@@ -98,7 +98,12 @@ jobs:
             if (-not $info) { Get-Content agent.log, agent.err; throw 'the agent did not answer on port 8775' }
             $info | ConvertTo-Json -Depth 4
             if ($info.version -ne $version) { throw "agent reports $($info.version), expected $version" }
-            $state = Invoke-RestMethod http://127.0.0.1:8775/api/state
+            # The first PC reading arrives a moment after the API answers, so give it up to 20 seconds.
+            $state = $null
+            for ($i = 0; $i -lt 20 -and -not ($state -and $state.pc); $i++) {
+              if ($i -gt 0) { Start-Sleep 1 }
+              $state = Invoke-RestMethod http://127.0.0.1:8775/api/state
+            }
             if (-not $state.pc) { throw 'no PC readings in /api/state' }
           } finally {
             Stop-Process -Id $agent.Id -Force -ErrorAction SilentlyContinue
