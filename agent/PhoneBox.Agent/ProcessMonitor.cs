@@ -36,7 +36,7 @@ public sealed class ProcessMonitor(ILogger<ProcessMonitor> log, SessionMonitor s
         "Memory Compression", "Secure System", "LsaIso", "conhost", "dllhost", "WUDFHost", "SearchHost",
         "StartMenuExperienceHost", "ShellExperienceHost", "TextInputHost", "LockApp", "SecurityHealthService",
         "MsMpEng", "NisSrv", "smartscreen", "RuntimeBroker", "ApplicationFrameHost", "SystemSettingsBroker",
-        "PhoneBoxAgent", "adb", "dotnet",
+        "PhoneDashAgent", "adb", "dotnet",
     };
 #endif
 
@@ -216,7 +216,7 @@ public sealed class ProcessMonitor(ILogger<ProcessMonitor> log, SessionMonitor s
     /// </summary>
     public KillResult KillPid(int pid)
     {
-        if (pid == _selfPid) return new(0, 0, "that is the PhoneBox agent itself");
+        if (pid == _selfPid) return new(0, 0, "that is the PhoneDash agent itself");
         Process p;
         try { p = Process.GetProcessById(pid); }
         catch { return new(0, 0, "process not found"); }

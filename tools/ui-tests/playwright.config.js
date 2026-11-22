@@ -1,10 +1,10 @@
-// Runs the UI tests against the web demo: python3 tools/pages/build.py builds it, a static server serves it.
+// Runs the UI tests against the web demo: tools/pages/build-site.mjs builds it, serve.mjs serves it.
 const { defineConfig } = require('@playwright/test');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..', '..');
 const site = path.join(root, '.ui-site');
-const python = process.platform === 'win32' ? 'python' : 'python3';
+const node = JSON.stringify(process.execPath);
 
 module.exports = defineConfig({
   testDir: __dirname,
@@ -17,7 +17,7 @@ module.exports = defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: `${python} "${path.join(root, 'tools', 'pages', 'build.py')}" "${site}" && ${python} "${path.join(__dirname, 'serve.py')}" "${site}" 8781`,
+    command: `${node} "${path.join(root, 'tools', 'pages', 'build-site.mjs')}" "${site}" && ${node} "${path.join(__dirname, 'serve.mjs')}" "${site}" 8781`,
     url: 'http://127.0.0.1:8781/panel/',
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,

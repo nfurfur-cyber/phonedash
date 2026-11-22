@@ -540,13 +540,21 @@ test('clicking a RAM widget navigates to the Processes page sorted by RAM', asyn
   await expect(procHead.locator('.p-sum')).toContainText('Total RAM');
 });
 
-test('the landing page embeds the panel', async ({ page }) => {
+test('the landing page links the download, the demo, the privacy policy and the licences', async ({ page }) => {
   const errors = watchErrors(page);
   await page.setViewportSize({ width: 1200, height: 900 });
   await page.goto('/');
-  await expect(page.frameLocator('#panel').locator('.w').first()).toBeVisible();
-  await page.getByRole('button', { name: /notification/ }).click();
-  await expect(page.frameLocator('#panel').locator('#toast')).toBeVisible();
+  await expect(page.locator('h1')).toContainText('PC 대시보드');
+  // off GitHub Pages there is no owner to build the release link from, so the download buttons stay on the guide
+  await expect(page.locator('[data-download]').first()).toHaveAttribute('href', '#start');
+  // the attribution line links the licences again, so each footer link is there at least once
+  for (const href of ['privacy.html', 'licenses.html', 'panel/']) await expect(page.locator(`footer a[href="${href}"]`).first()).toBeVisible();
+  await page.goto('/licenses.html');
+  await expect(page.locator('pre').first()).toContainText('Ersin KOÇ');
+  await page.goto('/privacy.html');
+  await expect(page.locator('h1')).toContainText('개인정보처리방침');
+  await page.goto('/panel/');
+  await expect(page.locator('.w').first()).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -556,14 +564,14 @@ test('the pairing page hands a checked link to the app and clears it from the ad
   const fp = 'ab'.repeat(32);
   await page.goto(`/pair/#v=1&pc=Desk%20PC&fp=${fp}&port=8766&h=192.168.1.10,100.64.0.7&c=${'A'.repeat(22)}&extra=%23x;y`);
   await expect(page.locator('#pc')).toHaveText('Desk PC');
-  await expect(page.locator('#hosts')).toHaveText('192.168.1.10, 100.64.0.7 (port 8766)');
+  await expect(page.locator('#hosts')).toHaveText('192.168.1.10, 100.64.0.7, 포트 8766');
   await expect(page.locator('#check')).toHaveText('ABAB ABAB');
   const href = await page.locator('#open').getAttribute('href');
   expect(href).toBe(`intent://pair?v=1&pc=Desk%20PC&fp=${fp}&port=8766&h=192.168.1.10%2C100.64.0.7&c=${'A'.repeat(22)}`
-    + '#Intent;scheme=phonebox;package=net.oxog.phonebox.deskpanel;S.browser_fallback_url=https%3A%2F%2Fgithub.com%2Fersinkoc%2Fphonebox%2Freleases%2Flatest;end');
+    + '#Intent;scheme=phonedash;package=kr.phonedash.app;S.browser_fallback_url=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%2Fdetails%3Fid%3Dkr.phonedash.app;end');
   // the button stays pinned to the app's package; the plain link is a separate choice for browsers that open a store (#175)
   await expect(page.locator('#plainWrap')).toBeVisible();
-  expect(await page.locator('#plain').getAttribute('href')).toBe(`phonebox://pair?v=1&pc=Desk%20PC&fp=${fp}&port=8766&h=192.168.1.10%2C100.64.0.7&c=${'A'.repeat(22)}`);
+  expect(await page.locator('#plain').getAttribute('href')).toBe(`phonedash://pair?v=1&pc=Desk%20PC&fp=${fp}&port=8766&h=192.168.1.10%2C100.64.0.7&c=${'A'.repeat(22)}`);
   expect(new URL(page.url()).hash).toBe('');
   await page.goto('about:blank'); // a hash-only change would not run the page again
   await page.goto(`/pair/#v=1&pc=x&fp=${fp}&port=8766&h=8.8.8.8&c=${'A'.repeat(22)}`); // not a local address
@@ -573,7 +581,7 @@ test('the pairing page hands a checked link to the app and clears it from the ad
   await expect(page.locator('#bad')).toBeVisible();
   await page.goto('about:blank');
   await page.goto(`/pair/#v=1&pc=x&fp=${fp}&port=8766&h=192.168.1.10,8.8.8.8&c=${'A'.repeat(22)}`); // a public address is dropped
-  await expect(page.locator('#hosts')).toHaveText('192.168.1.10 (port 8766)');
+  await expect(page.locator('#hosts')).toHaveText('192.168.1.10, 포트 8766');
   expect(await page.locator('#open').getAttribute('href')).toContain('&h=192.168.1.10&');
   await page.goto('about:blank');
   await page.goto(`/pair/#v=1&pc=x&fp=${fp}&port=8766&h=8.8.8.8&c=${'A'.repeat(22)}`);

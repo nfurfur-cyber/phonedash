@@ -18,7 +18,7 @@ public static class KeySender
     /// only removing it and adding the agent again helps (#269).
     /// </summary>
     internal const string AccessibilityHint =
-        "macOS refused: allow PhoneBoxAgent in System Settings › Privacy & Security › Accessibility. " +
+        "macOS refused: allow PhoneDashAgent in System Settings › Privacy & Security › Accessibility. " +
         "If it is already listed, remove it there with − and add it again";
 
     internal record struct MouseCall(string Action, int Dx, int Dy, int Delta);

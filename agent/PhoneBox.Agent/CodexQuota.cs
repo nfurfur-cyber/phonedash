@@ -97,7 +97,7 @@ internal static class CodexQuota
         {
             await Send(new { id = 1, method = "initialize", @params = new
             {
-                clientInfo = new { name = "phonebox", title = "PhoneBox", version = AppPaths.Version }
+                clientInfo = new { name = "phonedash", title = "PhoneDash", version = AppPaths.Version }
             } });
             await Response(1);
             await Send(new { method = "initialized" });

@@ -37,10 +37,10 @@
         <value>Geen telefoon aangesloten</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefoon verbonden</value>
+        <value>PhoneDash — telefoon verbonden</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — wachten op telefoon</value>
+        <value>PhoneDash — wachten op telefoon</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Kan de snelkoppeling voor het opstarten niet wijzigen: {0}</value>

@@ -1,10 +1,10 @@
 namespace PhoneBox.Agent;
 
 /// <summary>A separate local port allows development checks beside an installed agent.</summary>
-public sealed record AgentEndpoint(int Port = 8765)
+public sealed record AgentEndpoint(int Port = 8775)
 {
     public string SettingsUrl => $"http://127.0.0.1:{Port}/";
-    public string MutexName => Port == 8765 ? @"Local\PhoneBox.Agent" : $@"Local\PhoneBox.Agent.{Port}";
+    public string MutexName => Port == 8775 ? @"Local\PhoneDash.Agent" : $@"Local\PhoneDash.Agent.{Port}";
 
     public static AgentEndpoint FromArgs(string[] args)
     {

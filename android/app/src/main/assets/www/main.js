@@ -1,4 +1,4 @@
-// PhoneBox desk panel: core, pages, navigation and data from the agent. The widgets live in widgets/*.js;
+// PhoneDash desk panel: core, pages, navigation and data from the agent. The widgets live in widgets/*.js;
 // they import what they need from here, so this module must not run code that needs them while it loads
 // (the start section at the end runs after every module has loaded).
 import { W } from './registry.js';
@@ -17,8 +17,8 @@ import './widgets/dictate.js';
 import './widgets/camera.js';
 import './widgets/spectrum.js';
 
-// PhoneBox desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
-// The panel talks to the PhoneBox agent through "/agent/*", which the Android shell proxies over USB
+// PhoneDash desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
+// The panel talks to the PhoneDash agent through "/agent/*", which the Android shell proxies over USB
 // (adb reverse) or Wi-Fi to the computer.
 
 export const API = '/agent/api';

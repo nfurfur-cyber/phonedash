@@ -49,7 +49,7 @@ public sealed partial class QuotaMonitor(ConfigStore config, ILogger<QuotaMonito
     private static HttpClient NewHttpClient(HttpMessageHandler handler)
     {
         var http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(15) };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/" + AppPaths.Version);
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/" + AppPaths.Version);
         return http;
     }
 

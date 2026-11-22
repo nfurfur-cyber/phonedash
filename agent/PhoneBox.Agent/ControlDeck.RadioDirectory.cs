@@ -51,7 +51,7 @@ internal static partial class RadioBrowserDirectory
             ConnectCallback = ConnectPublicEndpointAsync,
         };
         var http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(10) };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/" + AppPaths.Version);
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/" + AppPaths.Version);
         http.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         return http;
     }

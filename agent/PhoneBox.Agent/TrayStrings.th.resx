@@ -37,10 +37,10 @@
         <value>ไม่มีโทรศัพท์เชื่อมต่อ</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox เชื่อมต่อ</value>
+        <value>PhoneDash เชื่อมต่อ</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox - รอโทรศัพท์</value>
+        <value>PhoneDash - รอโทรศัพท์</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>ไม่สามารถเปลี่ยนปุ่มพิมพ์ลัดในการเริ่มการทำงานได้: {0}</value>

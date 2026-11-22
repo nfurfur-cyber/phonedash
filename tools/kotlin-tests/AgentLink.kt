@@ -1,4 +1,4 @@
-package net.oxog.phonebox.deskpanel
+package kr.phonedash.app
 
 import java.io.InputStream
 

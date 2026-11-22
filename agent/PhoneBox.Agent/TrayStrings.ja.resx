@@ -37,10 +37,10 @@
         <value>電話が接続されていません</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox - 電話が接続されました</value>
+        <value>PhoneDash - 電話が接続されました</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — 電話待ち</value>
+        <value>PhoneDash — 電話待ち</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>起動ショートカットを変更できませんでした: {0}</value>

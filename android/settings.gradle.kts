@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "DeskPanel"
+rootProject.name = "PhoneDash"
 include(":app")

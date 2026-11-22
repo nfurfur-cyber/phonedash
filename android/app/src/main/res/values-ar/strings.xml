@@ -7,7 +7,7 @@
     <string name="pair_progress">جارٍ الإقران مع ⁨%1$s⁩…</string>
     <string name="pair_done">تم الإقران مع ⁨%1$s⁩</string>
     <string name="pair_failed_title">تعذّر الإقران</string>
-    <string name="pair_failed_unreachable">تعذّر الاتصال بـ ⁨%1$s⁩ على العنوان ⁨%2$s⁩. يجب أن يكون الهاتف والكمبيوتر على الشبكة نفسها أو أن يتصلا عبر Tailscale. تأكّد من أن جدار الحماية على الكمبيوتر يسمح بالاتصال بـ PhoneBox.</string>
+    <string name="pair_failed_unreachable">تعذّر الاتصال بـ ⁨%1$s⁩ على العنوان ⁨%2$s⁩. يجب أن يكون الهاتف والكمبيوتر على الشبكة نفسها أو أن يتصلا عبر Tailscale. تأكّد من أن جدار الحماية على الكمبيوتر يسمح بالاتصال بـ PhoneDash.</string>
     <string name="pair_failed_code">لم يقبل ⁨%1$s⁩ الرمز. يمكن استخدام الرمز مرة واحدة فقط، وتستمر صلاحيته 5 دقائق. ابدأ الإقران مجددًا على الكمبيوتر.</string>
     <string name="pair_failed_answer">أعاد ⁨%1$s⁩ الاستجابة ⁨%2$d⁩.</string>
     <string name="pair_failed_certificate">شهادة الكمبيوتر تختلف عن الشهادة في رمز QR. ابدأ الإقران من جديد.</string>

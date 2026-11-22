@@ -91,7 +91,7 @@ public sealed class QuestionPromptTests
 
             var settingsPath = Path.Combine(dir, "settings.json");
             File.WriteAllText(settingsPath, "  ");
-            Assert.Null(ClaudeHook.Configure(true, 18765, 30, settingsPath));
+            Assert.Null(ClaudeHook.Configure(true, 18775, 30, settingsPath));
             Assert.True(ClaudeHook.Installed(settingsPath));
 
             File.WriteAllText(settingsPath, """
@@ -106,9 +106,9 @@ public sealed class QuestionPromptTests
                 }
                 """);
             Assert.False(ClaudeHook.Installed(settingsPath));
-            Assert.Null(ClaudeHook.Configure(true, 18765, 30, settingsPath));
+            Assert.Null(ClaudeHook.Configure(true, 18775, 30, settingsPath));
             Assert.True(ClaudeHook.Installed(settingsPath));
-            Assert.Null(ClaudeHook.Configure(false, 18765, 30, settingsPath));
+            Assert.Null(ClaudeHook.Configure(false, 18775, 30, settingsPath));
             Assert.False(ClaudeHook.Installed(settingsPath));
             Assert.Contains("echo user-hook", File.ReadAllText(settingsPath));
         }

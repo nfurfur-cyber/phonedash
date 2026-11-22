@@ -152,7 +152,7 @@ public sealed class RuleEngine(ConfigStore config, PushStore push, SessionMonito
                 }));
                 break;
             case "notify":
-                var title = r.Name.Length > 0 ? r.Name : "PhoneBox";
+                var title = r.Name.Length > 0 ? r.Name : "PhoneDash";
                 var text = string.IsNullOrWhiteSpace(r.Text) ? detail : r.Text.Replace("{detail}", detail);
                 push.Emit("notify", JsonSerializer.SerializeToElement(new { title, text, level = r.Level ?? "info", wake = r.Level is "warn" or "error" }));
                 break;

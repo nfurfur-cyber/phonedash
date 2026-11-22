@@ -70,7 +70,7 @@ public sealed class Tray : IHostedService
         autostart.Click += (_, _) => { ToggleAutostart(UiCulture()); autostart.Checked = File.Exists(AppPaths.StartupShortcut); };
 
         var menu = new ContextMenuStrip();
-        menu.Items.Add(new ToolStripMenuItem($"PhoneBox {AppPaths.Version}") { Enabled = false });
+        menu.Items.Add(new ToolStripMenuItem($"PhoneDash {AppPaths.Version}") { Enabled = false });
         menu.Items.Add(status);
         menu.Items.Add(new ToolStripSeparator());
         var settings = new ToolStripMenuItem("", null, (_, _) => OpenUrl(SettingsUrl)) { Font = new Font(menu.Font, FontStyle.Bold) };
@@ -140,13 +140,13 @@ public sealed class Tray : IHostedService
             dynamic lnk = shell.CreateShortcut(AppPaths.StartupShortcut);
             lnk.TargetPath = Environment.ProcessPath;
             lnk.WorkingDirectory = Path.GetDirectoryName(Environment.ProcessPath);
-            lnk.Description = "PhoneBox agent";
+            lnk.Description = "PhoneDash";
             lnk.Save();
         }
         catch (Exception ex)
         {
             var options = culture.TextInfo.IsRightToLeft ? MessageBoxOptions.RightAlign | MessageBoxOptions.RtlReading : 0;
-            MessageBox.Show(string.Format(culture, Text("autostartError", culture), ex.Message), "PhoneBox",
+            MessageBox.Show(string.Format(culture, Text("autostartError", culture), ex.Message), "PhoneDash",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, options);
         }
     }

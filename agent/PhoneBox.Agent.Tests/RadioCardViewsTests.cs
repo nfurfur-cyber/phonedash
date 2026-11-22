@@ -10,7 +10,7 @@ public sealed class RadioCardViewsTests
     [Fact]
     public async Task RadioLogoCacheResolvesStationsCachesRasterAndFallsBackToMonogramSvg()
     {
-        Assert.False(RadioLogoCache.IsSafePublicUri(new Uri("http://127.0.0.1:8765/api/state")));
+        Assert.False(RadioLogoCache.IsSafePublicUri(new Uri("http://127.0.0.1:8775/api/state")));
         Assert.False(RadioLogoCache.IsSafePublicUri(new Uri("http://192.168.1.10/logo.png")));
         Assert.False(RadioLogoCache.IsSafePublicUri(new Uri("http://localhost/logo.png")));
         Assert.True(RadioLogoCache.IsSafePublicUri(new Uri("https://cdn.radyofenomen.com/logo.png")));

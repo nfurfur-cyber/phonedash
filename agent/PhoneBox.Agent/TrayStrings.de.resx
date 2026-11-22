@@ -37,10 +37,10 @@
         <value>Kein Telefon angeschlossen</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — Telefon verbunden</value>
+        <value>PhoneDash — Telefon verbunden</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — Warten auf Telefon</value>
+        <value>PhoneDash — Warten auf Telefon</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Die Startverknüpfung konnte nicht geändert werden: {0}</value>

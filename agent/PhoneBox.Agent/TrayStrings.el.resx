@@ -37,10 +37,10 @@
         <value>Δεν υπάρχει συνδεδεμένο τηλέφωνο</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — συνδεδεμένο τηλέφωνο</value>
+        <value>PhoneDash — συνδεδεμένο τηλέφωνο</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — αναμονή για τηλέφωνο</value>
+        <value>PhoneDash — αναμονή για τηλέφωνο</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Δεν ήταν δυνατή η αλλαγή της συντόμευσης εκκίνησης: {0}</value>

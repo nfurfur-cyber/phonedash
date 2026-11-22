@@ -3,23 +3,23 @@ using System.Diagnostics;
 namespace PhoneBox.Agent;
 
 /// <summary>
-/// While a phone is connected over USB, keeps an "adb reverse tcp:8765 tcp:&lt;USB port&gt;" rule in place so that
-/// 127.0.0.1:8765 on the phone reaches this agent's USB port, and reads the key the phone's app sends there (see
+/// While a phone is connected over USB, keeps an "adb reverse tcp:8775 tcp:&lt;USB port&gt;" rule in place so that
+/// 127.0.0.1:8775 on the phone reaches this agent's USB port, and reads the key the phone's app sends there (see
 /// <see cref="UsbLink"/>). When a phone is newly plugged in, wakes it and opens the panel
 /// (unless Settings › Display › open on connect is off).
 /// </summary>
 public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEndpoint? endpoint = null, UsbLink? usb = null) : BackgroundService
 {
-    public const string PanelActivity = "net.oxog.phonebox.deskpanel/.MainActivity";
-    private const string HomeAlias = "net.oxog.phonebox.deskpanel/.HomeAlias";
+    public const string PanelActivity = "kr.phonedash.app/.MainActivity";
+    private const string HomeAlias = "kr.phonedash.app/.HomeAlias";
     private readonly HashSet<string> _homeSet = [];
     private readonly HashSet<string> _awakeSet = [];
     private volatile string[] _missingApp = [];
 
-    /// <summary>Connected phones that do not have the PhoneBox app yet (installed from Settings, e.g. after winget / Scoop).</summary>
+    /// <summary>Connected phones that do not have the PhoneDash app yet (installed from Settings, e.g. after winget / Scoop).</summary>
     public string[] MissingApp => _missingApp;
-    private const string Rule = "tcp:8765";
-    private string TargetRule => $"tcp:{usb?.Port ?? endpoint?.Port ?? 8765}";
+    private const string Rule = "tcp:8775";
+    private string TargetRule => $"tcp:{usb?.Port ?? endpoint?.Port ?? 8775}";
     private readonly Dictionary<string, long> _keyTriedAt = []; // serial -> when its key was last asked for (Ensure only)
     private readonly HashSet<string> _oldApp = [];              // phones already told that their app is too old
     private readonly HashSet<string> _reverseSet = [];          // phones whose reverse rule this agent set (read only for Android 5 and 6)
@@ -111,6 +111,14 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
     private async Task Ensure(CancellationToken ct)
     {
         var adb = FindAdb(cfg.Get().AdbPath);
+        if (adb is null && OperatingSystem.IsWindows())
+        {
+            // PhoneDash: fetch adb for the buyer instead of asking them to install it
+            SetDevices([]);
+            AdbProvision.Start(log);
+            Report(AdbProvision.Status is { Length: > 0 } status ? status : "downloading adb (Android SDK Platform-Tools from Google)…");
+            return;
+        }
         if (adb is null)
         {
             SetDevices([]);
@@ -193,9 +201,9 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
             var keyed = usb is null || KeyAskedRecently(d, usb.HasKey(d) && !refreshKeys ? KeyRefreshMs : KeyRetryMs);
             if (ruled && keyed && !_missingApp.Contains(d)) continue;
             // is the app there at all? (the agent may have been installed on its own, with winget or Scoop)
-            var installed = (await Adb(adb, $"-s {d} shell pm path net.oxog.phonebox.deskpanel", ct, anyExit: true)).Contains("package:");
+            var installed = (await Adb(adb, $"-s {d} shell pm path kr.phonedash.app", ct, anyExit: true)).Contains("package:");
             _missingApp = installed ? _missingApp.Where(x => x != d).ToArray() : _missingApp.Union([d]).ToArray();
-            if (!installed) { Report($"{d}: the PhoneBox app is not installed (Settings › General › Install the phone app)"); continue; }
+            if (!installed) { Report($"{d}: the PhoneDash app is not installed (get it from Google Play: Settings › General › Open Google Play on the phone)"); continue; }
             if (!keyed) await ReadKeyAsync(adb, d, ct);
             if (ruled) continue;
             // the phone had a rule already: this agent restarted (its USB port changed), the phone was not plugged in now
@@ -227,7 +235,7 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
                 var r = await Adb(adb, $"-s {d} shell cmd package set-home-activity {HomeAlias}", ct, anyExit: true);
                 if (!r.Contains("Success")) continue; // the app has not enabled its home entry yet; try again shortly
                 _homeSet.Add(d);
-                log.LogInformation("{Device}: PhoneBox is now the home app", d);
+                log.LogInformation("{Device}: PhoneDash is now the home app", d);
             }
         }
         else _homeSet.Clear();
@@ -271,7 +279,7 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
         }
         usb.Forget(d);
         if (!_oldApp.Add(d)) return;
-        log.LogWarning("{Device}: the PhoneBox app on the phone is too old for this agent's USB connection; update it from the settings page", d);
+        log.LogWarning("{Device}: the PhoneDash app on the phone is too old for this PC program's USB connection; update it from Google Play", d);
         // it can't report its version over USB any more, so the update check takes it from here
         if (UsbLink.ParseVersionName(dump) is { } version) UpdateService.AppVersion ??= version;
     }
@@ -279,13 +287,13 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
     private bool KeyAskedRecently(string d, long window) =>
         _keyTriedAt.TryGetValue(d, out var at) && Environment.TickCount64 - at < window;
 
-    /// <summary>True when "reverse --list" has any rule for the phone's tcp:8765, whatever it points at.</summary>
+    /// <summary>True when "reverse --list" has any rule for the phone's tcp:8775, whatever it points at.</summary>
     internal static bool HasAnyRule(string list) => list.Split('\n')
         .Select(l => l.Split([' ', '\t', '\r'], StringSplitOptions.RemoveEmptyEntries))
         .Any(p => p.Length >= 2 && p[^2] == Rule);
 
     /// <summary>
-    /// True when "reverse --list" has this agent's rule: phone tcp:8765 to this agent's port. A rule left by an agent on
+    /// True when "reverse --list" has this agent's rule: phone tcp:8775 to this agent's port. A rule left by an agent on
     /// another port (--port) points the phone at a dead port; lines read "&lt;transport&gt; &lt;phone&gt; &lt;computer&gt;".
     /// </summary>
     private bool HasOwnRule(string list) => list.Split('\n')
@@ -326,6 +334,7 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
         foreach (var dir in (Environment.GetEnvironmentVariable("PATH") ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries))
             candidates.Add(Path.Combine(dir.Trim().Trim('"'), "adb.exe")); // PATH entries may be quoted
         var local = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+        candidates.Add(AdbProvision.LocalAdb); // fetched by PhoneDash itself
         candidates.Add(Path.Combine(local, "Android", "Sdk", "platform-tools", "adb.exe"));
         var winget = Path.Combine(local, "Microsoft", "WinGet", "Packages");
         if (Directory.Exists(winget))

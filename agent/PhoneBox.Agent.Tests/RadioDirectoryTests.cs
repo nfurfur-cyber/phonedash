@@ -51,7 +51,7 @@ public sealed class RadioDirectoryTests
         Assert.Equal("radio-tr-jazz-radio", stations[2].Id);
         Assert.Null(stations[2].LogoUrl);
         Assert.Equal("istanbul-fm", RadioBrowserDirectory.Slugify("İstanbul FM"));
-        Assert.False(RadioBrowserDirectory.IsSafePublicUri(new Uri("http://127.0.0.1:8765/api/state")));
+        Assert.False(RadioBrowserDirectory.IsSafePublicUri(new Uri("http://127.0.0.1:8775/api/state")));
         Assert.False(RadioBrowserDirectory.IsSafePublicUri(new Uri("http://192.168.1.50/stream.mp3")));
     }
 
@@ -122,7 +122,7 @@ public sealed class RadioDirectoryTests
             new RadioCheckItem("s1", "https://stream.example.com/live.mp3"),
             new RadioCheckItem("s2", "https://stream.example.com/page.html"),
             new RadioCheckItem("s3", "ftp://invalid"),
-            new RadioCheckItem("s4", "http://127.0.0.1:8765/api/state"),
+            new RadioCheckItem("s4", "http://127.0.0.1:8775/api/state"),
             new RadioCheckItem("s5", "https://stream.example.com/net-error.mp3"),
             new RadioCheckItem("s6", "https://stream.example.com/downgrade.mp3"),
             new RadioCheckItem("s7", "https://stream.example.com/private-redirect.mp3")

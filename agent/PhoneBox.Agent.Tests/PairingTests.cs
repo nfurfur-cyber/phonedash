@@ -61,13 +61,13 @@ public sealed class PairingTests
     [Fact]
     public void TheLinkKeepsEverythingInTheFragment()
     {
-        var link = PairingCodes.Link("Desk PC & co", "ab12", 8766, ["192.168.1.10", "100.64.0.7"], "CODE_x-1");
+        var link = PairingCodes.Link("Desk PC & co", "ab12", 8776, ["192.168.1.10", "100.64.0.7"], "CODE_x-1");
         var uri = new Uri(link);
         Assert.Equal("https", uri.Scheme);
-        Assert.Equal("ersinkoc.github.io", uri.Host);
-        Assert.Equal("/phonebox/pair/", uri.AbsolutePath);
+        Assert.Equal(new Uri(Brand.PairUrl).Host, uri.Host);
+        Assert.Equal("/phonedash/pair/", uri.AbsolutePath);
         Assert.Equal("", uri.Query); // nothing a web server would receive
-        Assert.Equal("#v=1&pc=Desk%20PC%20%26%20co&fp=ab12&port=8766&h=192.168.1.10,100.64.0.7&c=CODE_x-1", uri.Fragment);
+        Assert.Equal("#v=1&pc=Desk%20PC%20%26%20co&fp=ab12&port=8776&h=192.168.1.10,100.64.0.7&c=CODE_x-1", uri.Fragment);
     }
 
     [Fact]
@@ -77,7 +77,7 @@ public sealed class PairingTests
     [Fact]
     public void TheQrCodeIsAnSvg()
     {
-        var svg = PairingCodes.Svg(PairingCodes.Link("PC", new string('a', 64), 8766, ["192.168.1.10"], new string('A', 22)));
+        var svg = PairingCodes.Svg(PairingCodes.Link("PC", new string('a', 64), 8776, ["192.168.1.10"], new string('A', 22)));
         Assert.StartsWith("<svg", svg.TrimStart());
         Assert.DoesNotContain("<script", svg, StringComparison.OrdinalIgnoreCase);
     }
@@ -120,14 +120,14 @@ public sealed class PairingTests
     [Fact]
     public void DisabledLanRejectsAllTiersAndWebhookTokenStaysSeparateFromPhoneToken()
     {
-        var enabled = new LanConfig { Enabled = true, Port = 8766, Token = "phone-tok", WebhookToken = "hook-tok" };
+        var enabled = new LanConfig { Enabled = true, Port = 8776, Token = "phone-tok", WebhookToken = "hook-tok" };
         Assert.Equal(Lan.LanAccess.Phone, Lan.AuthorizeRequest(enabled, "GET", "/api/state", "", "Bearer phone-tok", null));
         Assert.Equal(Lan.LanAccess.Webhook, Lan.AuthorizeRequest(enabled, "POST", "/api/push/ci", "", null, "hook-tok"));
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(enabled, "GET", "/api/state", "", "Bearer hook-tok", null));
         Assert.Equal(Lan.LanAccess.PairingClaim, Lan.AuthorizeRequest(enabled, "POST", "/api/pair/claim", "", null, null));
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(enabled, "GET", "/api/state", "https://evil.example", "Bearer phone-tok", null));
 
-        var disabled = new LanConfig { Enabled = false, Port = 8766, Token = "phone-tok", WebhookToken = "hook-tok" };
+        var disabled = new LanConfig { Enabled = false, Port = 8776, Token = "phone-tok", WebhookToken = "hook-tok" };
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(disabled, "GET", "/api/state", "", "Bearer phone-tok", null));
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(disabled, "POST", "/api/push/ci", "", null, "hook-tok"));
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(disabled, "POST", "/api/pair/claim", "", null, null));
@@ -137,7 +137,7 @@ public sealed class PairingTests
     [Fact]
     public void ASharedPhoneAndWebhookKeyIsNotAPhoneKeyAndCannotBeSaved()
     {
-        var shared = new LanConfig { Enabled = true, Port = 8766, Token = "same-tok", WebhookToken = "same-tok" };
+        var shared = new LanConfig { Enabled = true, Port = 8776, Token = "same-tok", WebhookToken = "same-tok" };
         Assert.Equal(Lan.LanAccess.Denied, Lan.AuthorizeRequest(shared, "GET", "/api/state", "", "Bearer same-tok", null));
         Assert.Equal(Lan.LanAccess.Webhook, Lan.AuthorizeRequest(shared, "POST", "/api/push/ci", "", "Bearer same-tok", null));
 
@@ -173,7 +173,7 @@ public sealed class PairingTests
             ctx.Request.ContentType = "application/json";
             ctx.Request.Body = new GatedMemoryStream(System.Text.Encoding.UTF8.GetBytes($$"""{"code":"{{code}}"}"""), entered, release.Task);
 
-            var claim = Program.ClaimPairingAsync(ctx.Request, cfg, codes, cert, 8766, Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
+            var claim = Program.ClaimPairingAsync(ctx.Request, cfg, codes, cert, 8776, Microsoft.Extensions.Logging.Abstractions.NullLogger.Instance);
             try
             {
                 await entered.Task.WaitAsync(TimeSpan.FromSeconds(10));
@@ -190,18 +190,18 @@ public sealed class PairingTests
 
     // ConfigStore.Save keeps the last of repeated members; the port check must look at that one.
     [Theory]
-    [InlineData("""{"lan":{"enabled":false},"lan":{"enabled":true,"port":8765}}""", true)]
-    [InlineData("""{"lan":{"enabled":true,"port":8765},"LAN":{"enabled":false}}""", false)]
-    [InlineData("""{"lan":{"enabled":true,"port":8765},"lan":null}""", false)]
+    [InlineData("""{"lan":{"enabled":false},"lan":{"enabled":true,"port":8775}}""", true)]
+    [InlineData("""{"lan":{"enabled":true,"port":8775},"LAN":{"enabled":false}}""", false)]
+    [InlineData("""{"lan":{"enabled":true,"port":8775},"lan":null}""", false)]
     public void TheLastOfRepeatedLanMembersIsTheOneChecked(string json, bool collides)
     {
-        Assert.Equal(collides, Program.LanPortCollidesWithLocal(json, 8765));
+        Assert.Equal(collides, Program.LanPortCollidesWithLocal(json, 8775));
         var dir = Directory.CreateTempSubdirectory("phonebox-lan-repeat-").FullName;
         try
         {
             var cfg = new ConfigStore(Path.Combine(dir, "config.json"));
             Assert.Null(cfg.Save(json));
-            Assert.Equal(collides, cfg.Get().Lan.Enabled && cfg.Get().Lan.Port == 8765);
+            Assert.Equal(collides, cfg.Get().Lan.Enabled && cfg.Get().Lan.Port == 8775);
         }
         finally { Directory.Delete(dir, recursive: true); }
     }
@@ -222,10 +222,10 @@ public sealed class PairingTests
             if (!OperatingSystem.IsWindows())
                 Assert.Equal(UnixFileMode.UserRead | UnixFileMode.UserWrite, File.GetUnixFileMode(certPath));
 
-            Assert.True(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true,"port":8765}}""", 8765));
-            Assert.True(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true}}""", 8766));
-            Assert.False(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":false,"port":8765}}""", 8765));
-            Assert.False(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true,"port":8766}}""", 8765));
+            Assert.True(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true,"port":8775}}""", 8775));
+            Assert.True(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true}}""", 8776));
+            Assert.False(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":false,"port":8775}}""", 8775));
+            Assert.False(Program.LanPortCollidesWithLocal("""{"lan":{"enabled":true,"port":8776}}""", 8775));
         }
         finally { Directory.Delete(dir, recursive: true); }
     }

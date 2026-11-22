@@ -37,10 +37,10 @@
         <value>Aucun téléphone connecté</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — téléphone connecté</value>
+        <value>PhoneDash — téléphone connecté</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — en attente de téléphone</value>
+        <value>PhoneDash — en attente de téléphone</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Impossible de modifier le raccourci de démarrage: {0}</value>

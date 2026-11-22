@@ -45,7 +45,7 @@ internal static class OpenCodeSessions
     private static HttpClient NewHttpClient(HttpMessageHandler handler)
     {
         var http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(5) };
-        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/" + AppPaths.Version);
+        http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/" + AppPaths.Version);
         return http;
     }
 

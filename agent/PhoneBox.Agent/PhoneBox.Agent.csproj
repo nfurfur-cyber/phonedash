@@ -8,12 +8,12 @@
     <TargetFrameworks Condition="'$(OS)' != 'Windows_NT'">net10.0</TargetFrameworks>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AssemblyName>PhoneBoxAgent</AssemblyName>
+    <AssemblyName>PhoneDashAgent</AssemblyName>
     <RootNamespace>PhoneBox.Agent</RootNamespace>
-    <Product>PhoneBox</Product>
-    <Company>PhoneBox</Company>
-    <Description>PhoneBox desktop agent: feeds the PhoneBox Android desk panel over USB or Wi-Fi.</Description>
-    <Version>0.9.27</Version>
+    <Product>PhoneDash</Product>
+    <Company>PhoneDash</Company>
+    <Description>PhoneDash PC program: feeds the PhoneDash Android desk panel over USB or Wi-Fi. Based on PhoneBox (MIT).</Description>
+    <Version>1.0.0</Version>
     <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
   </PropertyGroup>
 
@@ -22,7 +22,7 @@
     <OutputType>WinExe</OutputType>
     <UseWindowsForms>true</UseWindowsForms>
     <SatelliteResourceLanguages>en;tr;de;fr;es;it;pt;pt-BR;nl;pl;ru;el;vi;zh-Hans;ja;ko;id;th;uk;hi;cs;ar;zh-Hant</SatelliteResourceLanguages>
-    <ApplicationIcon>phonebox.ico</ApplicationIcon>
+    <ApplicationIcon>phonedash.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup Condition="$(TargetFramework.Contains('-windows'))">
@@ -40,7 +40,7 @@
   </ItemGroup>
 
   <ItemGroup Condition="!$(TargetFramework.Contains('-windows'))">
-    <Compile Remove="Tray.cs;JobObject.cs;AudioControl.cs;MediaMonitor.cs" />
+    <Compile Remove="Tray.cs;JobObject.cs;AudioControl.cs;MediaMonitor.cs;SelfInstall.cs" />
     <EmbeddedResource Remove="TrayStrings*.resx" />
   </ItemGroup>
 
@@ -58,10 +58,13 @@
     <EmbeddedResource Include="config.default.json" LogicalName="config.default.json" />
     <EmbeddedResource Include="config.default.linux.json" LogicalName="config.default.linux.json" />
     <EmbeddedResource Include="config.default.macos.json" LogicalName="config.default.macos.json" />
-    <EmbeddedResource Include="phonebox.ico" LogicalName="phonebox.ico" />
+    <EmbeddedResource Include="phonedash.ico" LogicalName="phonebox.ico" />
     <EmbeddedResource Include="settings.html" LogicalName="settings.html" />
     <EmbeddedResource Include="widgets.json" LogicalName="widgets.json" />
     <EmbeddedResource Include="templates.json" LogicalName="templates.json" />
+    <!-- licence texts: the installer writes them next to the program, the settings page links them -->
+    <EmbeddedResource Include="..\..\LICENSE" LogicalName="LICENSE.txt" />
+    <EmbeddedResource Include="THIRD-PARTY-NOTICES.txt" LogicalName="THIRD-PARTY-NOTICES.txt" />
     <!-- the phone's panel, served at /panel/ for the live preview in the layout editor -->
     <EmbeddedResource Include="..\..\android\app\src\main\assets\www\*.*" LogicalName="www/%(Filename)%(Extension)" />
     <EmbeddedResource Include="..\..\android\app\src\main\assets\www\widgets\*.*" LogicalName="www/widgets/%(Filename)%(Extension)" />

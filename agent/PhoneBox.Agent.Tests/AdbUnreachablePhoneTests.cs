@@ -86,7 +86,7 @@ public sealed class AdbUnreachablePhoneTests : IDisposable
         FakeAdb(broken: null); // FAKE1 answers again: the next round sets it up
         await Pass();
         calls = Calls();
-        Assert.Contains("-s FAKE1 reverse tcp:8765 tcp:8765", calls);
+        Assert.Contains("-s FAKE1 reverse tcp:8775 tcp:8775", calls);
         Assert.Contains("-s FAKE1 " + awake, calls);
     }
 }

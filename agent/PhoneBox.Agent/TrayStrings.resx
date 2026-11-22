@@ -37,10 +37,10 @@
         <value>No phone connected</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — phone connected</value>
+        <value>PhoneDash — phone connected</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — waiting for phone</value>
+        <value>PhoneDash — waiting for phone</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Could not change the startup shortcut: {0}</value>

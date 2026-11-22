@@ -72,7 +72,7 @@ public class UsbLinkTests
     [Fact]
     public void AWebPageCannotUseTheTunnelEvenWithTheKey()
     {
-        Assert.Equal(UsbLink.Access.Forbidden, Linked().Authorize("GET", "/api/state", "http://127.0.0.1:8765", "Bearer " + Key));
+        Assert.Equal(UsbLink.Access.Forbidden, Linked().Authorize("GET", "/api/state", "http://127.0.0.1:8775", "Bearer " + Key));
     }
 
     [Fact]
@@ -105,36 +105,36 @@ public class UsbLinkTests
         Assert.Equal(Key, UsbLink.ParseKey($"Row: 0 key={Key}\n"));
         Assert.Equal(Key, UsbLink.ParseKey($"Row: 0 key={Key}\r\n"));
         Assert.Null(UsbLink.ParseKey("No result found.\n"));
-        Assert.Null(UsbLink.ParseKey("Error while accessing provider:net.oxog.phonebox.deskpanel.usb\njava.lang.SecurityException"));
+        Assert.Null(UsbLink.ParseKey("Error while accessing provider:kr.phonedash.app.usb\njava.lang.SecurityException"));
         Assert.Null(UsbLink.ParseKey("Row: 0 key=short\n"));
         Assert.Null(UsbLink.ParseKey($"Row: 0 key={Key} extra\n"));
     }
 
-    private const string Owned = "Packages:\n  Package [net.oxog.phonebox.deskpanel] (1a2b3c):\n    versionName=0.9.24\n"
-        + "ContentProvider Authorities:\n  [net.oxog.phonebox.deskpanel.usb]:\n    Provider{3ec2f24 net.oxog.phonebox.deskpanel/.UsbKeyProvider}\n"
-        + "      applicationInfo=ApplicationInfo{a39b11a net.oxog.phonebox.deskpanel}\n";
+    private const string Owned = "Packages:\n  Package [kr.phonedash.app] (1a2b3c):\n    versionName=0.9.24\n"
+        + "ContentProvider Authorities:\n  [kr.phonedash.app.usb]:\n    Provider{3ec2f24 kr.phonedash.app/.UsbKeyProvider}\n"
+        + "      applicationInfo=ApplicationInfo{a39b11a kr.phonedash.app}\n";
 
     [Fact]
     public void TheKeyIsTrustedOnlyFromTheAppsOwnProvider()
     {
         Assert.True(UsbLink.OwnsKeyProvider(Owned));
         Assert.True(UsbLink.OwnsKeyProvider(Owned.Replace("\n", "\r\n")));
-        Assert.True(UsbLink.OwnsKeyProvider(Owned.Replace("/.UsbKeyProvider", "/net.oxog.phonebox.deskpanel.UsbKeyProvider")));
+        Assert.True(UsbLink.OwnsKeyProvider(Owned.Replace("/.UsbKeyProvider", "/kr.phonedash.app.UsbKeyProvider")));
         // an older PhoneBox without the provider: the name may belong to another app, so no key is read
-        Assert.False(UsbLink.OwnsKeyProvider("Packages:\n  Package [net.oxog.phonebox.deskpanel] (1a2b3c):\n    versionName=0.9.23\n"));
+        Assert.False(UsbLink.OwnsKeyProvider("Packages:\n  Package [kr.phonedash.app] (1a2b3c):\n    versionName=0.9.23\n"));
         // another package's provider under the same name, or another class
-        Assert.False(UsbLink.OwnsKeyProvider(Owned.Replace("Provider{3ec2f24 net.oxog.phonebox.deskpanel/", "Provider{3ec2f24 com.evil.app/")));
+        Assert.False(UsbLink.OwnsKeyProvider(Owned.Replace("Provider{3ec2f24 kr.phonedash.app/", "Provider{3ec2f24 com.evil.app/")));
         Assert.False(UsbLink.OwnsKeyProvider(Owned.Replace("UsbKeyProvider}", "Other}")));
-        Assert.False(UsbLink.OwnsKeyProvider(Owned.Replace("[net.oxog.phonebox.deskpanel.usb]", "[net.oxog.phonebox.deskpanel.usb2]")));
+        Assert.False(UsbLink.OwnsKeyProvider(Owned.Replace("[kr.phonedash.app.usb]", "[kr.phonedash.app.usb2]")));
         Assert.False(UsbLink.OwnsKeyProvider(""));
     }
 
     [Fact]
     public void TheAppVersionIsReadFromDumpsys()
     {
-        const string dump = "Packages:\n  Package [net.oxog.phonebox.deskpanel] (1a2b3c):\n    versionCode=43 minSdk=21 targetSdk=35\n    versionName=0.9.22\n";
+        const string dump = "Packages:\n  Package [kr.phonedash.app] (1a2b3c):\n    versionCode=43 minSdk=21 targetSdk=35\n    versionName=0.9.22\n";
         Assert.Equal("0.9.22", UsbLink.ParseVersionName(dump));
-        Assert.Null(UsbLink.ParseVersionName("Unable to find package: net.oxog.phonebox.deskpanel"));
+        Assert.Null(UsbLink.ParseVersionName("Unable to find package: kr.phonedash.app"));
     }
 
     [Fact]

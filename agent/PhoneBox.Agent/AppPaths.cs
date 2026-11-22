@@ -5,7 +5,7 @@ namespace PhoneBox.Agent;
 /// <summary>File locations. The install folder is replaced on update; settings and logs are kept.</summary>
 public static class AppPaths
 {
-    public const string AppName = "PhoneBox";
+    public const string AppName = "PhoneDash";
 
     private static string Home => Environment.GetFolderPath(Environment.SpecialFolder.UserProfile, Environment.SpecialFolderOption.DoNotVerify);
     private static string Xdg(string variable, string fallback) =>

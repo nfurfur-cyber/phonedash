@@ -1,14 +1,14 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="referrer" content="no-referrer">
 <meta name="robots" content="noindex">
-<title>Pair PhoneBox</title>
+<title>폰대시 Wi-Fi 연결</title>
 <link rel="icon" href="../favicon.ico">
 <style>
-:root { --bg: #07090d; --panel: #10141b; --line: #232a35; --text: #eef2f6; --muted: #8a94a3; --accent: #2dd4bf; --warn: #f59e0b; color-scheme: dark; }
+:root { --bg: #07090d; --panel: #10141b; --line: #232a35; --text: #eef2f6; --muted: #8a94a3; --accent: #ff6b35; --warn: #f59e0b; color-scheme: dark; }
 * { box-sizing: border-box; margin: 0; }
 body { background: var(--bg); color: var(--text); font: 16px/1.5 "Segoe UI", system-ui, -apple-system, sans-serif; min-height: 100vh; }
 .wrap { max-width: 520px; margin: 0 auto; padding: 32px 16px; }
@@ -19,7 +19,7 @@ h1 { font-size: 20px; }
 .card h2 { font-size: 17px; margin-bottom: 6px; }
 .muted { color: var(--muted); font-size: 14px; }
 .btn { display: block; text-align: center; text-decoration: none; font-weight: 600; border-radius: 12px; padding: 14px; margin-top: 14px; }
-.primary { background: var(--accent); color: #062b26; }
+.primary { background: var(--accent); color: #1a0b04; }
 .secondary { border: 1px solid var(--line); color: var(--text); }
 .warn { color: var(--warn); }
 code { font-size: 13px; }
@@ -27,33 +27,31 @@ code { font-size: 13px; }
 </head>
 <body>
 <div class="wrap">
-  <header><img src="../favicon.ico" alt=""><h1>Pair PhoneBox</h1></header>
+  <header><img src="../favicon.ico" alt=""><h1>폰대시 Wi-Fi 연결</h1></header>
 
   <div class="card" id="ok" hidden>
-    <h2>Pair this phone with a computer?</h2>
-    <p class="muted">“<span id="pc"></span>” at <span id="hosts"></span>. Check that the computer's pairing window shows the code
-      <b id="check"></b>, and continue only if you started pairing there.</p>
-    <a class="btn primary" id="open" href="#">Open in PhoneBox</a>
-    <p class="muted" id="plainWrap" hidden style="margin-top:10px">Did a store open instead? Some browsers send app links there;
-      <a id="plain" href="#" style="color:var(--accent)">open the pairing link directly</a>. If Android then asks which app to
-      open it with, choose PhoneBox: another app that accepts these links would get the pairing code.</p>
-    <p class="muted" style="margin-top:10px">The pairing code works once, for 5 minutes. If it expired, start pairing again on the computer.</p>
+    <h2>이 폰을 컴퓨터와 연결할까요?</h2>
+    <p class="muted">컴퓨터 “<span id="pc"></span>” (<span id="hosts"></span>). 컴퓨터의 연결 창에 확인 코드
+      <b id="check"></b> 가 보이는지 확인하고, 직접 연결을 시작한 경우에만 계속하세요.</p>
+    <a class="btn primary" id="open" href="#">폰대시에서 열기</a>
+    <p class="muted" id="plainWrap" hidden style="margin-top:10px">스토어가 대신 열렸나요? 일부 브라우저는 앱 링크를 스토어로 보냅니다.
+      <a id="plain" href="#" style="color:var(--accent)">연결 링크 바로 열기</a>를 누르고, 어떤 앱으로 열지 물으면 꼭 폰대시를 고르세요.</p>
+    <p class="muted" style="margin-top:10px">연결 코드는 5분 동안 한 번만 쓸 수 있어요. 시간이 지났다면 컴퓨터에서 다시 시작하세요.</p>
   </div>
 
   <div class="card" id="bad" hidden>
-    <h2 class="warn">This pairing link is incomplete</h2>
-    <p class="muted">Scan the QR code again from PhoneBox on the computer: Settings › General › Wi-Fi &amp; Tailscale › Pair a phone over Wi-Fi.</p>
+    <h2 class="warn">연결 링크가 올바르지 않아요</h2>
+    <p class="muted">컴퓨터의 폰대시 설정 › Wi-Fi &amp; Tailscale 에서 QR 코드를 다시 찍어 주세요.</p>
   </div>
 
   <div class="card">
-    <h2>No PhoneBox app yet?</h2>
-    <p class="muted">Install it first (Android 5.0 or later), then scan the QR code again.</p>
-    <a class="btn secondary" href="https://github.com/ersinkoc/phonebox/releases/latest">Download the app</a>
+    <h2>폰대시 앱이 아직 없나요?</h2>
+    <p class="muted">Google Play에서 먼저 설치한 뒤(Android 5.0 이상) QR 코드를 다시 찍어 주세요.</p>
+    <a class="btn secondary" href="https://play.google.com/store/apps/details?id=kr.phonedash.app">Google Play에서 받기</a>
   </div>
 
-  <p class="muted">This page runs only in your browser. The pairing details are in the part of the link after <code>#</code>,
-    which browsers never send to a server, and the page removes them from your history.
-    <a href="https://github.com/ersinkoc/phonebox/blob/main/PRIVACY.md" style="color:var(--accent)">Privacy policy</a></p>
+  <p class="muted">이 페이지는 브라우저 안에서만 동작합니다. 연결 정보는 링크의 <code>#</code> 뒤에 있어 서버로 전송되지 않고,
+    페이지가 방문 기록에서도 지웁니다. <a href="../privacy.html" style="color:var(--accent)">개인정보처리방침</a></p>
 </div>
 <script>
 (() => {
@@ -75,21 +73,21 @@ code { font-size: 13px; }
   if (!ok) { document.getElementById('bad').hidden = false; return; }
   p.set('h', hosts.join(','));
   p.set('port', String(port));
-  document.getElementById('pc').textContent = (p.get('pc') || 'your computer').slice(0, 64);
-  document.getElementById('hosts').textContent = hosts.join(', ') + ' (port ' + port + ')';
+  document.getElementById('pc').textContent = (p.get('pc') || '컴퓨터').slice(0, 64);
+  document.getElementById('hosts').textContent = hosts.join(', ') + ', 포트 ' + port;
   document.getElementById('check').textContent = (p.get('fp').slice(0, 4) + ' ' + p.get('fp').slice(4, 8)).toUpperCase();
   // Chrome on Android opens intent:// links in the app and falls back to the download page when it is not installed;
-  // other browsers get the plain phonebox:// link. The intent names the package, so no other app that claims the
-  // phonebox:// scheme receives the one-time code. Some browsers (common on LineageOS) send such a link to the Play Store
+  // other browsers get the plain phonedash:// link. The intent names the package, so no other app that claims the
+  // phonedash:// scheme receives the one-time code. Some browsers (common on LineageOS) send such a link to the Play Store
   // even with the app installed (#175); for them the plain link is offered below, only as a choice the user makes.
   // rebuilt from the checked fields only, so nothing else from the link reaches the intent syntax
   const query = ['v', 'pc', 'fp', 'port', 'h', 'c'].filter((k) => p.has(k)).map((k) => k + '=' + encodeURIComponent(p.get(k))).join('&');
   const android = /Android/i.test(navigator.userAgent);
-  const fallback = encodeURIComponent('https://github.com/ersinkoc/phonebox/releases/latest');
+  const fallback = encodeURIComponent('https://play.google.com/store/apps/details?id=kr.phonedash.app');
   document.getElementById('open').href = android
-    ? `intent://pair?${query}#Intent;scheme=phonebox;package=net.oxog.phonebox.deskpanel;S.browser_fallback_url=${fallback};end`
-    : `phonebox://pair?${query}`;
-  document.getElementById('plain').href = `phonebox://pair?${query}`;
+    ? `intent://pair?${query}#Intent;scheme=phonedash;package=kr.phonedash.app;S.browser_fallback_url=${fallback};end`
+    : `phonedash://pair?${query}`;
+  document.getElementById('plain').href = `phonedash://pair?${query}`;
   document.getElementById('plainWrap').hidden = !android;
   document.getElementById('ok').hidden = false;
 })();

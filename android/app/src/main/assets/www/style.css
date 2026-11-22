@@ -43,6 +43,8 @@ html, body {
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
 }
+/* Korean wraps between words (eojeol), not inside them; a word too long for its line still breaks. */
+html:lang(ko) { word-break: keep-all; overflow-wrap: break-word; }
 
 body::before {
   content: "";

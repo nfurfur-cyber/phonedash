@@ -37,10 +37,10 @@
         <value>Không có điện thoại được kết nối</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — điện thoại kết nối</value>
+        <value>PhoneDash — điện thoại kết nối</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — chờ điện thoại</value>
+        <value>PhoneDash — chờ điện thoại</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Không thể thay đổi phím tắt khởi động: {0}</value>

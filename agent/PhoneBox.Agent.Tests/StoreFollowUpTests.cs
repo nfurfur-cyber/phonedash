@@ -150,7 +150,7 @@ public sealed class StoreFollowUpTests : IDisposable
         var path = Path.Combine(_dir, "settings.json");
         File.WriteAllText(path, """{ "env": { "ANTHROPIC_API_KEY": "not-a-real-key" } }""");
         if (!OperatingSystem.IsWindows()) File.SetUnixFileMode(path, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-        Assert.Null(ClaudeHook.Configure(true, 18765, 30, path));
+        Assert.Null(ClaudeHook.Configure(true, 18775, 30, path));
         Assert.True(ClaudeHook.Installed(path));
         Assert.Contains("not-a-real-key", File.ReadAllText(path));
         if (OperatingSystem.IsWindows()) return; // Windows keeps the profile's ACLs
@@ -168,7 +168,7 @@ public sealed class StoreFollowUpTests : IDisposable
         foreach (var install in new[] { false, true })
         {
             File.WriteAllText(path, json);
-            Assert.NotNull(ClaudeHook.Configure(install, 18765, 30, path));
+            Assert.NotNull(ClaudeHook.Configure(install, 18775, 30, path));
             Assert.Equal(json, File.ReadAllText(path));
         }
     }

@@ -404,7 +404,7 @@ W.meters = {
         const pc = D.state?.pc;
         if (!pc) return;
         const s = pc.uptimeSec, d = Math.floor(s / 86400), hr = Math.floor((s % 86400) / 3600), m = Math.floor((s % 3600) / 60);
-        up.textContent = tp('Up ') + (d ? `${d} d ${hr} h` : hr ? `${hr} h ${m} min` : `${m} min`);
+        up.textContent = tp('Up ') + (d ? t('time.dH', { d, h: hr }) : hr ? t('time.hMin', { h: hr, m }) : t('time.min', { m }));
         const rows = [meter('RAM', `${r1(pc.ramUsedGb)} / ${Math.round(pc.ramTotalGb)} GB`, (pc.ramUsedGb / pc.ramTotalGb) * 100)];
         // one row per GPU (the integrated one counts its shared memory); named once there is more than one
         const gpus = gpusOf(D.state);
@@ -486,7 +486,7 @@ W.quotas = {
       card.style.flex = flexVal;
       const days = ov.windowDays || 30;
       const age = ov.updatedAt ? Math.max(0, Date.now() - ov.updatedAt) : null;
-      const updStr = age != null ? `checked ${age < 60_000 ? 'just now' : fmtDur(age) + ' ago'}` : '';
+      const updStr = age != null ? (age < 60_000 ? t('time.justNow') : t('time.ago', { dur: fmtDur(age) })) : '';
       card.appendChild(h('div', 'q-head',
         h('span', 'q-logo', emo('📊')),
         h('span', 'q-name', tp('Overview')),
@@ -546,7 +546,7 @@ W.quotas = {
         card.style.setProperty('--q', st.color);
         card.style.flex = needsPaging && ps === 2 ? '1 1 0' : String(Math.max(1, p.limits.length) + 0.3);
         card.appendChild(h('div', 'q-head', h('span', 'q-logo', st.logo), h('span', 'q-name', p.name), h('span', 'q-plan', p.plan),
-          p.updatedAt ? h('span', 'q-upd', fmtDur(Date.now() - p.updatedAt) + ' ago') : null));
+          p.updatedAt ? h('span', 'q-upd', t('time.ago', { dur: fmtDur(Date.now() - p.updatedAt) })) : null));
         const compact = p.limits.length >= 4;
         const rings = h('div', 'q-rings' + (compact ? ' q-rings-grid' : ''));
         for (const l of p.limits) {
@@ -656,7 +656,7 @@ W.sessions = {
     // The tool each session comes from: one glyph in the list, a glyph and a name in the details panel.
     const toolIcon = (tool) => tool === 'claude' ? '✳' : tool === 'codex' ? '◎' : tool === 'cursor' ? '◆' : tool === 'opencode' ? '◈' : tool === 'antigravity' ? Q_STYLE.antigravity.logo : '◎';
     const toolTitle = (tool) => tool === 'claude' ? 'Claude Code' : tool === 'codex' ? 'Codex' : tool === 'cursor' ? 'Cursor' : tool === 'opencode' ? 'OpenCode' : tool === 'antigravity' ? 'Antigravity' : 'Codex';
-    const ageText = (since) => Date.now() - since < 60_000 ? 'just now' : shortDur(Date.now() - since) + ' ago';
+    const ageText = (since) => ago(since);
     // A session's title is the main label and the project folder goes under it: Claude Code sends it only while
     // Settings › Claude Code › "Show session titles on the phone" is on, OpenCode only while "Show OpenCode session
     // titles" is on, and Antigravity only while "Show Antigravity chat titles on the phone" is on; without a title

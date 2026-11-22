@@ -1,14 +1,23 @@
-import { $, D, DEFAULT_CFG, LOCALE, cfg, fmtDur, fmtHM, h, en, t, tick } from '../main.js';
+import { $, D, DEFAULT_CFG, I18n, LOCALE, cfg, fmtDur, fmtHM, h, en, t, tick } from '../main.js';
 import { W } from '../registry.js';
 import { cached, every } from './helpers.js';
 
 // ---------------------------------------------------------------- sky & air
+// A default widget title in the panel language when the widget catalog has it, otherwise English (see en()).
+function catalogTitle(text) {
+  const local = I18n && I18n.tc ? I18n.tc(text) : text;
+  if (local === text) return en(text);
+  const e = document.createElement('span');
+  e.textContent = local;
+  return e;
+}
+
 export function moonPhase(date) {
   const syn = 29.530588853;
   const age = ((((date - Date.UTC(2000, 0, 6, 18, 14)) / 864e5) % syn) + syn) % syn;
-  const names = ['New moon', 'Waxing crescent', 'First quarter', 'Waxing gibbous', 'Full moon', 'Waning gibbous', 'Last quarter', 'Waning crescent'];
+  const names = ['w.moonNew', 'w.moonWaxCres', 'w.moonFirstQ', 'w.moonWaxGib', 'w.moonFull', 'w.moonWanGib', 'w.moonLastQ', 'w.moonWanCres'];
   const i = Math.floor(((age + syn / 16) % syn) / (syn / 8));
-  return { name: names[i], age, illum: (1 - Math.cos((2 * Math.PI * age) / syn)) / 2 };
+  return { name: t(names[i]), age, illum: (1 - Math.cos((2 * Math.PI * age) / syn)) / 2 };
 }
 
 // The lit part of the moon in a 100 × 100 box (outer edge on the lit side, back along the terminator, an ellipse).
@@ -28,10 +37,11 @@ function moonIcon(m) {
 W.sun = {
   needs: ['weather', 'tick'],
   create(box) {
-    box.innerHTML = '<div class="w-title">Sun &amp; moon<span class="w-sub"></span></div>' +
+    box.innerHTML = '<div class="w-title"><span class="w-sub"></span></div>' +
       '<svg class="sun-arc" viewBox="0 0 200 80" preserveAspectRatio="xMidYMax meet"><path class="sa-bg" d="M10 75 A90 70 0 0 1 190 75"/><path class="sa-fg" d="M10 75 A90 70 0 0 1 190 75"/><line class="sa-h" x1="2" y1="75" x2="198" y2="75"/><circle class="sa-sun" r="7" cx="10" cy="75"/></svg>' +
       '<div class="sun-row"><span class="sr"></span><span class="sl"></span><span class="ss"></span></div><div class="moon"></div>';
     const q = (s) => box.querySelector(s);
+    q('.w-title').prepend(catalogTitle('Sun & moon'));
     const fg = q('.sa-fg'), sun = q('.sa-sun');
     const len = fg.getTotalLength();
     fg.style.strokeDasharray = len;
@@ -74,7 +84,9 @@ W.sun = {
   },
 };
 
-export const AQI_BANDS = [[20, 'Good', '#22c55e'], [40, 'Fair', '#84cc16'], [60, 'Moderate', '#eab308'], [80, 'Poor', '#f97316'], [100, 'Very poor', '#ef4444'], [1e9, 'Extremely poor', '#a855f7']];
+// [upper bound, English name, colour, t() key]
+export const AQI_BANDS = [[20, 'Good', '#22c55e', 'w.aqiGood'], [40, 'Fair', '#84cc16', 'w.aqiFair'], [60, 'Moderate', '#eab308', 'w.aqiModerate'],
+  [80, 'Poor', '#f97316', 'w.aqiPoor'], [100, 'Very poor', '#ef4444', 'w.aqiVeryPoor'], [1e9, 'Extremely poor', '#a855f7', 'w.aqiExtreme']];
 W.air = {
   needs: ['tick'],
   create(box) {
@@ -100,7 +112,7 @@ W.air = {
           if (band) {
             box.style.setProperty('--c', band[2]);
             v.textContent = Math.round(aqi);
-            cat.textContent = band[1] + ' · ' + t('w.euroAqi');
+            cat.textContent = t(band[3]) + ' · ' + t('w.euroAqi');
           } else clearIndex(t('w.unavailable'));
           chips.replaceChildren(...[['PM2.5', c.pm2_5], ['PM10', c.pm10], ['O₃', c.ozone], ['NO₂', c.nitrogen_dioxide]]
             .filter((x) => x[1] != null).map(([n, x]) => h('span', 'chip', `${n} ${Math.round(x)}`)));
@@ -132,9 +144,10 @@ W.air = {
 W.moon = {
   needs: ['tick'],
   create(box) {
-    box.innerHTML = '<div class="w-title">Moon</div><div class="mo-body"><svg viewBox="0 0 100 100" class="mo-disc"><circle class="mo-dark" cx="50" cy="50" r="44"/><path class="mo-lit"/></svg>' +
+    box.innerHTML = '<div class="w-title"></div><div class="mo-body"><svg viewBox="0 0 100 100" class="mo-disc"><circle class="mo-dark" cx="50" cy="50" r="44"/><path class="mo-lit"/></svg>' +
       '<div class="mo-text"><b class="mo-name"></b><span class="mo-ill"></span><small class="mo-next"></small></div></div>';
     const q = (s) => box.querySelector(s);
+    q('.w-title').append(catalogTitle('Moon'));
     let shown = -1;
     return {
       update() {
@@ -147,9 +160,9 @@ W.moon = {
         const m = moonPhase(now);
         q('.mo-lit').setAttribute('d', moonLitPath(m));
         q('.mo-name').textContent = m.name;
-        q('.mo-ill').textContent = `${Math.round(m.illum * 100)}% lit`;
-        const inDays = (target) => { const dd = ((target - age) % syn + syn) % syn; return dd < 0.5 ? 'tonight' : dd < 1.5 ? 'tomorrow' : `in ${Math.round(dd)} days`; };
-        q('.mo-next').textContent = age < syn / 2 ? `Full moon ${inDays(syn / 2)}` : `New moon ${inDays(syn)}`;
+        q('.mo-ill').textContent = t('w.moonLit', { n: Math.round(m.illum * 100) });
+        const inDays = (target) => { const dd = ((target - age) % syn + syn) % syn; return dd < 0.5 ? t('w.tonight') : dd < 1.5 ? t('w.tomorrow') : t('w.inDays', { n: Math.round(dd) }); };
+        q('.mo-next').textContent = age < syn / 2 ? t('w.fullMoonWhen', { when: inDays(syn / 2) }) : t('w.newMoonWhen', { when: inDays(syn) });
       },
     };
   },

@@ -37,10 +37,10 @@
         <value>Telefon bağlanmadı</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefon bağlandı</value>
+        <value>PhoneDash — telefon bağlandı</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — telefon bekle</value>
+        <value>PhoneDash — telefon bekle</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Başlatma kısayolunu değiştirilemedi: {0}</value>

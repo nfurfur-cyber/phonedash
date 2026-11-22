@@ -29,28 +29,28 @@ public class UpdateChecksumTests
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008185"
     },
     {
-      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-linux-arm64.zip",
-      "name": "PhoneBoxAgent-0.9.9-linux-arm64.zip",
+      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-linux-arm64.zip",
+      "name": "PhoneDashAgent-0.9.9-linux-arm64.zip",
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008190"
     },
     {
-      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-linux-x64.zip",
-      "name": "PhoneBoxAgent-0.9.9-linux-x64.zip",
+      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-linux-x64.zip",
+      "name": "PhoneDashAgent-0.9.9-linux-x64.zip",
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008184"
     },
     {
-      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-osx-arm64.zip",
-      "name": "PhoneBoxAgent-0.9.9-osx-arm64.zip",
+      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-osx-arm64.zip",
+      "name": "PhoneDashAgent-0.9.9-osx-arm64.zip",
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008193"
     },
     {
-      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-osx-x64.zip",
-      "name": "PhoneBoxAgent-0.9.9-osx-x64.zip",
+      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-osx-x64.zip",
+      "name": "PhoneDashAgent-0.9.9-osx-x64.zip",
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008208"
     },
     {
-      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-win-x64.zip",
-      "name": "PhoneBoxAgent-0.9.9-win-x64.zip",
+      "browser_download_url": "https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-win-x64.zip",
+      "name": "PhoneDashAgent-0.9.9-win-x64.zip",
       "url": "https://api.github.com/repos/ersinkoc/phonebox/releases/assets/752008218"
     },
     {
@@ -67,11 +67,11 @@ public class UpdateChecksumTests
     private const string Sums099 = """
 da72c2917e3575e171c5419ac20f5accf689972f2694b1a569e6deb04994bf08  PhoneBox-0.9.9.apk
 07d2d81e217d7067807673ea63924a9ab373a6142f82a84829f5d2c40cf5263b  PhoneBox-0.9.9.intoto.jsonl
-a37fdd69197d0b7635f91dca4e0c4358c76a4aacf5fc3a3afbfe977ee3dff839  PhoneBoxAgent-0.9.9-linux-arm64.zip
-b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-0.9.9-linux-x64.zip
-39114b5f1db06d66df3aa6c123a5eff7b66b6fcae5315a6af21bb3414745e58c  PhoneBoxAgent-0.9.9-osx-arm64.zip
-18f620183523c014668475deddc737f313912239d767bb8dcd6876d12f8f4818  PhoneBoxAgent-0.9.9-osx-x64.zip
-17e70d3df7db81eb767ee3328bdbdfc9f6492f69ebc63fe814afc96cf0990fd0  PhoneBoxAgent-0.9.9-win-x64.zip
+a37fdd69197d0b7635f91dca4e0c4358c76a4aacf5fc3a3afbfe977ee3dff839  PhoneDashAgent-0.9.9-linux-arm64.zip
+b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneDashAgent-0.9.9-linux-x64.zip
+39114b5f1db06d66df3aa6c123a5eff7b66b6fcae5315a6af21bb3414745e58c  PhoneDashAgent-0.9.9-osx-arm64.zip
+18f620183523c014668475deddc737f313912239d767bb8dcd6876d12f8f4818  PhoneDashAgent-0.9.9-osx-x64.zip
+17e70d3df7db81eb767ee3328bdbdfc9f6492f69ebc63fe814afc96cf0990fd0  PhoneDashAgent-0.9.9-win-x64.zip
 """;
 
     [Theory]
@@ -85,18 +85,17 @@ b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-
         using var doc = JsonDocument.Parse(Release099);
         var r = UpdateService.SelectAssets(doc.RootElement, rid);
         Assert.Equal("0.9.9", r.Version);
-        Assert.Equal($"PhoneBoxAgent-0.9.9-{rid}.zip", UpdateService.AssetName(r.AgentZip!));
-        Assert.Equal("PhoneBox-0.9.9.apk", UpdateService.AssetName(r.Apk!));
+        Assert.Equal($"PhoneDashAgent-0.9.9-{rid}.zip", UpdateService.AssetName(r.AgentZip!));
+        Assert.Null(r.Apk); // PhoneDash: the phone app comes from Google Play only
         Assert.Equal("SHA256SUMS-0.9.9.txt", UpdateService.AssetName(r.Sums!));
         Assert.NotNull(UpdateService.ExpectedSha256(Sums099, UpdateService.AssetName(r.AgentZip!)));
-        Assert.NotNull(UpdateService.ExpectedSha256(Sums099, UpdateService.AssetName(r.Apk!)));
     }
 
     [Fact]
     public void TheLinuxX64ZipIsNotTakenForTheArm64One()
     {
-        var x64 = UpdateService.ExpectedSha256(Sums099, "PhoneBoxAgent-0.9.9-linux-x64.zip");
-        var arm = UpdateService.ExpectedSha256(Sums099, "PhoneBoxAgent-0.9.9-linux-arm64.zip");
+        var x64 = UpdateService.ExpectedSha256(Sums099, "PhoneDashAgent-0.9.9-linux-x64.zip");
+        var arm = UpdateService.ExpectedSha256(Sums099, "PhoneDashAgent-0.9.9-linux-arm64.zip");
         Assert.NotNull(x64);
         Assert.NotNull(arm);
         Assert.NotEqual(x64, arm);
@@ -127,8 +126,8 @@ b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-
     [Fact]
     public void TheAssetNameComesFromTheLinkNotTheCachedName()
     {
-        Assert.Equal("PhoneBoxAgent-0.9.9-win-x64.zip",
-            UpdateService.AssetName("https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneBoxAgent-0.9.9-win-x64.zip"));
+        Assert.Equal("PhoneDashAgent-0.9.9-win-x64.zip",
+            UpdateService.AssetName("https://github.com/ersinkoc/phonebox/releases/download/v0.9.9/PhoneDashAgent-0.9.9-win-x64.zip"));
     }
 
     [Fact]
@@ -141,7 +140,7 @@ b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-
         var r = UpdateService.SelectAssets(doc.RootElement, "win-x64");
         Assert.Null(r.Sums);
         Assert.Null(r.AgentZip);
-        Assert.NotNull(r.Apk);
+        Assert.Null(r.Apk);
     }
 
     [Fact]
@@ -185,7 +184,7 @@ b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-
     public void APhoneUpdatedAnotherWayIsNotInstalledAgain()
     {
         // installed by hand after a failed update: the retry ends without installing, so "update available" clears (#353)
-        const string dump = "Packages:\n  Package [net.oxog.phonebox.deskpanel] (3ec2f24):\n    versionCode=47 minSdk=21 targetSdk=35\n    versionName=0.9.26\n";
+        const string dump = "Packages:\n  Package [kr.phonedash.app] (3ec2f24):\n    versionCode=47 minSdk=21 targetSdk=35\n    versionName=0.9.26\n";
         Assert.True(UpdateService.AppCurrentOn(dump, "0.9.26"));
         Assert.True(UpdateService.AppCurrentOn(dump.Replace("0.9.26", "0.9.27"), "0.9.26"));
         Assert.False(UpdateService.AppCurrentOn(dump.Replace("0.9.26", "0.9.25"), "0.9.26"));
@@ -263,44 +262,16 @@ b47da3d09583268d7bacef2d4375555313bf455af8a3ab16fd4d7ee95082826e  PhoneBoxAgent-
             var svc = new UpdateService(cfg, adb, new NoopLifetime(), NullLogger<UpdateService>.Instance) { DownloadsDir = Path.Combine(dir, "dl1") };
             httpField.SetValue(svc, new HttpClient(new FakeReleaseHandler(relJson, apkBytes, sums)));
 
+            // PhoneDash: even with every install failing (mode.txt "fail"), nothing is installed, nothing fails and no
+            // phone app update is offered, because a release's APK is ignored (the app is sold on Google Play)
+            File.WriteAllText(modePath, "fail");
             UpdateService.AppVersion = "0.0.1";
             devicesField.SetValue(adb, new[] { "SER1" });
             await svc.CheckAsync();
             await svc.ApplyAsync();
-            Assert.NotNull(svc.Status().Error);
-            Assert.True(svc.Status().AppUpdate);
-
-            File.WriteAllText(modePath, "ok");
-            await svc.ApplyAsync();
             Assert.Null(svc.Status().Error);
             Assert.False(svc.Status().AppUpdate);
-            Assert.Equal(ver, UpdateService.AppVersion);
-
-            var svc2 = new UpdateService(cfg, adb, new NoopLifetime(), NullLogger<UpdateService>.Instance) { DownloadsDir = Path.Combine(dir, "dl2") };
-            httpField.SetValue(svc2, new HttpClient(new FakeReleaseHandler(relJson, apkBytes, sums, () => devicesField.SetValue(adb, Array.Empty<string>()))));
-            UpdateService.AppVersion = "0.0.1";
-            devicesField.SetValue(adb, new[] { "SER1" });
-            await svc2.CheckAsync();
-            await svc2.ApplyAsync();
             Assert.Equal("0.0.1", UpdateService.AppVersion);
-            Assert.True(svc2.Status().AppUpdate);
-
-            // A fails, B installs; B then reports the new app while A is unplugged. The next apply has nothing to
-            // install, and A's update is still pending: the reason it failed must stay next to it.
-            var svc3 = new UpdateService(cfg, adb, new NoopLifetime(), NullLogger<UpdateService>.Instance) { DownloadsDir = Path.Combine(dir, "dl3") };
-            httpField.SetValue(svc3, new HttpClient(new FakeReleaseHandler(relJson, apkBytes, sums)));
-            File.WriteAllText(modePath, "SERA");
-            UpdateService.AppVersion = "0.0.1";
-            devicesField.SetValue(adb, new[] { "SERA", "SERB" });
-            await svc3.CheckAsync();
-            await svc3.ApplyAsync();
-            var reason = svc3.Status().Error;
-            Assert.Contains("SERA", reason);
-            UpdateService.AppVersion = ver;                 // SERB, updated, reports the new app
-            devicesField.SetValue(adb, new[] { "SERB" });   // SERA unplugged
-            await svc3.ApplyAsync();
-            Assert.True(svc3.Status().AppUpdate);
-            Assert.Equal(reason, svc3.Status().Error);
         }
         finally
         {

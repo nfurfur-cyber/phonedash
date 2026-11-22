@@ -803,7 +803,7 @@ W.trackpad = {
     function getWsUrl() {
       const proto = location.protocol === 'https:' ? 'wss:' : 'ws:';
       if (location.host && !location.host.includes('androidplatform.net')) return `${proto}//${location.host}/api/trackpad`;
-      return 'ws://127.0.0.1:8765/api/trackpad';
+      return 'ws://127.0.0.1:8775/api/trackpad';
     }
     function connectWs() {
       if (destroyed || (bridge && typeof bridge.trackpad === 'function')) return;

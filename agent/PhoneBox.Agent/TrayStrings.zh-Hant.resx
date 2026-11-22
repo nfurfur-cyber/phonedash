@@ -37,10 +37,10 @@
         <value>沒有連接電話</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — 電話連接了</value>
+        <value>PhoneDash — 電話連接了</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — 等待電話</value>
+        <value>PhoneDash — 等待電話</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>未能更改啟動快捷方式: {0}</value>

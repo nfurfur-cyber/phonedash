@@ -37,10 +37,10 @@
         <value>No hay teléfono conectado</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — teléfono conectado</value>
+        <value>PhoneDash — teléfono conectado</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — esperando por teléfono</value>
+        <value>PhoneDash — esperando por teléfono</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>No se pudo cambiar el acceso directo de inicio: {0}</value>

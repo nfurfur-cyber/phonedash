@@ -40,12 +40,12 @@ def main():
     # Keep the compiled evidence; the audit workflow retains its artifacts.
     output = Path(tempfile.mkdtemp(prefix="phonebox-stream-check-"))
     compiler_cp = os.pathsep.join(map(str, [compiler, *dependencies, annotations[-1]]))
-    sources = [ROOT / "android/app/src/main/java/net/oxog/phonebox/deskpanel/AgentStream.kt",
+    sources = [ROOT / "android/app/src/main/java/kr/phonedash/app/AgentStream.kt",
                ROOT / "tools/kotlin-tests/AgentLink.kt", ROOT / "tools/kotlin-tests/AgentStreamChecks.kt"]
     subprocess.run(["java", "-cp", compiler_cp, "org.jetbrains.kotlin.cli.jvm.K2JVMCompiler", "-no-stdlib", "-no-reflect",
                     "-jvm-target", "17", "-classpath", classpath, "-d", str(output), *map(str, sources)], check=True, timeout=60)
     result = subprocess.run(["java", "-cp", str(output) + os.pathsep + classpath,
-                             "net.oxog.phonebox.deskpanel.AgentStreamChecksKt", args.mode], timeout=30)
+                             "kr.phonedash.app.AgentStreamChecksKt", args.mode], timeout=30)
     if result.returncode != 0 or args.mode != "verify":
         raise SystemExit(result.returncode)
     check_agent_link(compiler_cp, classpath, output)
@@ -78,7 +78,7 @@ open class Context {
     open fun getSystemService(name: String): Any? = null
     private val prefs = mutableMapOf<String, SharedPreferencesImpl>()
     open fun getSharedPreferences(name: String, mode: Int): SharedPreferences = prefs.getOrPut(name) { SharedPreferencesImpl() }
-    open val packageName: String get() = "net.oxog.phonebox.deskpanel"
+    open val packageName: String get() = "kr.phonedash.app"
     open val packageManager: android.content.pm.PackageManager get() = android.content.pm.PackageManager()
     open val contentResolver: ContentResolver get() = ContentResolver()
     open fun getString(resId: Int, vararg args: Any): String = "err:$resId"
@@ -113,7 +113,7 @@ class ConnectivityManager {
     "WebkitStubs.kt": """package androidx.webkit
 object WebViewCompat { @JvmStatic fun getCurrentWebViewPackage(ctx: android.content.Context): android.content.pm.PackageInfo? = null }
 """,
-    "RStubs.kt": """package net.oxog.phonebox.deskpanel
+    "RStubs.kt": """package kr.phonedash.app
 object R { object string { const val pair_failed_unreachable = 1; const val pair_failed_code = 2; const val pair_failed_answer = 3; const val pair_failed_certificate = 4 } }
 // No certificate pin from the agent yet, so AgentLink never uses USB here: these checks cover Wi-Fi.
 object UsbKey { fun pin(context: android.content.Context): String? = null; fun get(context: android.content.Context): String = "k" }
@@ -180,7 +180,7 @@ internal class Tok(val s: String) {
 internal fun parseObj(s: String): MutableMap<String, Any?> = (Tok(s).next() as JSONObject).map
 internal fun parseArray(s: String): Collection<*> = (Tok(s).next() as JSONArray).list
 """,
-    "AgentLinkChecks.kt": """package net.oxog.phonebox.deskpanel
+    "AgentLinkChecks.kt": """package kr.phonedash.app
 import android.content.Context
 import org.json.JSONArray
 import org.json.JSONObject
@@ -401,7 +401,7 @@ def check_agent_link(compiler_cp: str, classpath: str, base_out: Path) -> None:
          "-sigalg", "SHA256withECDSA", "-dname", "CN=PhoneBoxTest", "-validity", "1",
          "-storetype", "PKCS12", "-keystore", str(pfx), "-storepass", "changeit", "-keypass", "changeit"],
         check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
-    deskpanel = ROOT / "android/app/src/main/java/net/oxog/phonebox/deskpanel"
+    deskpanel = ROOT / "android/app/src/main/java/kr/phonedash/app"
     # WakePacket.kt holds what AgentLink's Wake-on-LAN code uses (packet, MAC parsing, LanLink)
     src_files = [deskpanel / "AgentLink.kt", deskpanel / "WakePacket.kt"]
     for name, content in LINK_STUBS.items():
@@ -412,7 +412,7 @@ def check_agent_link(compiler_cp: str, classpath: str, base_out: Path) -> None:
                     "-jvm-target", "17", "-classpath", classpath, "-d", str(cls_dir), *map(str, src_files)],
                    check=True, timeout=60)
     res = subprocess.run(["java", "-cp", str(cls_dir) + os.pathsep + classpath,
-                          "net.oxog.phonebox.deskpanel.AgentLinkChecksKt", str(pfx)], timeout=30)
+                          "kr.phonedash.app.AgentLinkChecksKt", str(pfx)], timeout=30)
     if res.returncode != 0:
         raise SystemExit(res.returncode)
 

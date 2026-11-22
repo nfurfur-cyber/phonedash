@@ -37,10 +37,10 @@
         <value>Nenhum telefone conectado</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefone conectado</value>
+        <value>PhoneDash — telefone conectado</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — esperando por telefone</value>
+        <value>PhoneDash — esperando por telefone</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Não foi possível alterar o atalho de inicialização: {0}</value>

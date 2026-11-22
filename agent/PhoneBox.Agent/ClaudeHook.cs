@@ -53,7 +53,7 @@ public static class ClaudeHook
                 // "always" (Allow always, an OpenCode answer) has no Claude Code equivalent and allows once like "allow"
                 decision = decision is "allow" or "always"
                     ? (object)new { behavior = "allow" }
-                    : new { behavior = "deny", message = "Denied from the PhoneBox panel." },
+                    : new { behavior = "deny", message = "Denied from the PhoneDash panel." },
             },
         };
     }
@@ -175,7 +175,7 @@ public static class ClaudeHook
         catch { return false; }
     }
 
-    /// <summary>Adds (or, with install = false, removes) the PhoneBox hook, keeping everything else and a backup.</summary>
+    /// <summary>Adds (or, with install = false, removes) the PhoneDash hook, keeping everything else and a backup.</summary>
     public static string? Configure(bool install, int port, int timeoutSec) =>
         Configure(install, port, timeoutSec, SettingsPath);
 

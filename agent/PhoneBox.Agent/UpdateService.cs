@@ -11,17 +11,16 @@ public sealed record UpdateStatus(string AgentVersion, string? AppVersion, strin
     bool AgentUpdate, bool AppUpdate, long? LastCheck, string State, string? Error);
 
 /// <summary>
-/// Keeps the agent and the phone app up to date from GitHub releases (PhoneBox-&lt;v&gt;.apk and
-/// PhoneBoxAgent-&lt;v&gt;-&lt;rid&gt;.zip, rid = win-x64, linux-x64, linux-arm64, osx-arm64 or osx-x64):
-///  - phone: installed with "adb install -r" while the phone is on USB (no prompt on the phone). Android refuses
-///    an APK signed with a different key, and the agent never uninstalls to force it.
+/// Keeps the PC program up to date from the PhoneDash GitHub releases (PhoneDashAgent-&lt;v&gt;-&lt;rid&gt;.zip, checked
+/// against SHA256SUMS-&lt;v&gt;.txt; nothing is checked while <see cref="Brand.Owner"/> is not set):
+///  - phone app: sold and updated by Google Play only; "Install the phone app" opens its Play page on the phone.
 ///  - agent: files are swapped in place (running files are renamed to *.old, which Windows allows) and the agent
 ///    restarts itself. Only when running from the installed location, never from a build folder.
 /// </summary>
 public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicationLifetime life, ILogger<UpdateService> log) : BackgroundService
 {
     private static readonly string InstallDir = AppPaths.InstallDir;
-    private static readonly string ExeName = OperatingSystem.IsWindows() ? "PhoneBoxAgent.exe" : "PhoneBoxAgent";
+    private static readonly string ExeName = OperatingSystem.IsWindows() ? "PhoneDashAgent.exe" : "PhoneDashAgent";
     private static readonly string Downloads = Path.Combine(AppPaths.LocalDir, "updates");
     internal string DownloadsDir { get; init; } = Downloads;
     private readonly HttpClient _http = new() { Timeout = TimeSpan.FromMinutes(5) };
@@ -78,7 +77,7 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        _http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/" + AppPaths.Version);
+        _http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/" + AppPaths.Version);
         _http.DefaultRequestHeaders.Accept.ParseAdd("application/vnd.github+json");
         CleanupOldFiles();
         if (RunningInstalled) RemoveFrameworkDependentLeftovers(InstallDir, SingleFile);
@@ -111,6 +110,13 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
         {
             _state = "checking";
             var repo = cfg.Get().Updates.Repo;
+            if (string.IsNullOrWhiteSpace(repo))
+            {
+                // no release source yet (Brand.Owner not set): nothing to check, and nothing to report as an error
+                _state = "idle";
+                _error = null;
+                return;
+            }
             using var doc = JsonDocument.Parse(await ApiStringAsync($"https://api.github.com/repos/{repo}/releases/latest", ct));
             var r = doc.RootElement;
             foreach (var a in r.GetProperty("assets").EnumerateArray())
@@ -176,43 +182,31 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
     }
 
     /// <summary>
-    /// Installs the phone app on the connected phones that do not have it, from the GitHub release of this agent's
-    /// version (or the latest one): for agents installed on their own, e.g. with winget or Scoop.
+    /// PhoneDash: opens Google Play at the PhoneDash page on every connected phone that does not have the app yet. The
+    /// app is sold on Google Play, so the PC program never installs an APK itself. Returns null when every phone opened it.
     /// </summary>
     public async Task<string?> InstallAppAsync(CancellationToken ct = default)
     {
         var targets = adb.MissingApp;
         if (targets.Length == 0) return "no connected phone is missing the app";
-        if (!await _gate.WaitAsync(0, ct)) return "an update is already running";
-        try
+        var adbExe = AdbReverse.FindAdb(cfg.Get().AdbPath);
+        if (adbExe is null) return "adb not found";
+        var failed = new List<string>();
+        foreach (var serial in targets)
         {
-            _state = "installing the phone app";
-            if (_latest is null) { await CheckCoreAsync(ct); _state = "installing the phone app"; } // not CheckAsync: this method already holds the gate
-            if (_latest?.Apk is null) return "could not find the phone app in the GitHub releases";
-            var apk = await VerifiedDownloadAsync(_latest.Apk, $"PhoneBox-{_latest.Version}.apk", ct);
-            var adbExe = AdbReverse.FindAdb(cfg.Get().AdbPath) ?? throw new InvalidOperationException("adb not found");
-            var failed = new List<string>();
-            foreach (var serial in targets)
+            try
             {
-                try
-                {
-                    var output = await InstallAsync(adbExe, serial, apk, replace: false, ct);
-                    if (!output.Contains("Success")) failed.Add($"installing on {serial} failed: {output.Trim().Split('\n').LastOrDefault()}");
-                    else log.LogInformation("phone app {Version} installed on {Serial}", _latest.Version, serial);
-                }
-                catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
-                {
-                    failed.Add($"installing on {serial} failed: {ex.Message}");
-                }
+                await Run(adbExe, ["-s", serial, "shell", "input", "keyevent", "KEYCODE_WAKEUP"], ct);
+                var output = await Run(adbExe, ["-s", serial, "shell", "am", "start", "-a", "android.intent.action.VIEW", "-d", Brand.MarketUri], ct);
+                if (output.Contains("Error", StringComparison.OrdinalIgnoreCase)) failed.Add($"{serial}: {output.Trim().Split('\n').LastOrDefault()}");
+                else log.LogInformation("{Serial}: opened Google Play at the PhoneDash page", serial);
             }
-            return failed.Count > 0 ? string.Join("; ", failed) : null;
+            catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
+            {
+                failed.Add($"{serial}: {ex.Message}");
+            }
         }
-        catch (Exception ex) { return ex.Message; }
-        finally
-        {
-            _state = "idle";
-            _gate.Release();
-        }
+        return failed.Count > 0 ? "could not open Google Play on " + string.Join("; ", failed) : null;
     }
 
     private async Task UpdatePhoneAsync(CancellationToken ct)
@@ -268,7 +262,7 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
     private async Task UpdateAgentAsync(CancellationToken ct)
     {
         _state = "updating agent";
-        var zip = await VerifiedDownloadAsync(_latest!.AgentZip!, $"PhoneBoxAgent-{_latest.Version}.zip", ct);
+        var zip = await VerifiedDownloadAsync(_latest!.AgentZip!, $"PhoneDashAgent-{_latest.Version}.zip", ct);
         var staging = Path.Combine(DownloadsDir, "agent-" + _latest.Version);
         if (Directory.Exists(staging)) Directory.Delete(staging, true);
         ZipFile.ExtractToDirectory(zip, staging);
@@ -401,7 +395,7 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
     /// </summary>
     internal static readonly string[] FrameworkDependentFiles =
     [
-        "PhoneBoxAgent.dll", "PhoneBoxAgent.deps.json", "PhoneBoxAgent.runtimeconfig.json",
+        "PhoneDashAgent.dll", "PhoneDashAgent.deps.json", "PhoneDashAgent.runtimeconfig.json",
         "NAudio.dll", "NAudio.Core.dll", "NAudio.Midi.dll", "NAudio.Wasapi.dll", "NAudio.WinMM.dll",
         "WinRT.Runtime.dll", "Microsoft.Windows.SDK.NET.dll", "System.Numerics.Tensors.dll",
     ];
@@ -438,7 +432,7 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
 
     /// <summary>
     /// The phone app, this machine's agent zip and the checksum file of a GitHub release
-    /// (PhoneBox-&lt;v&gt;.apk, PhoneBoxAgent-&lt;v&gt;-&lt;rid&gt;.zip, SHA256SUMS-&lt;v&gt;.txt, as release.yml names them).
+    /// (PhoneDashAgent-&lt;v&gt;-&lt;rid&gt;.zip and SHA256SUMS-&lt;v&gt;.txt, as tools/release.mjs names them; an APK is never used).
     /// </summary>
     internal static Release SelectAssets(JsonElement release, string rid)
     {
@@ -447,8 +441,8 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
         {
             var name = a.GetProperty("name").GetString() ?? "";
             var url = a.GetProperty("browser_download_url").GetString();
-            if (name.StartsWith("PhoneBox-", StringComparison.OrdinalIgnoreCase) && name.EndsWith(".apk", StringComparison.OrdinalIgnoreCase)) apk = url;
-            if (name.StartsWith("PhoneBoxAgent-", StringComparison.OrdinalIgnoreCase) && name.EndsWith($"-{rid}.zip", StringComparison.OrdinalIgnoreCase)) zip = url;
+            // PhoneDash: the phone app comes from Google Play only, so a release's APK (if any) is never offered or installed
+            if (name.StartsWith("PhoneDashAgent-", StringComparison.OrdinalIgnoreCase) && name.EndsWith($"-{rid}.zip", StringComparison.OrdinalIgnoreCase)) zip = url;
             if (name.StartsWith("SHA256SUMS-", StringComparison.OrdinalIgnoreCase) && name.EndsWith(".txt", StringComparison.OrdinalIgnoreCase)) sums = url;
         }
         var tag = release.GetProperty("tag_name").GetString() ?? "";
@@ -478,7 +472,7 @@ public sealed class UpdateService(ConfigStore cfg, AdbReverse adb, IHostApplicat
     /// <summary>"dumpsys package" for the app; empty when the phone does not answer (the install then goes ahead).</summary>
     private static async Task<string> InstalledDumpAsync(string adbExe, string serial, CancellationToken ct)
     {
-        try { return await Run(adbExe, ["-s", serial, "shell", "dumpsys", "package", "net.oxog.phonebox.deskpanel"], ct, TimeSpan.FromSeconds(20)); }
+        try { return await Run(adbExe, ["-s", serial, "shell", "dumpsys", "package", "kr.phonedash.app"], ct, TimeSpan.FromSeconds(20)); }
         catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested) { return ""; }
     }
 
@@ -571,7 +565,7 @@ public static class AppRestart
     public const int ServiceRestartCode = 75;
 
     /// <summary>
-    /// True when launchd (the setup.sh login item, label net.oxog.phonebox.agent) or systemd started the agent. A copy
+    /// True when launchd (the setup.sh login item, label kr.phonedash.agent) or systemd started the agent. A copy
     /// started by the agent itself doesn't survive there: launchd ends the job's whole process group when the agent
     /// exits, and a clean exit counts as "stopped" (KeepAlive SuccessfulExit=false, Restart=on-failure), so the agent
     /// stayed down after Restart or a self-update (#182). It exits with <see cref="ServiceRestartCode"/> instead.
@@ -582,7 +576,7 @@ public static class AppRestart
     /// pid, or on an older systemd its parent process is systemd.
     /// </remarks>
     internal static bool ServiceManaged(Func<string, string?> env, int pid, Func<string?> parentName) =>
-        env("XPC_SERVICE_NAME") == "net.oxog.phonebox.agent"
+        env("XPC_SERVICE_NAME") == "kr.phonedash.agent"
         || (!string.IsNullOrEmpty(env("INVOCATION_ID")) && (env("SYSTEMD_EXEC_PID") is { Length: > 0 } exec
             ? exec == pid.ToString(System.Globalization.CultureInfo.InvariantCulture)
             : parentName() == "systemd"));

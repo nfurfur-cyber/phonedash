@@ -1,6 +1,6 @@
 namespace PhoneBox.Agent;
 
-/// <summary>Writes logs to %LOCALAPPDATA%\PhoneBox\agent.log (the agent has no console window).</summary>
+/// <summary>Writes logs to %LOCALAPPDATA%\PhoneDash\agent.log (the agent has no console window).</summary>
 public sealed class FileLoggerProvider : ILoggerProvider
 {
     public static readonly string LogPath = AppPaths.LogPath;

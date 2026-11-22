@@ -37,10 +37,10 @@
         <value>Tidak ada telepon yang terhubung</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telepon terhubung</value>
+        <value>PhoneDash — telepon terhubung</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — menunggu telepon</value>
+        <value>PhoneDash — menunggu telepon</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Tak dapat mengubah jalan pintas startup: {0}</value>

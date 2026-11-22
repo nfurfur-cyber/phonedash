@@ -89,5 +89,5 @@ test('a dictation too long to type whole is not sent cut short', async ({ page }
 
 test('dictation in a browser or an older app says to update', async ({ page }) => {
   await layout(page, { control: true }, { app: false });
-  await expect(page.locator('.dc-note')).toHaveText('Update the PhoneBox app to dictate');
+  await expect(page.locator('.dc-note')).toHaveText('Update the PhoneDash app to dictate');
 });

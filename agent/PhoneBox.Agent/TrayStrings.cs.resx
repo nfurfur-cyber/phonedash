@@ -37,10 +37,10 @@
         <value>Žádný telefon není připojen</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefon připojen</value>
+        <value>PhoneDash — telefon připojen</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — čekání na telefon</value>
+        <value>PhoneDash — čekání na telefon</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Nelze změnit spouštěcí zkratku: {0}</value>

@@ -214,7 +214,7 @@ public sealed class FeedHttpTests
     public async Task ARedirectToTheAgentIsRefusedBeforeAnyRequest()
     {
         var handler = new Fake(req => req.RequestUri!.Host == "feeds.example"
-            ? Redirect("http://127.0.0.1:8765/api/settings")
+            ? Redirect("http://127.0.0.1:8775/api/settings")
             : new HttpResponseMessage(HttpStatusCode.OK));
         using var http = new HttpClient(handler);
         var ex = await Assert.ThrowsAsync<HttpRequestException>(() =>

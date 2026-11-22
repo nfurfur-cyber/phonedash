@@ -12,7 +12,7 @@ public class AppRestartTests
     [Fact]
     public void TheSetupLoginItemAndSystemdAreServiceManagers()
     {
-        Assert.True(Managed(Env(("XPC_SERVICE_NAME", "net.oxog.phonebox.agent"))));
+        Assert.True(Managed(Env(("XPC_SERVICE_NAME", "kr.phonedash.agent"))));
         Assert.True(Managed(Env(("INVOCATION_ID", "5f0c1c3a9e8b4f0d"), ("SYSTEMD_EXEC_PID", "4242"))));
         Assert.True(Managed(Env(("INVOCATION_ID", "5f0c1c3a9e8b4f0d")), parent: "systemd")); // systemd before 248
     }

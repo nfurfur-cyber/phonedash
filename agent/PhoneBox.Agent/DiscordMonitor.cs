@@ -168,7 +168,7 @@ public sealed partial class DiscordMonitor(ConfigStore config, ILogger<DiscordMo
         var reader = Task.Run(() => ReadLoop(io, stop.Token), CancellationToken.None);
         try
         {
-            _snap = Empty("Waiting for you to approve PhoneBox in Discord…");
+            _snap = Empty("Waiting for you to approve PhoneDash in Discord…");
             var user = await Authenticate(cfg, ct);
             _loggedIn = true;
             log.LogInformation("discord: connected");
@@ -246,10 +246,10 @@ public sealed partial class DiscordMonitor(ConfigStore config, ILogger<DiscordMo
         {
             try { return await Auth(tokens.Access, ct); } catch (Exception ex) { log.LogInformation("discord: saved login no longer works ({Msg})", ex.Message); }
         }
-        const string retry = " PhoneBox will not ask again until you change the Discord settings (or turn Discord off and on).";
+        const string retry = " PhoneDash will not ask again until you change the Discord settings (or turn Discord off and on).";
         JsonNode? granted;
         try { granted = await Request("AUTHORIZE", AuthorizeArgs(cfg.ClientId), null, ct, TimeSpan.FromMinutes(2)); }
-        catch (TimeoutException) { throw new LoginRefusedException("PhoneBox was not approved in Discord in time." + retry); }
+        catch (TimeoutException) { throw new LoginRefusedException("PhoneDash was not approved in Discord in time." + retry); }
         catch (Exception ex) when (ex is not (OperationCanceledException or IOException)) { throw new LoginRefusedException($"Discord login was refused ({ex.Message})." + retry); }
         // no answer at all means the connection ended (Discord closed or restarted): that is not a refusal
         var code = granted?["code"]?.GetValue<string>() ?? throw new IOException("Discord closed the connection");
@@ -258,7 +258,7 @@ public sealed partial class DiscordMonitor(ConfigStore config, ILogger<DiscordMo
         {
             // approved in Discord, but the code couldn't be traded (discord.com unreachable, or its token service failing):
             // the code is single-use, so a retry would show the prompt again every 30 s; stop like after a refusal
-            throw new LoginRefusedException($"PhoneBox could not finish the Discord login ({ex.Message})." + retry);
+            throw new LoginRefusedException($"PhoneDash could not finish the Discord login ({ex.Message})." + retry);
         }
         tokens = tokens
             ?? throw new LoginRefusedException("Discord refused the client secret or the redirect (add http://127.0.0.1 under OAuth2 › Redirects)." + retry);

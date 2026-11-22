@@ -37,10 +37,10 @@
         <value>Nessun telefono collegato</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefono collegato</value>
+        <value>PhoneDash — telefono collegato</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — in attesa di telefono</value>
+        <value>PhoneDash — in attesa di telefono</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Impossibile modificare il collegamento di avvio: {0}</value>

@@ -283,7 +283,7 @@ internal static class FeedHttp
             if (IPAddress.TryParse(uri.Host, out var lit) && !Allowed(lit, allowPrivate))
                 throw new HttpRequestException($"refused: {uri.Host} is not a public address");
             using var req = new HttpRequestMessage(HttpMethod.Get, uri);
-            req.Headers.UserAgent.ParseAdd($"PhoneBox/{AppPaths.Version}");
+            req.Headers.UserAgent.ParseAdd($"PhoneDash/{AppPaths.Version}");
             req.Headers.Accept.ParseAdd("application/rss+xml, application/atom+xml, application/xml;q=0.9, text/xml;q=0.8, */*;q=0.1");
             if (hop == 0 && etag is not null) req.Headers.TryAddWithoutValidation("If-None-Match", etag);
             if (hop == 0 && lastModified is not null) req.Headers.TryAddWithoutValidation("If-Modified-Since", lastModified);

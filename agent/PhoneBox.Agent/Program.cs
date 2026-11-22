@@ -11,6 +11,13 @@ string[] SameOrigins = [$"http://127.0.0.1:{Port}", $"http://localhost:{Port}"];
 // Install scripts ask where the agent belongs (it differs per OS), then copy it there.
 if (args.Contains("--print-install-dir")) { Console.WriteLine(AppPaths.InstallDir); return; }
 
+// PhoneDash on Windows: double-clicking the downloaded PhoneDashAgent.exe installs it (see SelfInstall.cs).
+if (OperatingSystem.IsWindows())
+{
+    if (args.Contains("--uninstall")) { SelfInstall.Uninstall(ask: !args.Contains("--quiet")); return; }
+    if (SelfInstall.Wanted(args) && SelfInstall.Install()) return;
+}
+
 // Single instance: a second launch opens the running instance's settings page and exits.
 // After a restart the previous instance may still be shutting down, so wait for it briefly.
 var single = new Mutex(false, endpoint.MutexName);
@@ -139,7 +146,7 @@ app.MapPost("/api/controls/spotify/disconnect", async (SpotifyControl spotify, C
 app.MapGet("/api/controls/spotify/callback", async (string? state, string? code, SpotifyControl spotify, CancellationToken ct) =>
 {
     try { return state is not null && code is not null && await spotify.Complete(state, code, ct)
-        ? Results.Text("Spotify connected. Return to PhoneBox settings; this tab can be closed.", "text/plain")
+        ? Results.Text("Spotify connected. Return to PhoneDash settings; this tab can be closed.", "text/plain")
         : Results.BadRequest("Spotify sign-in expired or was refused. Start again from desktop settings."); }
     catch { return Results.BadRequest("Spotify sign-in failed. Start again from desktop settings."); }
 });
@@ -196,7 +203,7 @@ app.Use(async (ctx, next) =>
 app.MapGet("/api/latency", () => Results.Json(timings.Summary()));
 
 // Security:
-//  - Local port 8765 listens on 127.0.0.1 only; the Host check blocks DNS rebinding. From browsers only the settings
+//  - Local port 8775 listens on 127.0.0.1 only; the Host check blocks DNS rebinding. From browsers only the settings
 //    page itself (same origin) is accepted (no CSRF).
 //  - The phone's USB tunnel ends on a port of its own (UsbLink): every app on the phone can reach the tunnel, so it
 //    is TLS with the certificate the app pins (handed over adb), needs the key the PhoneBox app made (read over adb),
@@ -299,7 +306,7 @@ app.MapPost("/api/pair/start", (ConfigStore cfg, PairingCodes codes) =>
     var hosts = Lan.Addresses();
     var fingerprint = Lan.Fingerprint(lanCert);
     var link = PairingCodes.Link(Environment.MachineName, fingerprint, lanCfg.Port, hosts, code);
-    var apk = $"https://github.com/ersinkoc/phonebox/releases/download/v{AppPaths.Version}/PhoneBox-{AppPaths.Version}.apk";
+    var apk = Brand.PlayStoreUrl; // the phone app comes from Google Play only
     return Results.Json(new
     {
         enabled = true,
@@ -368,6 +375,9 @@ app.MapGet("/panel/{*file}", (string? file, HttpRequest req) =>
     };
     return AppPaths.Resource("www/" + file) is { } s ? Results.Stream(s, type) : Results.NotFound();
 });
+// Licences: PhoneDash is based on PhoneBox (MIT); its copyright notice and the bundled components' notices stay readable
+app.MapGet("/licenses", () => Results.Text(string.Join("\n\n" + new string('-', 72) + "\n\n",
+    new[] { "LICENSE.txt", "THIRD-PARTY-NOTICES.txt" }.Select(n => { using var s = AppPaths.Resource(n); return s is null ? "" : new StreamReader(s).ReadToEnd(); })), "text/plain; charset=utf-8"));
 app.MapGet("/favicon.ico", () => AppPaths.Resource("phonebox.ico") is { } s ? Results.Stream(s, "image/x-icon") : Results.NotFound());
 
 // The version lets the settings page save only over what it loaded (X-Config-Version, see ConfigStore.Save).
@@ -987,8 +997,14 @@ app.MapDelete("/api/settings/shortcut-icon", (string id, HttpRequest req, Config
 });
 
 app.Lifetime.ApplicationStarted.Register(() =>
-    app.Logger.LogInformation("PhoneBox agent {Version} ready on http://127.0.0.1:{Port}, phone USB port {UsbPort} (config: {Path})",
-        AppPaths.Version, Port, usb.Port, configPath));
+{
+    app.Logger.LogInformation("PhoneDash agent {Version} ready on http://127.0.0.1:{Port}, phone USB port {UsbPort} (config: {Path})",
+        AppPaths.Version, Port, usb.Port, configPath);
+    // first start after installing: show the settings page, which walks through connecting the phone
+    if (args.Contains("--welcome"))
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo($"http://127.0.0.1:{Port}/") { UseShellExecute = true })?.Dispose(); }
+        catch (System.ComponentModel.Win32Exception) { }
+});
 
 app.Run();
 
@@ -1027,7 +1043,7 @@ public partial class Program
                 collides = false;
                 if (prop.Value.ValueKind != JsonValueKind.Object) continue;
                 var enabled = false;
-                var port = 8766;
+                var port = 8776;
                 foreach (var lp in prop.Value.EnumerateObject())
                 {
                     if (lp.Name.Equals("enabled", StringComparison.OrdinalIgnoreCase) && lp.Value.ValueKind is JsonValueKind.True or JsonValueKind.False)

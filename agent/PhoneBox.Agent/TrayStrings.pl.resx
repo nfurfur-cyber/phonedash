@@ -37,10 +37,10 @@
         <value>Brak podłączonego telefonu</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — telefon podłączony</value>
+        <value>PhoneDash — telefon podłączony</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — czekanie na telefon</value>
+        <value>PhoneDash — czekanie na telefon</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>Nie można zmienić skrótu uruchamiania: {0}</value>

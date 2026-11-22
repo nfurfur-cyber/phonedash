@@ -37,10 +37,10 @@
         <value>कोई फोन जुड़ा नहीं है</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox — फोन जुड़ा</value>
+        <value>PhoneDash — फोन जुड़ा</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox — फोन के लिए प्रतीक्षारत</value>
+        <value>PhoneDash — फोन के लिए प्रतीक्षारत</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>प्रारंभिक शॉर्टकट को बदल नहीं सका: {0}</value>

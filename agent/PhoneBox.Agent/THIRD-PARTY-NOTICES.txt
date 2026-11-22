@@ -1,6 +1,6 @@
-PhoneBox agent: third-party software
+PhoneDash PC program (based on the PhoneBox agent, MIT licence, see LICENSE.txt): third-party software
 
-The release agent is self-contained: it includes the .NET runtime and ASP.NET Core, QRCoder, and on Windows also
+The release build is self-contained: it includes the .NET runtime and ASP.NET Core, QRCoder, and on Windows also
 Windows Forms, the C#/WinRT projection (WinRT.Runtime, Microsoft.Windows.SDK.NET) and NAudio.
 
 .NET runtime, ASP.NET Core, Windows Forms, C#/WinRT

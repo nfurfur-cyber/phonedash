@@ -23,7 +23,7 @@ internal static class HlsPlaylist
             PooledConnectionLifetime = TimeSpan.FromMinutes(5),
         };
         var client = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(6) };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/1.0");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/1.0");
         return client;
     }
 

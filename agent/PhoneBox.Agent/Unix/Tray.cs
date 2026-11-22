@@ -4,7 +4,7 @@ namespace PhoneBox.Agent;
 
 /// <summary>
 /// Linux / macOS: no tray icon (the agent usually runs as a systemd user service or a launchd agent). The settings live
-/// in the browser at http://127.0.0.1:8765; this just says so in the log.
+/// in the browser at http://127.0.0.1:8775; this just says so in the log.
 /// </summary>
 public sealed class Tray(ILogger<Tray> log, AgentEndpoint endpoint) : IHostedService
 {

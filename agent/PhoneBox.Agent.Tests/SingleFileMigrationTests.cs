@@ -13,7 +13,7 @@ public sealed class SingleFileMigrationTests
     [Fact]
     public void ASingleFileAgentRemovesTheFrameworkDependentFilesAndKeepsTheRest()
     {
-        var keep = new[] { "PhoneBoxAgent.exe", "THIRD-PARTY-NOTICES.txt", "config.default.json", "widgets.json", "aspnetcorev2_inprocess.dll", "agent.log" };
+        var keep = new[] { "PhoneDashAgent.exe", "THIRD-PARTY-NOTICES.txt", "config.default.json", "widgets.json", "aspnetcorev2_inprocess.dll", "agent.log" };
         var dir = WithFiles([.. UpdateService.FrameworkDependentFiles, .. keep]);
         try
         {
@@ -39,7 +39,7 @@ public sealed class SingleFileMigrationTests
     public void AMissingDirectoryOrPartialSetIsFine()
     {
         UpdateService.RemoveFrameworkDependentLeftovers(Path.Combine(Path.GetTempPath(), "phonebox-missing-" + Guid.NewGuid().ToString("N")), singleFile: true);
-        var dir = WithFiles("PhoneBoxAgent.dll");
+        var dir = WithFiles("PhoneDashAgent.dll");
         try
         {
             UpdateService.RemoveFrameworkDependentLeftovers(dir, singleFile: true);

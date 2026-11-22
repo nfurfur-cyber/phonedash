@@ -50,7 +50,7 @@ internal sealed class RadioLogoCache : IDisposable
                 ConnectCallback = ConnectPublicEndpointAsync,
             };
             _http = new HttpClient(handler) { Timeout = TimeSpan.FromSeconds(6) };
-            _http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox/" + AppPaths.Version);
+            _http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash/" + AppPaths.Version);
             _ownsHttp = true;
         }
     }

@@ -57,12 +57,12 @@ public sealed class CodexHookTests
                 {"description":"mine","hooks":{"PostToolUse":[{"matcher":"Bash","hooks":[{"type":"command","command":"echo done"}]}]}}
                 """);
 
-            Assert.Null(CodexHook.Configure(true, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(true, 18775, 30, path));
             Assert.True(CodexHook.Installed(path));
             Assert.Contains(CodexHook.Endpoint, File.ReadAllText(path));
             Assert.True(File.Exists(path + ".phonebox.bak"));
 
-            Assert.Null(CodexHook.Configure(false, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(false, 18775, 30, path));
             Assert.False(CodexHook.Installed(path));
             var text = File.ReadAllText(path);
             Assert.Contains("echo done", text);
@@ -84,14 +84,14 @@ public sealed class CodexHookTests
                 """);
 
             Assert.False(CodexHook.Installed(path));
-            Assert.Null(CodexHook.Configure(true, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(true, 18775, 30, path));
             Assert.True(CodexHook.Installed(path));
 
-            Assert.Null(CodexHook.Configure(false, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(false, 18775, 30, path));
             Assert.False(CodexHook.Installed(path));
             var text = File.ReadAllText(path);
             Assert.Contains("echo /api/hooks/codex/permission", text);
-            Assert.DoesNotContain("127.0.0.1:18765", text);
+            Assert.DoesNotContain("127.0.0.1:18775", text);
         }
         finally { Directory.Delete(dir, true); }
     }
@@ -109,8 +109,8 @@ public sealed class CodexHookTests
                 """);
 
             Assert.False(CodexHook.Installed(path));
-            Assert.Null(CodexHook.Configure(true, 18765, 30, path));
-            Assert.Null(CodexHook.Configure(false, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(true, 18775, 30, path));
+            Assert.Null(CodexHook.Configure(false, 18775, 30, path));
             Assert.Contains("/api/hooks/codex/permission-audit", File.ReadAllText(path)); // someone else's hook survives
         }
         finally { Directory.Delete(dir, true); }
@@ -124,7 +124,7 @@ public sealed class CodexHookTests
         try
         {
             var path = Path.Combine(dir, "hooks.json");
-            Assert.Null(CodexHook.Configure(true, 18765, 30, path));
+            Assert.Null(CodexHook.Configure(true, 18775, 30, path));
             Assert.Contains("--noproxy 127.0.0.1", File.ReadAllText(path));
         }
         finally { Directory.Delete(dir, true); }

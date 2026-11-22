@@ -37,10 +37,10 @@
         <value>لا يوجد هاتف متصل</value>
     </data>
     <data xml:space="preserve" name="tooltipConnected">
-        <value>PhoneBox - وصل الهاتف</value>
+        <value>PhoneDash - وصل الهاتف</value>
     </data>
     <data xml:space="preserve" name="tooltipWaiting">
-        <value>PhoneBox - انتظار الهاتف</value>
+        <value>PhoneDash - انتظار الهاتف</value>
     </data>
     <data xml:space="preserve" name="autostartError">
         <value>لم يكن من الممكن تغيير اختصار البدء: {0}</value>

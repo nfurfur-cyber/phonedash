@@ -25,7 +25,7 @@ public sealed class CalendarMonitor(ConfigStore config, ILogger<CalendarMonitor>
 
     protected override async Task ExecuteAsync(CancellationToken ct)
     {
-        Http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneBox");
+        Http.DefaultRequestHeaders.UserAgent.ParseAdd("PhoneDash");
         var next = DateTime.MinValue;
         var wakes = Wake.Count;
         while (!ct.IsCancellationRequested)

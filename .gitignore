@@ -49,4 +49,4 @@ tools/ui-tests/test-results/
 
 
 *.log
-*.txt
+*.txt.store-site/
