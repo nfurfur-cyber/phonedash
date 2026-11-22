@@ -42,8 +42,8 @@ if (existsSync(DIST)) rmSync(DIST, { recursive: true, force: true });
 mkdirSync(DIST);
 
 // ---- phone app (Android App Bundle for Google Play)
-if (!skipTests) run('Android lint and unit tests', 'gradlew.bat', ['lintRelease', 'testReleaseUnitTest', '--console=plain'], { cwd: join(ROOT, 'android'), env, shell: true });
-run(`Android app bundle ${version}`, 'gradlew.bat', ['bundleRelease', '--console=plain'], { cwd: join(ROOT, 'android'), env, shell: true });
+if (!skipTests) run('Android lint and unit tests', join(ROOT, 'android', 'gradlew.bat'), ['lintRelease', 'testReleaseUnitTest', '--console=plain'], { cwd: join(ROOT, 'android'), env, shell: true });
+run(`Android app bundle ${version}`, join(ROOT, 'android', 'gradlew.bat'), ['bundleRelease', '--console=plain'], { cwd: join(ROOT, 'android'), env, shell: true });
 const aab = join(DIST, `PhoneDash-${version}.aab`);
 copyFileSync(join(ROOT, 'android/app/build/outputs/bundle/release/app-release.aab'), aab);
 

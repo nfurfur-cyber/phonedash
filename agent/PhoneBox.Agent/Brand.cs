@@ -9,7 +9,7 @@ public static class Brand
 {
     public const string Name = "PhoneDash";
     public const string AppId = "kr.phonedash.app";
-    public const string Owner = "";
+    public const string Owner = "nfurfur-cyber";
 
     /// <summary>GitHub repository with the PC program releases, or null while <see cref="Owner"/> is not set.</summary>
     public static string? Repo => Owner.Length > 0 ? Owner + "/phonedash" : null;
