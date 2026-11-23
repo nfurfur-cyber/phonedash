@@ -82,7 +82,7 @@ function privacyHtml() {
 <title>폰대시 개인정보처리방침 · PhoneDash privacy policy</title>
 <link rel="icon" href="favicon.ico">
 <style>
-:root { --bg: #0b1222; --bg2: #101a30; --line: #22304d; --text: #eef2f8; --muted: #a3afc4; --accent: #ff6b35; color-scheme: dark; }
+:root { --bg: #0b1222; --bg2: #101a30; --line: #22304d; --text: #eef2f8; --muted: #a3afc4; --accent: #FFB020; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.7 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; word-break: keep-all; }
 main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
@@ -120,7 +120,7 @@ function licensesHtml() {
 <title>폰대시 오픈소스 라이선스 · PhoneDash licences</title>
 <link rel="icon" href="favicon.ico">
 <style>
-:root { --bg: #0b1222; --bg2: #101a30; --line: #22304d; --text: #eef2f8; --muted: #a3afc4; --accent: #ff6b35; color-scheme: dark; }
+:root { --bg: #0b1222; --bg2: #101a30; --line: #22304d; --text: #eef2f8; --muted: #a3afc4; --accent: #FFB020; color-scheme: dark; }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.7 "Malgun Gothic", "Apple SD Gothic Neo", system-ui, sans-serif; word-break: keep-all; }
 main { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }

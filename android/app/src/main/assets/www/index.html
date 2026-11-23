@@ -66,6 +66,23 @@
 <div class="toast" id="toast"></div>
 <div id="offline"><svg class="ico" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8.5 16.5a5 5 0 0 1 7 0M2 8.82a15 15 0 0 1 4.17-2.65M10.66 5c4.01-.36 8.14.9 11.34 3.76M16.85 11.25a10 10 0 0 1 2.22 1.68M5 13a10 10 0 0 1 5.24-2.76M12 20h.01M2 2l20 20"/></svg><span data-i18n="panel.pcNotConnected">PC not connected</span></div>
 <div id="wake" hidden><button type="button" data-i18n="panel.wake">Wake the PC</button><span class="note" role="status"></span></div>
+<!-- first start: no computer has been paired yet and none answers. Walks through installing the PC program. -->
+<div id="welcome" hidden>
+  <div class="wl-card">
+    <div class="wl-eyebrow">PHONEDASH</div>
+    <h1 data-i18n="welcome.title">Connect this phone to your computer</h1>
+    <ol class="wl-steps">
+      <li><b data-i18n="welcome.s1">Install the free PhoneDash program on the computer</b><span data-i18n="welcome.s1Hint">Send yourself the link below and open it on the computer.</span></li>
+      <li><b data-i18n="welcome.s2">Scan the QR code it shows</b><span data-i18n="welcome.s2Hint">Keep this phone on the same Wi-Fi as the computer and use the camera.</span></li>
+      <li><b data-i18n="welcome.s3">Check the code and tap Pair</b><span data-i18n="welcome.s3Hint">That's all. Next time it connects by itself.</span></li>
+    </ol>
+    <div class="wl-btns">
+      <button type="button" id="wlSend" class="wl-primary" data-i18n="welcome.send">Send the link to my computer</button>
+      <button type="button" id="wlCopy" data-i18n="welcome.copy">Copy link</button>
+    </div>
+    <p class="wl-url"><span data-i18n="welcome.orType">Or type this on the computer:</span> <b id="wlUrl"></b></p>
+  </div>
+</div>
 <div id="night"><div id="nClock">--:--</div><div id="nDate"></div></div>
 
 <div id="webviewWarn" hidden role="status" style="position:fixed;top:8px;left:8px;right:8px;z-index:90;align-items:center;gap:10px;padding:8px 12px;border-radius:10px;background:rgba(24,20,12,.94);border:1px solid rgba(245,158,11,.45);color:#fde68a;font:12.5px/1.35 system-ui,sans-serif">

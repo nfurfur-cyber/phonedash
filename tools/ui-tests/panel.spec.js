@@ -445,6 +445,19 @@ test('pairing over Wi-Fi shows both QR codes and cancels the code when closed', 
   expect(errors).toEqual([]);
 });
 
+test('the first start after installing (?pair=1) opens the Wi-Fi pairing QR codes by itself, once', async ({ page }) => {
+  const errors = watchErrors(page);
+  await page.setViewportSize({ width: 1280, height: 860 });
+  await page.goto('/settings/?pair=1#general');
+  await expect(page.locator('#modal')).toBeVisible();
+  await expect(page.locator('#modalBody .pair-qr img')).toHaveCount(2);
+  // the flag leaves the address bar, so a reload or a bookmark does not pop the dialog up again
+  await expect.poll(() => page.evaluate(() => location.search)).toBe('');
+  await page.locator('#modalClose').click();
+  await expect(page.locator('#modal')).toBeHidden();
+  expect(errors).toEqual([]);
+});
+
 test('an edit in the settings page shows up on the panel right away', async ({ context }) => {
   const panel = await context.newPage();
   await panel.goto('/panel/');

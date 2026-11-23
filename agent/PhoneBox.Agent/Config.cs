@@ -182,8 +182,8 @@ public sealed class DisplayConfig
     public string Orientation { get; set; } = "landscape";
     /// <summary>default, amoled, midnight, warm or graphite.</summary>
     public string Theme { get; set; } = "default";
-    /// <summary>Accent colour (background glow, page dots), e.g. "#2dd4bf".</summary>
-    public string Accent { get; set; } = "#2dd4bf";
+    /// <summary>Accent colour (background glow, page dots), e.g. "#ffb020".</summary>
+    public string Accent { get; set; } = "#ffb020";
     /// <summary>Tint the background with the album art's colour while music plays.</summary>
     public bool ArtTint { get; set; } = true;
     /// <summary>Screen brightness follows the room (the phone's light sensor).</summary>
@@ -224,8 +224,9 @@ public sealed class DisplayConfig
 
 public sealed class LanConfig
 {
-    /// <summary>Also accept the phone over Wi-Fi (HTTPS + token, paired over USB). Requires an agent restart.</summary>
-    public bool Enabled { get; set; }
+    /// <summary>Also accept the phone over Wi-Fi (HTTPS + token, paired by QR code or over USB). On by default in
+    /// PhoneDash, whose first start pairs the phone with a QR code; only a paired phone gets in. Requires an agent restart.</summary>
+    public bool Enabled { get; set; } = true;
     public int Port { get; set; } = 8776;
     /// <summary>Shared secret handed to the phone over USB. Empty = generate a new one (forces re-pairing).</summary>
     public string? Token { get; set; }

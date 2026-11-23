@@ -62,7 +62,7 @@
       deviceSerial: null, adbPath: null,
       weather: { city: KO ? '서울' : 'Seoul', lat: 37.5665, lon: 126.978, unit: 'celsius', model: '' },
       night: { enabled: false, start: '00:30', end: '07:30', brightness: 0.02 },
-      display: { appearance: null, showSeconds: true, hour12: false, idleReturnSec: 0, vibrate: true, volumeKeys: true, orientation: 'landscape', theme: 'default', accent: '#2dd4bf',
+      display: { appearance: null, showSeconds: true, hour12: false, idleReturnSec: 0, vibrate: true, volumeKeys: true, orientation: 'landscape', theme: 'default', accent: '#ffb020',
         pixelShift: false, idleDimMin: 0,
         artTint: true, autoBrightness: false, nightWhenDark: false, proximityWake: true, pin: false, homeScreen: false, keepAwake: true, openOnConnect: true, followComputerLock: false,
         homePage: null, switchCountdownSec: 3, touchGraceSec: 20, minDwellSec: 15, holdMaxMin: 30 },
@@ -828,7 +828,7 @@
 
   // A pretend Android bridge for phone-only widgets.
   if (!window.Android && document.currentScript.dataset.panel !== undefined)
-    window.Android = { battery: () => JSON.stringify({ level: 82, plugged: true, temp: 29.5 }), transport: () => 'usb', version: () => VERSION,
+    window.Android = { battery: () => JSON.stringify({ level: 82, plugged: true, temp: 29.5 }), transport: () => 'wifi', version: () => VERSION,
       is24Hour: () => !new Intl.DateTimeFormat(undefined, { hour: 'numeric' }).resolvedOptions().hour12,
       haptic() {}, buzz() {}, setBrightness() {}, setVolumeKeys() {} };
 

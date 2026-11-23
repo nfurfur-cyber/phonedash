@@ -532,6 +532,22 @@ class MainActivity : Activity(), SensorEventListener {
         @JavascriptInterface
         fun version(key: String): String = if (ok(key)) packageManager.getPackageInfo(packageName, 0).versionName ?: "" else ""
 
+        /**
+         * First-start screen: hands a short text (the PC program's download link) to Android's share sheet, so the user
+         * can send it to their computer (a chat app's "to myself", e-mail, ...). False when nothing could take it.
+         */
+        @JavascriptInterface
+        fun share(key: String, text: String): Boolean {
+            if (!ok(key) || text.isBlank()) return false
+            val send = Intent(Intent.ACTION_SEND).setType("text/plain").putExtra(Intent.EXTRA_TEXT, text.take(500))
+            return try {
+                runOnUiThread { startActivity(Intent.createChooser(send, null)) }
+                true
+            } catch (e: android.content.ActivityNotFoundException) {
+                false
+            }
+        }
+
         /** Dictation widget: true when the phone has a speech recognizer. */
         @JavascriptInterface
         fun canListen(key: String): Boolean = ok(key) && dictation.available()

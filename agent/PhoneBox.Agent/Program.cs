@@ -1000,9 +1000,9 @@ app.Lifetime.ApplicationStarted.Register(() =>
 {
     app.Logger.LogInformation("PhoneDash agent {Version} ready on http://127.0.0.1:{Port}, phone USB port {UsbPort} (config: {Path})",
         AppPaths.Version, Port, usb.Port, configPath);
-    // first start after installing: show the settings page, which walks through connecting the phone
+    // first start after installing: show the settings page with the Wi-Fi pairing QR code already open
     if (args.Contains("--welcome"))
-        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo($"http://127.0.0.1:{Port}/") { UseShellExecute = true })?.Dispose(); }
+        try { System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo($"http://127.0.0.1:{Port}/?pair=1") { UseShellExecute = true })?.Dispose(); }
         catch (System.ComponentModel.Win32Exception) { }
 });
 

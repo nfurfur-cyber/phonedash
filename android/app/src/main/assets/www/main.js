@@ -53,7 +53,7 @@ export const $ = (id) => document.getElementById(id);
 // The native bridge (window.Android) is in every frame, sandboxed widgets included, so each call carries a key that only
 // the panel's own frames receive (MainActivity.bridgeKey). This wrapper adds it.
 const BRIDGE = ['battery', 'buzz', 'haptic', 'is24Hour', 'pcs', 'selectPc', 'forgetPc', 'setBrightness', 'setHomeScreen', 'setOrientation',
-  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc'];
+  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share'];
 export const bridge = typeof Android === 'undefined' ? null : Object.fromEntries(BRIDGE.filter((m) => typeof Android[m] === 'function')
   .map((m) => [m, (...args) => Android[m](window.__phoneboxKey || '', ...args)]));
 // Live preview inside the agent's layout editor: the layout comes from the editor (unsaved), not from the agent.
@@ -863,7 +863,7 @@ export const setMediaState = (m) => {
   emit('state');
 };
 // The background glow: the accent colour (Settings › Display), or the album art's colour while music plays.
-export let DEFAULT_AMBIENT = '45, 212, 191';
+export let DEFAULT_AMBIENT = '255, 176, 32';
 export let artTint = true;
 export let currentArtColor = null;
 export const setArtColor = (c) => { currentArtColor = c; setAmbient(c); };
@@ -2216,7 +2216,7 @@ export function applyDisplay() {
   document.body.dataset.theme = ['amoled', 'midnight', 'warm', 'graphite'].includes(d.theme) ? d.theme : 'default';
   const accent = hexToRgb(d.accent);
   const before = DEFAULT_AMBIENT;
-  DEFAULT_AMBIENT = accent || '45, 212, 191';
+  DEFAULT_AMBIENT = accent || '255, 176, 32';
   document.documentElement.style.setProperty('--accent', `rgb(${DEFAULT_AMBIENT})`);
   artTint = d.artTint !== false;
   if (before !== DEFAULT_AMBIENT || !artTint) setAmbient(artTint ? currentArtColor : null);
@@ -2356,10 +2356,31 @@ $('wake')?.querySelector('button').addEventListener('click', () => {
   wakeRender();
 });
 
+// ---------------------------------------------------------------- first start
+// In the app, before any computer has been paired and while none answers (not even over USB), the panel would only
+// say "PC not connected". Instead it walks through the setup and sends the PC program's link to the user's computer.
+const siteUrl = () => String(window.__phonedashSite || '');
+function welcomeRender() {
+  const box = $('welcome');
+  if (!box) return;
+  box.hidden = !(bridge && document.body.classList.contains('offline') && pairedPcs().length === 0);
+  if (!box.hidden) $('wlUrl').textContent = siteUrl().replace(/^https?:\/\//, '').replace(/\/$/, '');
+}
+$('wlSend')?.addEventListener('click', () => {
+  haptic();
+  const text = t('welcome.shareText', { url: siteUrl() });
+  if (!bridge?.share || !bridge.share(text)) toast(siteUrl());
+});
+$('wlCopy')?.addEventListener('click', async () => {
+  haptic();
+  try { await navigator.clipboard.writeText(siteUrl()); toast(t('welcome.copied')); } catch (_) { toast(siteUrl()); }
+});
+
 export function setOnline(on) {
   document.body.classList.toggle('offline', !on);
   if (on) { wakeAt = 0; clearInterval(wakeTicker); wakeTicker = 0; }
   wakeRender();
+  welcomeRender();
   if (on && online !== true) { loadConfig(); loadQuotas(); loadWork(); loadPush(); loadApprovals(); loadCalendar(); }
   const changed = online !== on;
   online = on;

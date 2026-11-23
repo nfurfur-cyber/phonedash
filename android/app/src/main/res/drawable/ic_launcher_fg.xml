@@ -8,19 +8,19 @@
     <!-- phone -->
     <path
         android:pathData="M33,37h42a6,6 0,0 1,6 6v22a6,6 0,0 1,-6 6h-42a6,6 0,0 1,-6 -6v-22a6,6 0,0 1,6 -6z"
-        android:fillColor="#14213D"
+        android:fillColor="#0E1424"
         android:strokeColor="#FFFFFF"
         android:strokeWidth="3.5" />
     <!-- gauge track -->
     <path
         android:pathData="M39,63A15,15 0,0 1,69 63"
-        android:strokeColor="#34456B"
+        android:strokeColor="#2A3450"
         android:strokeWidth="4"
         android:strokeLineCap="round" />
     <!-- gauge value -->
     <path
         android:pathData="M39,63A15,15 0,0 1,62.82 50.86"
-        android:strokeColor="#FF6B35"
+        android:strokeColor="#FFB020"
         android:strokeWidth="4"
         android:strokeLineCap="round" />
     <!-- needle and hub -->
