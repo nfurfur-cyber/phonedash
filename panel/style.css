@@ -1,19 +1,20 @@
+/* PhoneDash palette: an instrument panel at night. Deep navy, warm white text, amber / coral / sky / mint gauges. */
 :root {
-  --bg: #06080b;
-  --card: rgba(255, 255, 255, 0.045);
-  --card-hi: rgba(255, 255, 255, 0.075);
-  --line: rgba(255, 255, 255, 0.08);
-  --text: #eef2f6;
-  --muted: #8a94a3;
-  --dim: #5b6472;
-  --cpu: #2dd4bf;
-  --gpu: #84cc16;
-  --ram: #a78bfa;
-  --net: #f59e0b;
-  --up: #60a5fa;
-  --ok: #22c55e;
-  --err: #ef4444;
-  --ambient: 45, 212, 191;
+  --bg: #0a0f1c;
+  --card: rgba(255, 214, 160, 0.045);
+  --card-hi: rgba(255, 214, 160, 0.08);
+  --line: rgba(255, 196, 120, 0.14);
+  --text: #f5ede0;
+  --muted: #a49c8e;
+  --dim: #6a6672;
+  --cpu: #ffb020;
+  --gpu: #ff6b4a;
+  --ram: #6ec6ff;
+  --net: #4fe0b6;
+  --up: #b49cff;
+  --ok: #4ade80;
+  --err: #ff5252;
+  --ambient: 255, 176, 32;
   --pad-l: max(14px, env(safe-area-inset-left));
   --pad-r: max(14px, env(safe-area-inset-right));
   color-scheme: dark;
@@ -27,6 +28,36 @@ body[data-theme="warm"] { --bg: #0e0907; --card: rgba(255, 196, 150, 0.06); --ca
 body[data-theme="graphite"] { --bg: #16181c; --card: rgba(255, 255, 255, 0.06); --card-hi: rgba(255, 255, 255, 0.09); --line: rgba(255, 255, 255, 0.1); }
 body[data-theme="graphite"]::before { opacity: .45; }
 #dots i.on { background: color-mix(in srgb, var(--accent, #fff) 55%, white); }
+
+/* The default theme is PhoneDash's own "dash" look: bezelled cards with a warm top light, a faint measuring grid
+   behind them, monospace labels with a small indicator lamp, and page dots that glow like LEDs.
+   The other themes (AMOLED, midnight, warm, graphite) keep their flat cards. */
+body[data-theme="default"]::before {
+  background:
+    radial-gradient(60% 80% at 78% 30%, rgba(var(--ambient), 0.13), transparent 70%),
+    radial-gradient(50% 60% at 10% 100%, rgba(var(--ambient), 0.06), transparent 70%),
+    repeating-linear-gradient(0deg, rgba(255, 214, 160, 0.028) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(90deg, rgba(255, 214, 160, 0.028) 0 1px, transparent 1px 32px);
+}
+body[data-theme="default"] .card {
+  background: linear-gradient(180deg, rgba(255, 220, 170, 0.06), rgba(255, 220, 170, 0.018) 45%, rgba(0, 0, 0, 0.1));
+  border-color: rgba(255, 196, 120, 0.22);
+  box-shadow: inset 0 1px 0 rgba(255, 236, 200, 0.12), inset 0 0 0 3px rgba(0, 0, 0, 0.28), inset 0 0 0 4px rgba(255, 196, 120, 0.06), 0 10px 28px rgba(0, 0, 0, 0.45);
+  border-radius: clamp(8px, 4.5cqmin, 14px);
+}
+body[data-theme="default"] :is(.w-title, .t-label, .s-label) {
+  display: flex; align-items: center; gap: 8px;
+  font-family: "Roboto Mono", "Cascadia Mono", Consolas, "Droid Sans Mono", monospace;
+  letter-spacing: .16em;
+}
+/* Hangul, kana and Han need no tracking: wide letter spacing pulls a word apart */
+html:is(:lang(ko), :lang(ja), :lang(zh)) body[data-theme="default"] :is(.w-title, .t-label, .s-label) { letter-spacing: .04em; }
+body[data-theme="default"] :is(.w-title, .t-label, .s-label)::before {
+  content: ""; flex: 0 0 auto; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--c, var(--accent)); box-shadow: 0 0 6px var(--c, var(--accent));
+}
+body[data-theme="default"] #dots i { background: rgba(255, 214, 160, 0.2); }
+body[data-theme="default"] #dots i.on { background: var(--accent); box-shadow: 0 0 8px var(--accent); }
 
 * { box-sizing: border-box; margin: 0; padding: 0; }
 [hidden] { display: none !important; }
@@ -195,6 +226,35 @@ body.offline #offline { display: flex; align-items: center; gap: 5px; }
 /* Wake-on-LAN: under the offline pill, only while the PC is unreachable (main.js shows it when the app can wake it) */
 #wake { position: fixed; top: 38px; right: var(--pad-r); z-index: 6; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; max-width: 280px; }
 #wake[hidden] { display: none; }
+
+/* First start (no computer paired yet): a full-screen guide over the empty panel, with a button that sends the PC
+   program's link to the user's computer through Android's share sheet. */
+#welcome {
+  position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; padding: 18px var(--pad-r) 18px var(--pad-l);
+  background: radial-gradient(70% 90% at 80% 10%, rgba(var(--ambient), .14), transparent 70%), var(--bg); overflow-y: auto;
+}
+#welcome[hidden] { display: none; }
+.wl-card {
+  width: min(760px, 100%); padding: clamp(18px, 4vmin, 34px); border-radius: 16px;
+  background: linear-gradient(180deg, rgba(255, 220, 170, .07), rgba(255, 220, 170, .02)); border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255, 236, 200, .1), 0 18px 50px rgba(0, 0, 0, .5);
+}
+.wl-eyebrow { font: 700 12px/1 "Roboto Mono", "Droid Sans Mono", monospace; letter-spacing: .2em; color: var(--accent); }
+.wl-card h1 { margin: 10px 0 16px; font-size: clamp(20px, 5vmin, 30px); line-height: 1.25; color: var(--text); }
+.wl-steps { list-style: none; counter-reset: wl; display: grid; gap: 12px; margin-bottom: 18px; }
+.wl-steps li { counter-increment: wl; display: grid; grid-template-columns: 34px 1fr; column-gap: 12px; align-items: start; }
+.wl-steps li::before {
+  content: counter(wl); grid-row: span 2; width: 34px; height: 34px; border-radius: 10px; display: grid; place-items: center;
+  font: 700 15px/1 "Roboto Mono", "Droid Sans Mono", monospace; color: var(--accent); background: rgba(var(--ambient), .12);
+}
+.wl-steps b { font-size: 15.5px; color: var(--text); }
+.wl-steps span { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.wl-btns { display: flex; flex-wrap: wrap; gap: 10px; }
+.wl-btns button { min-height: 48px; padding: 0 20px; border-radius: 12px; font-size: 15px; font-weight: 700; border: 1px solid var(--line); background: var(--card-hi); color: var(--text); }
+.wl-btns .wl-primary { background: var(--accent); border-color: transparent; color: #1a1000; }
+.wl-btns button:active { transform: translateY(1px); }
+.wl-url { margin-top: 12px; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
+.wl-url b { color: var(--text); font-family: "Roboto Mono", "Droid Sans Mono", monospace; }
 #wake button { min-height: 44px; padding: 0 18px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .1); color: var(--text); font-size: 14px; font-weight: 600; }
 #wake button:disabled { opacity: .6; }
 /* opaque backing: the note is the one message that says what to check, and it can sit over the media widget's own text */

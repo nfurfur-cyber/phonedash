@@ -3,14 +3,14 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>폰대시 PhoneDash — 안 쓰는 폰을 PC 대시보드로</title>
-<meta name="description" content="서랍 속 안드로이드 폰을 PC 옆 대시보드로. CPU·GPU·음악·날씨·AI 사용량을 한눈에, USB 케이블 한 줄로 연결합니다.">
+<title>폰대시 PhoneDash — 공기계를 PC 대시보드로</title>
+<meta name="description" content="서랍 속 공기계를 PC 옆 대시보드로. CPU·GPU·음악·날씨·AI 사용량을 한눈에, QR 코드 한 번이면 연결됩니다.">
 <link rel="icon" href="favicon.ico">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root {
   --bg: #0b1222; --bg2: #101a30; --line: #22304d; --text: #eef2f8; --muted: #93a0b8; --dim: #64718a;
-  --accent: #ff6b35; --accent-ink: #1a0b04; --radius: 18px;
+  --accent: #FFB020; --accent-ink: #1a0b04; --radius: 18px;
   color-scheme: dark;
 }
 * { box-sizing: border-box; margin: 0; }
@@ -34,13 +34,13 @@ h1 em { font-style: normal; color: var(--accent); }
 .btn { display: inline-flex; align-items: center; gap: 10px; padding: 14px 22px; border-radius: 14px; font-weight: 700; text-decoration: none; transition: transform .15s ease, box-shadow .15s ease; }
 .btn:hover { transform: translateY(-2px); }
 .btn:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
-.btn.primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -10px rgba(255,107,53,.7); }
+.btn.primary { background: var(--accent); color: var(--accent-ink); box-shadow: 0 10px 30px -10px rgba(255,176,32,.7); }
 .btn.ghost { border: 1px solid var(--line); color: var(--text); background: var(--bg2); }
 .btn small { font-weight: 500; opacity: .75; }
 .note { color: var(--dim); font-size: 14px; margin-top: 12px; }
 .shot { position: relative; }
 .shot img { width: 100%; display: block; border-radius: 26px; border: 10px solid #e9edf4; box-shadow: 0 40px 80px -30px rgba(0,0,0,.8), 0 0 0 1px rgba(255,255,255,.05); }
-.shot::before { content: ""; position: absolute; inset: -40px -30px auto auto; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,107,53,.28), transparent 70%); z-index: -1; }
+.shot::before { content: ""; position: absolute; inset: -40px -30px auto auto; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,176,32,.28), transparent 70%); z-index: -1; }
 
 section { padding: 64px 0; border-top: 1px solid var(--line); }
 h2 { font-size: clamp(28px, 3.6vw, 38px); letter-spacing: -.01em; margin-bottom: 10px; }
@@ -48,7 +48,7 @@ h2 { font-size: clamp(28px, 3.6vw, 38px); letter-spacing: -.01em; margin-bottom:
 
 .steps { counter-reset: s; display: grid; gap: 16px; }
 .step { display: grid; grid-template-columns: 64px 1fr; gap: 18px; background: var(--bg2); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; }
-.step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: rgba(255,107,53,.12); color: var(--accent); font-weight: 800; font-size: 24px; }
+.step::before { counter-increment: s; content: counter(s); display: grid; place-items: center; width: 52px; height: 52px; border-radius: 14px; background: rgba(255,176,32,.12); color: var(--accent); font-weight: 800; font-size: 24px; }
 .step h3 { font-size: 20px; margin-bottom: 4px; }
 .step p, .step li { color: var(--muted); }
 .step ol { padding-left: 20px; margin-top: 6px; }
@@ -90,8 +90,8 @@ footer a { color: var(--muted); }
   <header class="hero">
     <div>
       <div class="eyebrow">PHONEDASH</div>
-      <h1>서랍 속 폰을<br><em>PC 대시보드</em>로</h1>
-      <p class="lead">CPU·GPU 사용량, 재생 중인 음악, 날씨, Claude·Codex 사용량까지. 안 쓰는 안드로이드 폰을 모니터 옆에 세워 두고 한눈에 보세요. 연결은 USB 케이블 한 줄이면 됩니다.</p>
+      <h1>서랍 속 공기계를<br><em>PC 대시보드</em>로</h1>
+      <p class="lead">CPU·GPU 사용량, 재생 중인 음악, 날씨, Claude·Codex 사용량까지. 안드로이드 공기계를 모니터 옆에 세워 두고 한눈에 보세요. 연결은 QR 코드 한 번이면 끝, 개발자 옵션도 필요 없어요.</p>
       <div class="cta">
         <a class="btn primary" href="https://play.google.com/store/apps/details?id=kr.phonedash.app">Google Play에서 앱 받기</a>
         <a class="btn ghost" data-download href="#start">PC 프로그램 받기 <small>Windows · 무료</small></a>
@@ -103,25 +103,25 @@ footer a { color: var(--muted); }
 
   <section id="start">
     <h2>3분이면 연결 끝</h2>
-    <p class="sub">처음 한 번만 하면 됩니다. 그다음부터는 USB를 꽂기만 하면 저절로 이어져요.</p>
+    <p class="sub">처음 한 번만 하면 됩니다. 그다음부터는 PC와 공기계가 같은 Wi-Fi에 있으면 저절로 이어져요.</p>
     <div class="steps">
       <div class="step"><div>
         <h3>PC 프로그램 설치</h3>
-        <p><a data-download href="#start"><b>PhoneDash-Setup.exe</b></a>를 받아 더블클릭하세요. 설치 폴더를 고를 필요 없이 바로 설치되고, 컴퓨터를 켤 때마다 자동으로 실행됩니다. 폰 연결에 필요한 adb도 알아서 받아 둡니다.</p>
-        <p class="note">“Windows의 PC 보호” 창이 뜨면 <b>추가 정보 › 실행</b>을 누르세요. 아직 코드 서명 인증서가 없는 프로그램이라 나오는 안내입니다.</p>
+        <p><a data-download href="#start"><b>PhoneDash-Setup.exe</b></a>를 받아 더블클릭하세요. 설치 폴더를 고를 필요 없이 바로 설치되고, 컴퓨터를 켤 때마다 자동으로 실행됩니다. 설치가 끝나면 연결용 QR 코드가 바로 떠요.</p>
+        <p class="note">“Windows의 PC 보호” 창이 뜨면 <b>추가 정보 › 실행</b>을 누르세요. 아직 코드 서명 인증서가 없는 프로그램이라 나오는 안내입니다. 방화벽 창이 뜨면 <kbd>허용</kbd>을 눌러 주세요. 공기계가 Wi-Fi로 PC에 들어오는 길입니다.</p>
       </div></div>
       <div class="step"><div>
-        <h3>폰에 앱 설치</h3>
-        <p>Google Play에서 <b>폰대시</b>를 설치하고 한 번 열어 두세요. Android 5.0 이상이면 됩니다.</p>
+        <h3>공기계에 앱 설치</h3>
+        <p>Google Play에서 <b>폰대시</b>를 설치하세요. Android 5.0 이상이면 됩니다. PC 화면 왼쪽 QR을 공기계 카메라로 찍어도 설치 페이지가 열려요.</p>
       </div></div>
       <div class="step"><div>
-        <h3>폰에서 USB 디버깅 켜기</h3>
+        <h3>QR 찍으면 연결 끝</h3>
         <ol>
-          <li><b>설정 › 휴대전화 정보 › 소프트웨어 정보</b>에서 <b>빌드번호</b>를 7번 누르세요. (삼성 기준. 다른 폰은 <b>설정 › 휴대전화 정보</b>의 빌드번호)</li>
-          <li><b>설정 › 개발자 옵션</b>에서 <b>USB 디버깅</b>을 켜세요.</li>
-          <li>USB 케이블로 PC에 연결하면 폰에 <b>“USB 디버깅을 허용하시겠습니까?”</b>가 뜹니다. <b>이 컴퓨터에서 항상 허용</b>을 체크하고 <kbd>허용</kbd>을 누르세요.</li>
+          <li>공기계와 PC를 <b>같은 Wi-Fi</b>에 연결하세요.</li>
+          <li>PC 화면 오른쪽 <b>연결 QR</b>을 공기계 카메라로 찍으세요. 링크를 열고 폰대시를 고르면 확인 코드가 나와요.</li>
+          <li>공기계에 나온 코드가 PC 화면의 코드와 같은지 보고 <kbd>페어링</kbd>을 누르면 끝입니다.</li>
         </ol>
-        <p class="note">충전만 되는 케이블은 데이터가 통하지 않아요. 연결이 안 되면 다른 케이블이나 PC 뒤쪽 USB 포트를 써 보세요.</p>
+        <p class="note">QR 창을 닫았다면 PC 설정 화면의 <b>일반 › Wi-Fi &amp; Tailscale › Wi-Fi로 폰 페어링</b>에서 다시 열 수 있어요. 케이블을 선호하면 개발자 옵션의 USB 디버깅을 켜고 USB로 연결해도 됩니다(충전과 화면 깨우기가 같이 돼요).</p>
       </div></div>
     </div>
   </section>
@@ -135,8 +135,8 @@ footer a { color: var(--muted); }
       <div class="card"><div class="ico">🤖</div><h3>AI 사용량</h3><p>Claude·Codex 사용 한도와 작업 상태, 승인 요청을 폰에서.</p></div>
       <div class="card"><div class="ico">⚡</div><h3>자동 규칙</h3><p>음악이 나오면 음악 페이지로, 자리를 비우면 시계로. 조건에 따라 화면이 바뀝니다.</p></div>
       <div class="card"><div class="ico">⌨️</div><h3>단축키 패드</h3><p>앱 실행, 음소거, 화면 잠금 같은 버튼을 폰에 두고 한 번에.</p></div>
-      <div class="card wide"><div class="ico">🔒</div><h3>내 PC와 폰 사이에서만</h3><p>계정도 서버도 없습니다. 패널 데이터는 USB 케이블(또는 직접 연결한 Wi-Fi) 안에서만 오갑니다.</p></div>
-      <div class="card wide"><div class="ico">📶</div><h3>Wi-Fi 연결도 가능</h3><p>PC 설정에서 QR 코드를 찍으면 케이블 없이도 같은 네트워크에서 연결됩니다.</p></div>
+      <div class="card wide"><div class="ico">🔒</div><h3>내 PC와 공기계 사이에서만</h3><p>계정도 서버도 없습니다. 패널 데이터는 집 안 Wi-Fi(암호화된 직접 연결) 또는 USB 케이블 안에서만 오갑니다.</p></div>
+      <div class="card wide"><div class="ico">📶</div><h3>케이블도 가능</h3><p>USB 디버깅을 켜고 케이블로 연결하면 충전하면서 쓰고, PC를 켜면 공기계 화면도 저절로 켜져요.</p></div>
     </div>
   </section>
 
@@ -144,7 +144,7 @@ footer a { color: var(--muted); }
     <h2>자주 묻는 질문</h2>
     <details><summary>PC 프로그램은 유료인가요?</summary><p>아니요. PC 프로그램은 무료이고, 폰 앱만 Google Play에서 판매합니다.</p></details>
     <details><summary>맥이나 리눅스에서도 되나요?</summary><p>현재 정식 지원은 Windows 10/11입니다.</p></details>
-    <details><summary>폰을 계속 꽂아 두면 화면이나 배터리는 괜찮나요?</summary><p>밤(기본 00:30~07:30)에는 화면을 아주 어둡게 하는 야간 모드가 켜져 있어요. Home Assistant로 제어하는 스마트 플러그가 있으면 PC 설정의 <b>배터리 관리</b>에서 충전을 일정 범위로 묶어 둘 수도 있습니다.</p></details>
+    <details><summary>공기계를 계속 켜 두면 화면이나 배터리는 괜찮나요?</summary><p>밤(기본 00:30~07:30)에는 화면을 아주 어둡게 하는 야간 모드가 켜져 있어요. Home Assistant로 제어하는 스마트 플러그가 있으면 PC 설정의 <b>배터리 관리</b>에서 충전을 일정 범위로 묶어 둘 수도 있습니다.</p></details>
     <details><summary>어떤 정보가 밖으로 나가나요?</summary><p>폰대시는 사용 기록을 수집하지 않습니다. 날씨처럼 기능에 필요한 요청만 해당 서비스로 갑니다. 전체 목록은 <a href="privacy.html">개인정보처리방침</a>에 있습니다.</p></details>
     <details><summary>PC 프로그램을 지우려면?</summary><p>Windows <b>설정 › 앱 › 설치된 앱</b>에서 <b>PhoneDash (폰대시)</b>를 제거하세요. 설정 파일은 남겨 둡니다.</p></details>
   </section>

@@ -14,7 +14,7 @@
 }
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0c0e12; --panel: #14171d; --panel-2: #1a1e25; --line: #262b34; --text: #e8ecf1; --muted: #8a94a3;
-    --accent: #2dd4bf; --accent-ink: #062b26; --shadow: none; color-scheme: dark; }
+    --accent: #ffb020; --accent-ink: #2a1a00; --shadow: none; color-scheme: dark; }
 }
 * { box-sizing: border-box; }
 body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 "Segoe UI", system-ui, sans-serif; }
@@ -3529,7 +3529,7 @@ function fillDefaults() {
   cfg.pages = fitPages(cfg.pages); cfg.shortcuts ??= []; cfg.rules ??= []; cfg.display ??= {}; cfg.night = { enabled: true, start: '00:30', end: '07:30', brightness: 0.02, ...cfg.night }; cfg.weather ??= {}; cfg.weather.unit ??= 'celsius'; cfg.weather.model ??= ''; cfg.photos ??= { source: 'folder', folder: '', subfolders: true, immichUrl: '', immichKey: '', immichAlbum: '', immichAlbumName: '' }; cfg.lan ??= { enabled: false, port: 8766 }; cfg.updates ??= { auto: true, repo: '' }; cfg.claude ??= { phoneApprovals: true, timeoutSec: 90, onlyWhenAway: false, shareSessionTitles: false, shareConversation: false }; cfg.opencode ??= { phoneApprovals: false, timeoutSec: 90, onlyWhenAway: false, alwaysCountdownSec: 10, watchWsl: false, shareSessionTitles: false, sessions: false };
   cfg.codexBar ??= { providers: ['claude', 'codex', 'antigravity'], rotate: true, pageSize: 2, rotateInterval: 8 };
   for (const [k, v] of Object.entries({ language: 'auto', hour12: false, idleReturnSec: 90, switchCountdownSec: 3, touchGraceSec: 20, minDwellSec: 15, holdMaxMin: 30, keepAwake: true, openOnConnect: true,
-    showSeconds: true, vibrate: true, finishToast: true, volumeKeys: true, artTint: true, proximityWake: true, orientation: 'landscape', theme: 'default', accent: '#2dd4bf' })) cfg.display[k] ??= v;
+    showSeconds: true, vibrate: true, finishToast: true, volumeKeys: true, artTint: true, proximityWake: true, orientation: 'landscape', theme: 'default', accent: '#ffb020' })) cfg.display[k] ??= v;
   cfg.charge ??= { enabled: false, min: 50, max: 80, method: 'ha' };
   cfg.steam ??= { enabled: false };
 }
@@ -3550,6 +3550,11 @@ async function load() {
   // get back to a clean state
   saved = JSON.stringify(cfg);
   changed(); loadInfo(); loadPhones();
+  // first start after installing (?pair=1): open the Wi-Fi pairing QR code right away, once
+  if (new URLSearchParams(location.search).has('pair')) {
+    history.replaceState(null, '', location.pathname + location.hash);
+    pairOverWifi();
+  }
 }
 
 // one save at a time: pressing Save or Ctrl/Cmd+S again while it runs joins the save in flight, and the busy
