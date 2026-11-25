@@ -16,6 +16,7 @@ import './widgets/console.js';
 import './widgets/dictate.js';
 import './widgets/camera.js';
 import './widgets/spectrum.js';
+import { allowedTheme, buttonOpen, closePro, freePage, isPro, lockedKey, lockedPage, openPro, sellsPro } from './pro.js';
 
 // PhoneDash desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
 // The panel talks to the PhoneDash agent through "/agent/*", which the Android shell proxies over USB
@@ -53,7 +54,7 @@ export const $ = (id) => document.getElementById(id);
 // The native bridge (window.Android) is in every frame, sandboxed widgets included, so each call carries a key that only
 // the panel's own frames receive (MainActivity.bridgeKey). This wrapper adds it.
 const BRIDGE = ['battery', 'buzz', 'haptic', 'is24Hour', 'pcs', 'selectPc', 'forgetPc', 'setBrightness', 'setHomeScreen', 'setOrientation',
-  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share'];
+  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro'];
 export const bridge = typeof Android === 'undefined' ? null : Object.fromEntries(BRIDGE.filter((m) => typeof Android[m] === 'function')
   .map((m) => [m, (...args) => Android[m](window.__phoneboxKey || '', ...args)]));
 // Live preview inside the agent's layout editor: the layout comes from the editor (unsaved), not from the agent.
@@ -300,6 +301,7 @@ const ICONS = {
   'image': 'M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-14a2 2 0 0 1 2 -2z|M7 9a2 2 0 1 0 4 0a2 2 0 1 0 -4 0|m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21',
   'keyboard': 'M10 8h.01|M12 12h.01|M14 8h.01|M16 12h.01|M18 8h.01|M6 8h.01|M7 16h10|M8 12h.01|M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1 -2 2h-16a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2z',
   'laptop': 'M20 16V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v9m16 0H4m16 0 1.28 2.55a1 1 0 0 1-.9 1.45H3.62a1 1 0 0 1-.9-1.45L4 16',
+  'layout-grid': 'M4 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z|M15 3h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1z|M15 14h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1h-5a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z|M4 14h5a1 1 0 0 1 1 1v5a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1v-5a1 1 0 0 1 1-1z',
   'leaf': 'M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z|M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12',
   'lightbulb': 'M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5|M9 18h6|M10 22h4',
   'lock': 'M5 11h14a2 2 0 0 1 2 2v7a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-7a2 2 0 0 1 2 -2z|M7 11V7a5 5 0 0 1 10 0v4',
@@ -751,6 +753,7 @@ export async function runShortcut(btn, id, hold = false) {
 /** A shortcut key. The Big button's options: with `cover`, a picture the user uploaded becomes the key's background
  *  instead of the centred icon; without `label`, the key shows no name (screen readers still get it). */
 export function keyButton(s, { cover = false, label = true } = {}) {
+  if (!buttonOpen(s.id)) return lockedKey(s, { label });
   const icon = h('span', 'k-icon', s.icon ? rich(s.icon) : '•');
   const b = h('button', 'key' + (s.toggle ? ' toggle' : '') + (s.cycle ? ' cycle' : '') + (label ? '' : ' k-nolabel'), icon, h('span', 'k-label', s.label));
   // The agent accepts a blank label, and a filled key hides its icon, so the id keeps the button named when no text
@@ -1432,7 +1435,8 @@ export function buildLayout() {
   const portrait = isPortrait();
   const h12 = hour12();
   // the active language belongs in the key: the widgets render their texts once, when they are created
-  const key = JSON.stringify([next, cfg.shortcuts, cfg.display?.showSeconds, cfg.display?.hour12, h12, cfg.display?.appearance, portrait, I18n?.getLang()]);
+  const free = freePage(next);
+  const key = JSON.stringify([next, cfg.shortcuts, cfg.display?.showSeconds, cfg.display?.hour12, h12, cfg.display?.appearance, portrait, I18n?.getLang(), free]);
   if (key === layoutKey) return;
   layoutKey = key;
   lastHour12 = h12;
@@ -1443,6 +1447,13 @@ export function buildLayout() {
   closeSheet();
   pager.replaceChildren();
   pages.forEach((p, pi) => {
+    if (free >= 0 && pi !== free) {
+      // without Pro only one page is open; the others say what they hold
+      const sec = h('section', 'page locked', lockedPage(p));
+      sec.dataset.id = p.id;
+      pager.appendChild(sec);
+      return;
+    }
     const grid = h('div', 'grid');
     const pageAppearance = PhoneBoxAppearance.resolve(cfg.display?.appearance, p.appearance);
     const pl = portrait ? portraitLayout(p.widgets) : null;
@@ -1656,6 +1667,8 @@ export const resolvePage = (ref) => {
   const n = typeof ref === 'number' ? ref - 1 : /^\d+$/.test(String(ref)) ? +ref - 1 : pages.findIndex((p) => p.id === ref || p.title.toLowerCase() === String(ref).toLowerCase());
   return n >= 0 && n < pages.length ? n : -1;
 };
+/** A page the free app keeps locked: automatic switches (rules, webhooks) leave it alone. */
+export const pageLocked = (i) => { const free = freePage(pages); return free >= 0 && i !== free; };
 export const homeIndex = () => { const id = cfg.display?.homePage; const i = id ? pages.findIndex((p) => p.id === id) : -1; return i >= 0 ? i : 0; };
 
 // ================================================================= calm page switching
@@ -1677,7 +1690,7 @@ const pageLabel = (i) => { const p = pages[i]; return p ? `${p.icon || ''} ${p.t
 export function requestPage(d) {
   if (PREVIEW) return;
   const page = resolvePage(d.page);
-  if (page < 0) return;
+  if (page < 0 || pageLocked(page)) return;
   const rule = d.rule || null;
   if (rule) {
     // the rule ended and came back before its "back" ran: just stay
@@ -1902,12 +1915,17 @@ export function openOverview() {
       b.style.gridArea = `${w.y + 1} / ${w.x + 1} / span ${w.h} / span ${w.w}`;
       return b;
     }));
-    const t = h('button', 'ov-tile' + (i === curPage ? ' on' : ''), map, h('div', 'ov-name', h('b', null, `${i + 1}`), rich(` ${p.icon || ''} ${p.title}`)));
+    const locked = pageLocked(i);
+    const t = h('button', 'ov-tile' + (i === curPage ? ' on' : '') + (locked ? ' locked' : ''), map, h('div', 'ov-name', h('b', null, `${i + 1}`), rich(` ${p.icon || ''} ${p.title}`)));
+    if (locked) t.appendChild(icon('lock', 'ov-lock'));
     t.addEventListener('click', (e) => { e.stopPropagation(); haptic(); closeOverview(); goPage(i, true); });
     return t;
   };
   $('ovGrid').replaceChildren(...pages.map(tile));
   renderRulesBtn();
+  // the free app: the way to Pro sits next to the rules button
+  $('ovPro').hidden = !sellsPro() || isPro();
+  $('ovPro').replaceChildren(icon('lock-open', 'm'), t('pro.see'));
   // several paired computers: switch between them here (a USB cable always wins)
   const pcs = pairedPcs();
   $('ovPcs').replaceChildren(...(pcs.length > 1 ? pcs.map((pc) => {
@@ -1933,6 +1951,7 @@ export function switchPc(pc) {
 export function closeOverview() { $('overview').hidden = true; }
 $('overview').addEventListener('click', closeOverview);
 $('ovRules').addEventListener('click', (e) => { e.stopPropagation(); toggleRulesPause(); });
+$('ovPro').addEventListener('click', (e) => { e.stopPropagation(); closeOverview(); openPro(); });
 
 let dotsHoldTimer = 0, dotsHoldStart = null, heldDots = false;
 /** Cancels any pending long-press hold timer on the #dots bar. */
@@ -2054,7 +2073,8 @@ window.onAndroidBack = () => {
   const noteEdit = document.querySelector('.note-edit');
   if (noteEdit) { noteEdit.remove(); return; }
   if (closeSessionDetails()) return;
-  if (!$('overview').hidden) closeOverview();
+  if ($('pro') && !$('pro').hidden) closePro();
+  else if (!$('overview').hidden) closeOverview();
   else if (sheet) closeSheet();
   else if (curPage !== homeIndex()) goPage(homeIndex(), true);
   else openOverview();
@@ -2213,7 +2233,8 @@ export function applyDisplay() {
   LOCALE = I18n ? I18n.getLocale() : 'en-GB';
   I18n?.applyDom();
   // theme and accent apply in the preview and the browser too
-  document.body.dataset.theme = ['amoled', 'midnight', 'warm', 'graphite'].includes(d.theme) ? d.theme : 'default';
+  const theme = ['amoled', 'midnight', 'warm', 'graphite'].includes(d.theme) ? d.theme : 'default';
+  document.body.dataset.theme = allowedTheme(theme); // the colour themes come with Pro
   const accent = hexToRgb(d.accent);
   const before = DEFAULT_AMBIENT;
   DEFAULT_AMBIENT = accent || '255, 176, 32';

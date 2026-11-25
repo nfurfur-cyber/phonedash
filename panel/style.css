@@ -255,6 +255,52 @@ body.offline #offline { display: flex; align-items: center; gap: 5px; }
 .wl-btns button:active { transform: translateY(1px); }
 .wl-url { margin-top: 12px; font-size: 12.5px; color: var(--muted); overflow-wrap: anywhere; }
 .wl-url b { color: var(--text); font-family: "Roboto Mono", "Droid Sans Mono", monospace; }
+
+/* PhoneDash Pro (pro.js). A locked page says what it holds instead of drawing its widgets. */
+.page.locked { display: grid; place-items: center; padding: 18px var(--pad-r) 18px var(--pad-l); }
+.pro-lock {
+  width: min(520px, 100%); display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
+  padding: clamp(18px, 4vmin, 28px); border-radius: 16px; border: 1px dashed var(--line);
+  background: repeating-linear-gradient(135deg, rgba(255, 220, 170, .025) 0 10px, transparent 10px 20px);
+}
+.pl-ico { width: 46px; height: 46px; border-radius: 14px; display: grid; place-items: center; color: var(--accent); background: rgba(var(--ambient), .12); }
+.pl-ico .ico { width: 24px; height: 24px; }
+.pl-title { font-size: clamp(16px, 4.2vmin, 21px); color: var(--text); line-height: 1.3; }
+.pl-text { font-size: 13px; color: var(--muted); max-width: 42ch; }
+.pl-widgets { display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; color: var(--muted); }
+.pl-widgets span { width: 30px; height: 30px; border-radius: 9px; display: grid; place-items: center; background: var(--card); border: 1px solid var(--line); }
+.pl-widgets .ico { width: 16px; height: 16px; }
+.pl-go { margin-top: 4px; min-height: 44px; padding: 0 20px; border-radius: 12px; border: 0; font: inherit; font-size: 14.5px; font-weight: 700; background: var(--accent); color: #1a1000; }
+.pl-go:active { transform: translateY(1px); }
+/* a button past the free ones: shown greyed, it opens the Pro sheet */
+.key.k-locked { filter: saturate(0); opacity: .55; border-style: dashed; }
+.key.k-locked .k-icon .ico { width: clamp(14px, 5cqmin, 22px); height: clamp(14px, 5cqmin, 22px); }
+.ov-tile { position: relative; }
+.ov-tile.locked .ov-map { opacity: .35; }
+.ov-lock { position: absolute; top: 8px; right: 8px; width: 16px; height: 16px; color: var(--accent); }
+.ov-pro { border-color: rgba(var(--ambient), .55); color: var(--accent); display: inline-flex; align-items: center; gap: 5px; white-space: nowrap; flex: none; }
+.ov-pro[hidden] { display: none; }
+/* a flex box with an auto-margin card: centred when it fits, scrolled from its top when a short landscape phone can't hold it */
+#pro {
+  position: fixed; inset: 0; z-index: 85; display: flex; padding: 12px var(--pad-r) 12px var(--pad-l);
+  background: rgba(4, 6, 10, .82); overflow-y: auto;
+}
+#pro[hidden] { display: none; }
+.pr-card {
+  position: relative; margin: auto; width: min(640px, 100%); padding: clamp(16px, 4vmin, 30px); border-radius: 16px; background: var(--bg);
+  border: 1px solid rgba(var(--ambient), .35); box-shadow: inset 0 1px 0 rgba(255, 236, 200, .1), 0 18px 50px rgba(0, 0, 0, .6);
+}
+.pr-card h1 { margin: 10px 0 14px; font-size: clamp(20px, 5vmin, 28px); line-height: 1.25; color: var(--text); }
+.pr-close { position: absolute; top: 10px; right: 10px; width: 40px; height: 40px; border-radius: 10px; border: 0; background: none; color: var(--muted); display: grid; place-items: center; }
+.pr-perks { list-style: none; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 9px 16px; margin-bottom: 14px; }
+.pr-perks li { display: grid; grid-template-columns: 30px 1fr; gap: 10px; align-items: center; font-size: 14.5px; color: var(--text); }
+.pr-perks .ico { width: 30px; height: 30px; padding: 6px; border-radius: 9px; color: var(--accent); background: rgba(var(--ambient), .12); }
+.pr-once { font-size: 13px; color: var(--muted); margin-bottom: 12px; }
+.pr-status { font-size: 13.5px; color: #fde68a; margin-bottom: 12px; }
+.pr-status.ok { color: #86efac; }
+.pr-card .wl-btns button:disabled { opacity: .5; }
+.wl-btns .pr-buy { background: var(--accent); border-color: transparent; color: #1a1000; }
+.pr-note { margin-top: 12px; font-size: 12px; color: var(--dim, var(--muted)); }
 #wake button { min-height: 44px; padding: 0 18px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .1); color: var(--text); font-size: 14px; font-weight: 600; }
 #wake button:disabled { opacity: .6; }
 /* opaque backing: the note is the one message that says what to check, and it can sit over the media widget's own text */
