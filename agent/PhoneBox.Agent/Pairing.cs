@@ -26,6 +26,9 @@ public sealed class PairingCodes
     /// <summary>How many phones have paired with a code since the agent started (the settings page watches it).</summary>
     public long Claims => Interlocked.Read(ref _claims);
 
+    /// <summary>A phone paired without the code (<see cref="NearbyPairing"/>): the code ends and the settings page sees the claim.</summary>
+    public void PairedNearby() { lock (_lock) _code = null; Interlocked.Increment(ref _claims); }
+
     /// <summary>Starts a new pairing; the previous code stops working.</summary>
     public (string Code, long ExpiresAt, long Attempt) Start(long nowMs)
     {

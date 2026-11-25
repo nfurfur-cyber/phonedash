@@ -134,6 +134,10 @@ textarea { width: 100%; resize: vertical; }
 .pair-qr { flex: 1 1 260px; display: flex; flex-direction: column; align-items: center; gap: 8px; text-align: center; }
 .pair-qr img { width: min(260px, 100%); aspect-ratio: 1; background: #fff; border-radius: 12px; padding: 6px; }
 .pair-qr.expired img { opacity: .15; }
+.pair-fast { display: grid; gap: 6px; margin: 10px 0 2px; }
+.pair-ask { display: grid; gap: 8px; justify-items: start; padding: 14px 16px; border-radius: 12px; border: 1px solid var(--accent); background: rgba(255, 176, 32, .08); }
+.pair-ask[hidden] { display: none; }
+.pair-code { font: 700 26px/1.1 "Cascadia Mono", Consolas, monospace; letter-spacing: .04em; direction: ltr; padding: 12px 18px; }
 .modal-box { background: var(--panel); border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px; width: min(1000px, 100%); max-height: 90vh; overflow-y: auto; }
 .tpl-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; }
 .tpl { display: flex; flex-direction: column; gap: 4px; text-align: start; padding: 10px; border-radius: 12px; border: 1px solid var(--line); background: var(--panel-2); cursor: pointer; }
@@ -700,7 +704,7 @@ nav a.on::before { color: var(--accent); }
           <div class="field" style="margin:0"><label data-i18n="lang.label">Language</label>
             <select data-bind="display.language" id="displayLangSel"></select></div>
           <div class="field" style="margin:0"><label data-i18n="s.display.theme">Theme</label>
-            <select data-bind="display.theme"><option value="default" data-i18n="s.display.theme.default">Default</option><option value="amoled" data-i18n="s.display.theme.amoled">AMOLED black</option><option value="midnight" data-i18n="s.display.theme.midnight">Midnight blue</option><option value="warm" data-i18n="s.display.theme.warm">Warm</option><option value="graphite" data-i18n="s.display.theme.graphite">Graphite</option></select></div>
+            <select data-bind="display.theme"><option value="default" data-i18n="s.display.theme.default">Default</option><optgroup label="Pro"><option value="calendar" data-i18n="s.display.theme.calendar">Tear-off calendar</option><option value="keycap" data-i18n="s.display.theme.keycap">Keycaps</option><option value="amoled" data-i18n="s.display.theme.amoled">AMOLED black</option><option value="midnight" data-i18n="s.display.theme.midnight">Midnight blue</option><option value="warm" data-i18n="s.display.theme.warm">Warm</option><option value="graphite" data-i18n="s.display.theme.graphite">Graphite</option></optgroup></select></div>
           <div class="field" style="margin:0"><label data-i18n="s.display.accent">Accent colour</label><input type="color" data-bind="display.accent" style="width:56px;height:36px;padding:2px"></div>
           <label class="check" style="margin-bottom:8px"><input type="checkbox" data-bind="display.artTint"> <span data-i18n="s.display.artTint">Tint the background with the album art</span></label>
         </div>
@@ -1335,7 +1339,7 @@ function renderPages() {
     return row;
   }), h('button', { class: 'btn', style: { width: '100%', marginTop: '8px' }, onclick: () => openTemplates(null) }, t('s.js.newPage')),
     h('div', { class: 'row', style: { gap: '6px', marginTop: '8px' } },
-      h('button', { class: 'btn sm', style: { flex: '1' }, title: t('s.js.saveAllPages'), onclick: () => exportPages(cfg.pages, 'phonebox-pages') }, icon('download', 'm'), t('s.js.export')),
+      h('button', { class: 'btn sm', style: { flex: '1' }, title: t('s.js.saveAllPages'), onclick: () => exportPages(cfg.pages, 'phonedash-pages') }, icon('download', 'm'), t('s.js.export')),
       h('button', { class: 'btn sm', style: { flex: '1' }, title: t('s.js.loadPages'), onclick: importPages }, icon('upload', 'm'), t('s.js.import'))));
   renderPageEditor();
 }
@@ -1371,7 +1375,7 @@ function renderPageEditor() {
       h('div', { class: 'row', style: { gap: '6px', marginTop: '10px' } },
         h('button', { class: 'btn sm', onclick: () => openTemplates(selPage) }, t('s.js.replaceTpl')),
         h('button', { class: 'btn sm', onclick: () => { const c = JSON.parse(JSON.stringify(p)); c.id = ''; c.title += t('s.js.dupPageSuffix'); cfg.pages.splice(selPage + 1, 0, c); selPage++; renderPages(); changed(); } }, t('s.js.dupPage')),
-        h('button', { class: 'btn sm', title: t('s.js.exportPageHint'), onclick: () => exportPages([p], 'phonebox-page-' + (p.id || 'page')) }, t('s.js.exportPage')),
+        h('button', { class: 'btn sm', title: t('s.js.exportPageHint'), onclick: () => exportPages([p], 'phonedash-page-' + (p.id || 'page')) }, t('s.js.exportPage')),
         h('button', { class: 'btn sm', onclick: () => { p.widgets = []; selWidget = -1; renderPageEditor(); changed(); } }, t('s.js.clear')),
         h('span', { class: 'spacer' }),
         h('button', { class: 'btn sm' + (isHome(p) ? ' on' : ''), title: t('s.js.homePageHint'),
@@ -2038,12 +2042,35 @@ async function pairOverWifi() {
   }
   const svg = (markup) => 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(markup)));
   const left = h('b', {}, '');
+  // without the QR code: a phone on USB connects by itself, one on the same Wi-Fi asks and both screens show a number
+  const usbLine = h('p', { class: 'hint pair-usb', style: 'margin:0', role: 'status' }, t('s.near.usbWait'));
+  const ask = h('div', { class: 'pair-ask', role: 'alert', hidden: true });
+  let asked = '';
+  let usbBefore = null;
+  const decide = (id, code) => {
+    for (const b of ask.querySelectorAll('button')) b.disabled = true;
+    fetch(`/api/pair/nearby/decide?id=${encodeURIComponent(id)}${code ? '&code=' + encodeURIComponent(code) : ''}`, { method: 'POST' }).catch(() => {});
+  };
+  const showAsk = (n) => {
+    if ((n?.id || '') === asked) return; // unchanged: a rebuild would move the buttons under the pointer
+    asked = n?.id || '';
+    ask.hidden = !n;
+    if (!n) { ask.replaceChildren(); return; }
+    ask.replaceChildren(
+      h('b', {}, t('s.near.ask', { phone: n.model })),
+      h('small', { class: 'hint' }, t('s.near.compare')),
+      h('div', { class: 'row' }, ...(n.choices || []).map((c) => h('button', { class: 'btn pair-code', onclick: () => decide(n.id, c) }, c))),
+      h('button', { class: 'btn sm', onclick: () => decide(n.id, null) }, t('s.near.deny')));
+    window.focus();
+  };
+  const USB_TEXT = { connected: 's.near.usbDone', allow: 's.near.usbAllow', noApp: 's.near.usbNoApp', none: 's.near.usbWait' };
   const pairBox = h('div', { class: 'pair-qr' },
     h('b', {}, t('s.wifi.step2')),
     h('img', { src: svg(r.qr), alt: t('s.pair.qr') }),
     h('small', { class: 'hint' }, t('s.wifi.step2Hint'), h('b', {}, r.check), '. ', left));
   $('modalBody').replaceChildren(
     h('h3', {}, t('s.pair.title', { pc: r.pc })),
+    h('div', { class: 'pair-fast' }, usbLine, h('p', { class: 'hint', style: 'margin:0' }, t('s.near.wifi', { pc: r.pc })), ask),
     h('p', { class: 'hint', style: 'margin:0' }, t('s.wifi.noCableHint')),
     h('div', { class: 'pair-qrs' },
       h('div', { class: 'pair-qr' },
@@ -2060,11 +2087,17 @@ async function pairOverWifi() {
     try {
       const s = await (await fetch('/api/pair/status')).json();
       if (mine !== pairAttempt) return; // this dialog was closed (and maybe a new one opened) while waiting
+      const usb = s.usb?.state || 'none';
+      usbLine.textContent = t(USB_TEXT[usb] || USB_TEXT.none);
+      showAsk(s.nearby || null);
+      const pluggedIn = usbBefore && usbBefore !== 'connected' && usb === 'connected'; // while the dialog was open
+      usbBefore = usb;
+      if (pluggedIn) { closeModal(); toast(t('s.near.usbDone')); return; }
       if (s.claims > r.claims) { onModalClose = () => { pairAttempt++; clearInterval(timer); }; closeModal(); toast(t('s.js.pairedWifi')); return; }
     } catch (_) { }
     if (mine !== pairAttempt) return;
     const ms = r.expiresAt - Date.now();
-    if (ms <= 0) { left.textContent = t('s.pair.expired'); pairBox.classList.add('expired'); clearInterval(timer); return; }
+    if (ms <= 0) { showAsk(null); left.textContent = t('s.pair.expired'); pairBox.classList.add('expired'); clearInterval(timer); return; }
     left.textContent = t('s.pair.expires', { time: `${Math.floor(ms / 60000)}:${String(Math.floor(ms / 1000) % 60).padStart(2, '0')}` });
   };
   const timer = setInterval(tick, 1000);
@@ -2157,7 +2190,7 @@ async function importPages() {
   renderPages(); changed();
   toast(`Imported ${clean.length} page(s)` + (dropped ? ` (${dropped} unknown widget(s) left out)` : '') + ' — remember to save');
 }
-$('downloadJson').onclick = () => download('phonebox-settings', cfg);
+$('downloadJson').onclick = () => download('phonedash-settings', cfg);
 $('uploadJson').onclick = async () => {
   const text = await pickFile();
   if (text == null) return;

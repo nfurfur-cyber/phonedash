@@ -74,6 +74,7 @@ builder.Services.AddSingleton<AudioControl>();
 builder.Services.AddSingleton<AppCatalog>();
 builder.Services.AddSingleton(_ => new ShortcutIconUploads(Path.Combine(configDir, "icons")));
 builder.Services.AddSingleton<PairingCodes>();
+builder.Services.AddSingleton<NearbyPairing>();
 builder.Services.AddSingleton<SpotifyControl>();
 builder.Services.AddSingleton<ControlDeck>();
 builder.Services.AddHostedService(sp => sp.GetRequiredService<ControlDeck>());
@@ -96,6 +97,8 @@ builder.Services.AddSingleton<CameraFeeds>();
 AddMonitor<GitHubMonitor>(builder.Services);
 AddMonitor<PingMonitor>(builder.Services);
 AddMonitor<AdbReverse>(builder.Services);
+builder.Services.AddSingleton(new NearbyIdentity(Environment.MachineName, lanCfg.Port, lanCert is null ? null : Lan.Fingerprint(lanCert)));
+AddMonitor<NearbyDiscovery>(builder.Services);
 AddMonitor<SessionLockMonitor>(builder.Services);
 AddMonitor<UpdateService>(builder.Services);
 AddMonitor<PrivacyMonitor>(builder.Services);
@@ -298,11 +301,12 @@ app.MapGet("/api/pair", (ConfigStore cfg) =>
 app.MapGet("/api/wake/macs", () => Results.Json(new { macs = WakeOnLan.LocalMacs() }));
 
 // Pairing without USB (see PairingCodes). Start and cancel are local only (settings page); the phone claims over Wi-Fi.
-app.MapPost("/api/pair/start", (ConfigStore cfg, PairingCodes codes) =>
+app.MapPost("/api/pair/start", (ConfigStore cfg, PairingCodes codes, NearbyPairing nearby) =>
 {
     if (!cfg.Get().Lan.Enabled || lanCert is null)
         return Results.Json(new { enabled = false, configured = cfg.Get().Lan.Enabled });
     var (code, expiresAt, attempt) = codes.Start(DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
+    nearby.Open(attempt, expiresAt); // phones on this Wi-Fi may ask while the dialog is open
     var hosts = Lan.Addresses();
     var fingerprint = Lan.Fingerprint(lanCert);
     var link = PairingCodes.Link(Environment.MachineName, fingerprint, lanCfg.Port, hosts, code);
@@ -323,8 +327,18 @@ app.MapPost("/api/pair/start", (ConfigStore cfg, PairingCodes codes) =>
         appQr = PairingCodes.Svg(apk),
     });
 });
-app.MapPost("/api/pair/cancel", (long attempt, PairingCodes codes) => { codes.Cancel(attempt); return Results.Ok(); });
-app.MapGet("/api/pair/status", (PairingCodes codes) => Results.Json(new { claims = codes.Claims }));
+app.MapPost("/api/pair/cancel", (long attempt, PairingCodes codes, NearbyPairing nearby) => { codes.Cancel(attempt); nearby.Close(attempt); return Results.Ok(); });
+app.MapGet("/api/pair/status", (PairingCodes codes, NearbyPairing nearby, AdbReverse adb) =>
+{
+    var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+    return Results.Json(new { claims = codes.Claims, nearby = nearby.Pending(now), usb = new { state = UsbState(adb, PhoneRegistry.All(), now) } });
+});
+// Pairing on the same Wi-Fi without a QR code (see NearbyPairing): the phone's four steps come over Wi-Fi without a key,
+// the decision only from the settings page on this computer.
+app.MapPost("/api/pair/nearby/{step}", (string step, HttpRequest req, ConfigStore cfg, PairingCodes codes, NearbyPairing nearby) =>
+    NearbyStepAsync(step, req, cfg, codes, nearby, lanCert, lanCfg.Port, app.Logger));
+app.MapPost("/api/pair/nearby/decide", (string id, string? code, NearbyPairing nearby) =>
+    Results.Json(new { ok = nearby.Decide(id, code, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()) }));
 app.MapPost("/api/pair/claim", (HttpRequest req, ConfigStore cfg, PairingCodes codes) =>
     ClaimPairingAsync(req, cfg, codes, lanCert, lanCfg.Port, app.Logger));
 
@@ -1134,8 +1148,12 @@ public partial class Program
         var lan = cfg.Get().Lan;
         if (!lan.Enabled || code is null || !codes.Claim(code, DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()))
             return Results.StatusCode(StatusCodes.Status403Forbidden);
-        log.LogInformation("phone paired over Wi-Fi ({Model})", req.Headers["X-PhoneBox-Model"].ToString());
-        return Results.Json(new
+        log.LogInformation("phone paired over Wi-Fi ({Model})", NearbyPairing.PhoneName(req.Headers["X-PhoneBox-Model"].ToString()));
+        return PairingData(lan, lanCert, lanPort);
+    }
+
+    private static IResult PairingData(LanConfig lan, System.Security.Cryptography.X509Certificates.X509Certificate2 lanCert, int lanPort) =>
+        Results.Json(new
         {
             enabled = true,
             pc = Environment.MachineName,
@@ -1145,7 +1163,41 @@ public partial class Program
             hosts = Lan.Addresses(),
             macs = WakeOnLan.LocalMacs(),
         });
+
+    /// <summary>The phone's steps of pairing on the same Wi-Fi without a QR code (<see cref="NearbyPairing"/>).</summary>
+    internal static async Task<IResult> NearbyStepAsync(string step, HttpRequest req, ConfigStore cfg, PairingCodes codes, NearbyPairing nearby,
+        System.Security.Cryptography.X509Certificates.X509Certificate2? lanCert, int lanPort, ILogger log)
+    {
+        var refused = Results.StatusCode(StatusCodes.Status403Forbidden);
+        if (!cfg.Get().Lan.Enabled || lanCert is null || await NearbyPairing.ReadBodyAsync(req) is not { } body) return refused;
+        var now = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds();
+        switch (step)
+        {
+            case "begin":
+                return nearby.Begin(body.Commit, req.Headers["X-PhoneBox-Model"].ToString(), now) is { } begun ? Results.Json(begun) : refused;
+            case "reveal":
+                return nearby.Reveal(body.Id, body.Nonce, Lan.Fingerprint(lanCert), now) ? Results.Json(new { ok = true }) : refused;
+            case "withdraw":
+                nearby.Withdraw(body.Id, now);
+                return Results.Json(new { ok = true });
+            case "poll":
+                var answer = nearby.Poll(body.Id, now);
+                if (answer == NearbyPairing.Answer.Waiting) return Results.StatusCode(StatusCodes.Status202Accepted);
+                if (answer != NearbyPairing.Answer.Allowed) return refused;
+                codes.PairedNearby();
+                log.LogInformation("phone paired over Wi-Fi without a QR code ({Model})", NearbyPairing.PhoneName(req.Headers["X-PhoneBox-Model"].ToString()));
+                return PairingData(cfg.Get().Lan, lanCert, lanPort);
+            default:
+                return Results.NotFound();
+        }
     }
+
+    /// <summary>What the pairing dialog says about the cable: "connected", "allow", "noApp" or "none".</summary>
+    internal static string UsbState(AdbReverse adb, IEnumerable<PhoneSeen> phones, long now) =>
+        phones.Any(p => p.Via == "USB" && now - p.LastSeen < 10_000) ? "connected"
+        : adb.WaitingForPermission > 0 ? "allow"
+        : adb.MissingApp.Length > 0 ? "noApp"
+        : "none";
 
     /// <summary>
     /// POST /api/run/{id}. Why a shortcut failed stays in the agent log: an exception text can carry the configured

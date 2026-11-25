@@ -18,7 +18,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 | 웹사이트 | `https://<owner>.github.io/phonedash/` |
 | 개인정보처리방침 URL | `https://<owner>.github.io/phonedash/privacy.html` |
 | 그래픽 | 아이콘 `brand/out/play-icon-512.png`, 그래픽 이미지 `brand/out/feature-1024x500.png` (영어 `feature-en-1024x500.png`) |
-| 휴대전화 스크린샷 | `brand/store/ko/*.png` (한국어 등록정보), `brand/store/en/*.png` (영어), 1920×1080, 6장 |
+| 휴대전화 스크린샷 | `brand/store/ko/*.png` (한국어 등록정보), `brand/store/en/*.png` (영어), 1920×1080, 8장. `tools/store/screenshots.mjs`로 만듦. 2·3번(일력·키캡 테마)과 여러 페이지는 Pro에서 열리는 화면 |
 
 ## 한국어 등록정보
 
@@ -60,7 +60,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 
 ■ 무료로 시작하고, 필요하면 Pro
 • 무료: 모든 위젯, 페이지 1장, 버튼 8개, 기본 테마
-• Pro(한 번 결제, 구독 아님): 만든 페이지 전부와 페이지를 알아서 바꿔 주는 규칙, 버튼·매크로 무제한, 모든 색 테마
+• Pro(한 번 결제, 구독 아님): 만든 페이지 전부와 페이지를 알아서 바꿔 주는 규칙, 버튼·매크로 무제한, 모든 테마(일력, 키캡, 색 테마)
 • 같은 Google 계정의 다른 폰에서는 [구매 복원]으로 다시 열 수 있습니다.
 
 ■ 안심하고 쓰세요
@@ -113,7 +113,7 @@ No developer options and no cable needed. If you would rather charge and connect
 
 FREE TO START, PRO WHEN YOU WANT MORE
 • Free: every widget, one page, 8 buttons, the default theme
-• Pro (one payment, no subscription): every page you set up and the rules that switch between them, unlimited buttons and macros, every colour theme
+• Pro (one payment, no subscription): every page you set up and the rules that switch between them, unlimited buttons and macros, every theme (calendar, keycaps and the colours)
 • On another phone with the same Google account, tap Restore purchase.
 
 PRIVATE BY DESIGN
@@ -141,7 +141,7 @@ PhoneDash is the phone half of a desktop companion: it displays data sent by the
 Without the PC program the app shows a "Computer not connected" screen with setup help; this is expected.
 To see the full dashboard without a PC: the same panel runs with demo data at https://<owner>.github.io/phonedash/panel/
 To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/phonedash/, run it, put the phone on the same Wi-Fi, scan the QR code it shows with the phone camera and tap Pair (a USB cable with USB debugging also works).
-PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Play Billing. The free app shows one page, 8 buttons and the default theme; extra pages show a "opens with Pro" card, and "See Pro" (also in the page overview) opens the purchase sheet. Nothing else is behind a payment.
+PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Play Billing. The free app shows one page, 8 buttons and the default theme; the other pages are replaced by one "Add more pages with Pro" page, and "See Pro" there (also in the page overview) opens the purchase sheet. Nothing else is behind a payment.
 ```
 
 ### 광고
@@ -208,7 +208,7 @@ PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Pl
 - 결제 라이브러리가 들어간 빌드(AAB)를 테스트 트랙에 한 번 올려야 인앱 상품 메뉴가 열립니다.
 - **수익 창출 › 제품 › 일회성 제품**(예전 이름: 인앱 상품) › 만들기:
   - 제품 ID: `pro_lifetime` (만든 뒤에는 바꿀 수 없음, 코드와 같아야 함)
-  - 이름: `폰대시 Pro` / 설명: `페이지 여러 장과 자동 전환 규칙, 버튼·매크로 무제한, 모든 색 테마를 한 번 결제로 엽니다.`
+  - 이름: `폰대시 Pro` / 설명: `페이지 여러 장과 자동 전환 규칙, 버튼·매크로 무제한, 모든 테마를 한 번 결제로 엽니다.`
   - 가격: 보고서 제안은 ₩4,900 (출시 기념 할인 ₩2,900은 할인 혜택으로 따로 만들면 앱이 가장 싼 가격을 보여 줍니다)
   - 상태를 **활성**으로 바꿔야 앱에서 보입니다.
 - 무료판에서 열리는 양은 `android/app/src/main/assets/www/pro.js`의 `FREE_BUTTONS`(버튼 8개)와 페이지 1장입니다.

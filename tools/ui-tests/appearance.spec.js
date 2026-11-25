@@ -107,6 +107,7 @@ test('all catalog widgets and Smart Stack children accept the common flat style'
   });
   await page.reload();await expect(page.locator('#dots i')).toHaveCount(count);
   const bad=await page.locator('.w').evaluateAll(nodes=>nodes.filter(node=>{
+    if(node.parentElement.closest('.w-board'))return false; // a part of the home board, which places it itself
     const c=getComputedStyle(node);return c.borderTopLeftRadius!=='0px'||c.paddingLeft!=='8px'||c.boxShadow!=='none';
   }).map(node=>node.className));
   expect(bad).toEqual([]);

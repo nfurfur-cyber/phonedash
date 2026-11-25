@@ -25,24 +25,59 @@ async function open(page, { pro = FREE, app = true, pages = PAGES, shortcuts = [
     localStorage.setItem('pb-demo-config', JSON.stringify({ night: { enabled: false }, rules: [], ...cfg }));
   }, { pages, shortcuts, display: { idleReturnSec: 0, ...display } });
   await page.goto('/panel/');
-  await expect(page.locator('#pager .page')).toHaveCount(pages.length);
+  await expect(page.locator('#pager .page').first()).toBeVisible();
 }
 
 const play = (page, next) => page.evaluate((n) => window.onProChange(n), next);
 const openSheet = (page) => page.evaluate(async () => (await import('/panel/pro.js')).openPro());
 
-test('without Pro only the home page draws its widgets; the others say they open with Pro', async ({ page }) => {
+test('without Pro there is the home page and one page for all the others', async ({ page }) => {
   await open(page);
+  await expect(page.locator('#pager .page')).toHaveCount(2);
+  await expect(page.locator('#dots i')).toHaveCount(2);
   await expect(page.locator('.page').first().locator('.w-note')).toHaveCount(1);
-  await expect(page.locator('.page.locked')).toHaveCount(2);
-  await expect(page.locator('.page.locked').first()).toContainText('Two opens with Pro');
-  await expect(page.locator('.page.locked .w-note')).toHaveCount(0);
+  const locked = page.locator('.page.locked');
+  await expect(locked).toHaveCount(1);
+  await expect(locked).toContainText('Add more pages with Pro');
+  await expect(locked.locator('.pl-pages span')).toHaveText(['Two', 'Three']);
+  await expect(locked.locator('.w-note')).toHaveCount(0);
+});
+
+test('the Pro page names six pages and counts the rest', async ({ page }) => {
+  const many = Array.from({ length: 10 }, (_, i) => ({ ...PAGES[0], id: 'p' + i, title: 'Page number ' + i }));
+  for (const [width, height] of [[640, 320], [360, 640]]) {
+    await page.setViewportSize({ width, height });
+    await open(page, { pages: many });
+    await expect(page.locator('.pl-pages span')).toHaveCount(7);
+    await expect(page.locator('.pl-pages span').last()).toHaveText('+3');
+    const card = await page.locator('.pro-lock').evaluate((e) => { const r = e.getBoundingClientRect(), p = e.parentElement.getBoundingClientRect(); return [r.top >= p.top, r.bottom <= p.bottom]; });
+    expect(card).toEqual([true, true]);
+  }
+});
+
+test('a panel with a single page has no Pro page', async ({ page }) => {
+  await open(page, { pages: PAGES.slice(0, 1) });
+  await expect(page.locator('#pager .page')).toHaveCount(1);
+  await expect(page.locator('.page.locked')).toHaveCount(0);
+});
+
+test('page numbers and names still mean the pages set up on the computer', async ({ page }) => {
+  await open(page, { display: { homePage: 'three' } });
+  const at = (ref) => page.evaluate(async (r) => (await import('/panel/main.js')).resolvePage(r), ref);
+  expect(await at('three')).toBe(0);
+  expect(await at(3)).toBe(0);
+  for (const ref of [1, '2', 'home', 'Two']) expect(await at(ref)).toBe(1); // kept back: the Pro page
+  for (const ref of [0, 4, 'nothing', '__pro']) expect(await at(ref)).toBe(-1);
+  await play(page, { ...FREE, state: 'pro' });
+  expect(await at(1)).toBe(0);
+  expect(await at('three')).toBe(2);
 });
 
 test('the page set as Home is the free one', async ({ page }) => {
   await open(page, { display: { homePage: 'three' } });
   await expect(page.locator('.page:not(.locked)')).toHaveAttribute('data-id', 'three');
-  await expect(page.locator('.page.locked')).toHaveCount(2);
+  await expect(page.locator('#pager .page').first()).toHaveAttribute('data-id', 'three');
+  await expect(page.locator('.page.locked')).toHaveCount(1);
 });
 
 test('rules and webhooks do not switch to a locked page', async ({ page }) => {
@@ -56,6 +91,18 @@ test('rules and webhooks do not switch to a locked page', async ({ page }) => {
   expect(await ask()).toBe(0);
   await play(page, { ...FREE, state: 'pro' });
   expect(await ask()).toBe(1);
+});
+
+test('a page switch that waits while a purchase opens the pages is dropped', async ({ page }) => {
+  await open(page, { display: { homePage: 'three' } });
+  const left = await page.evaluate(async (pro) => {
+    const m = await import('/panel/main.js');
+    m.requestPage({ page: 'three', rule: 'r1', name: 'R1', countdown: 5 });
+    const before = m.navQueue.length;
+    window.onProChange(pro);
+    return [before, m.navQueue.length, m.ruleHold];
+  }, { ...FREE, state: 'pro' });
+  expect(left).toEqual([1, 0, null]);
 });
 
 test('buttons past the free ones are greyed and open the Pro sheet', async ({ page }) => {
@@ -82,6 +129,7 @@ test('a purchase opens every page, button and theme at once', async ({ page }) =
   await openSheet(page);
   await play(page, { ...FREE, state: 'pro' });
   await expect(page.locator('.page.locked')).toHaveCount(0);
+  await expect(page.locator('#pager .page')).toHaveCount(4);
   await expect(page.locator('.key.k-locked')).toHaveCount(0);
   await expect(page.locator('body')).toHaveAttribute('data-theme', 'midnight');
   await expect(page.locator('#pro')).toBeHidden();
@@ -92,7 +140,7 @@ test('a refund (Play no longer lists the purchase) locks the extras again', asyn
   await open(page, { pro: { ...FREE, state: 'pro' } });
   await expect(page.locator('.page.locked')).toHaveCount(0);
   await play(page, FREE);
-  await expect(page.locator('.page.locked')).toHaveCount(2);
+  await expect(page.locator('.page.locked')).toHaveCount(1);
 });
 
 test('a pending payment and a Play problem are explained, and a pending one cannot be bought twice', async ({ page }) => {
@@ -106,10 +154,10 @@ test('a pending payment and a Play problem are explained, and a pending one cann
   await expect(page.locator('#pro .pr-buy')).toHaveText('Buy Pro');
 });
 
-test('the overview marks locked pages and offers Pro', async ({ page }) => {
+test('the overview marks the Pro page and offers Pro', async ({ page }) => {
   await open(page);
   await page.evaluate(() => window.openOverview());
-  await expect(page.locator('.ov-tile.locked')).toHaveCount(2);
+  await expect(page.locator('.ov-tile.locked')).toHaveCount(1);
   await expect(page.locator('#ovPro')).toBeVisible();
   await page.locator('#ovPro').click();
   await expect(page.locator('#overview')).toBeHidden();
@@ -135,7 +183,7 @@ test.describe('Korean', () => {
   test.use({ locale: 'ko-KR' });
   test('reads in Korean', async ({ page }) => {
     await open(page);
-    await expect(page.locator('.page.locked').first()).toContainText('Two 페이지는 Pro에서 열려요');
+    await expect(page.locator('.page.locked').first()).toContainText('Pro로 페이지를 더 추가하세요');
     await openSheet(page);
     await expect(page.locator('#pro h1')).toHaveText('한 번 결제로 전부 열기');
     await expect(page.locator('#pro .pr-buy')).toHaveText('Pro 구매 · ₩4,900');

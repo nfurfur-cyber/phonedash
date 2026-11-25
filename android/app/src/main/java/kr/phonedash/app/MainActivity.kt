@@ -19,6 +19,8 @@ import android.os.BatteryManager
 import android.os.SystemClock
 import android.net.Uri
 import android.os.Bundle
+import android.provider.MediaStore
+import android.provider.Settings
 import android.os.Build
 import android.os.VibrationEffect
 import android.os.Vibrator
@@ -70,6 +72,7 @@ class MainActivity : Activity(), SensorEventListener {
     private val dictation by lazy { Dictation(this) { script -> if (!destroyed) web.evaluateJavascript(script, null) } }
     private lateinit var link: AgentLink
     private lateinit var stream: AgentStream
+    private lateinit var nearby: NearbyPairing
     private lateinit var proStore: ProStore
     private lateinit var usage: UsageStats
     private lateinit var review: ReviewAsk
@@ -99,6 +102,13 @@ class MainActivity : Activity(), SensorEventListener {
             val js = "window.onAgentStream && window.onAgentStream(${JSONObject.quote(event)}, ${JSONObject.quote(data)})"
             runOnUiThread { if (!destroyed) web.evaluateJavascript(js, null) }
         }
+
+        // first start, Wi-Fi: computers found on this Wi-Fi and the pairing with one of them (window.onNearby, main.js)
+        nearby = NearbyPairing(link, show = { json ->
+            runOnUiThread { if (!destroyed) web.evaluateJavascript("window.onNearby && window.onNearby($json)", null) }
+        }, paired = { pc ->
+            runOnUiThread { if (!destroyed) nearbyPaired(pc) }
+        })
 
         // Pro: Google Play's answers reach the panel through window.onProChange (see assets/www/pro.js)
         proStore = ProStore(this) { json -> if (!destroyed) web.evaluateJavascript("window.onProChange && window.onProChange($json)", null) }
@@ -197,6 +207,13 @@ class MainActivity : Activity(), SensorEventListener {
         }.start()
     }
 
+    private fun nearbyPaired(pc: String) {
+        nearby.stop()
+        val context = pairingContext()
+        Toast.makeText(context, context.getString(R.string.pair_done, pc), Toast.LENGTH_LONG).show()
+        stream.stop(); if (resumed) stream.start(); web.reload()
+    }
+
     /**
      * Only the panel itself may reach the agent. Every frame of the WebView comes through here, including the sandboxed
      * iframe of a Custom HTML widget, which is meant to talk to the panel through postMessage only. The panel sends
@@ -284,6 +301,7 @@ class MainActivity : Activity(), SensorEventListener {
     override fun onPause() {
         resumed = false
         dictation.cancel(0) // the microphone is never left open behind another app or a dark screen
+        nearby.stop() // nothing is looked for on the Wi-Fi in the background; the panel starts it again
         sensors?.unregisterListener(this)
         stream.stop()
         // WebView.onPause() leaves JavaScript running: tell the panel to stop polling and refreshing while nobody sees it
@@ -298,6 +316,7 @@ class MainActivity : Activity(), SensorEventListener {
         dictation.cancel(0)
         sensors?.unregisterListener(this)
         stream.stop()
+        nearby.stop()
         proStore.close()
         link.trackpadSocket.close()
         link.close()
@@ -550,6 +569,45 @@ class MainActivity : Activity(), SensorEventListener {
                 runOnUiThread { startActivity(Intent.createChooser(send, null)) }
                 true
             } catch (e: android.content.ActivityNotFoundException) {
+                false
+            }
+        }
+
+        /** First start, Wi-Fi: looks for computers while the screen asks for it; what it finds arrives via window.onNearby. */
+        @JavascriptInterface
+        fun nearbySearch(key: String, on: Boolean) {
+            if (!ok(key)) return
+            runOnUiThread { if (on && resumed && !destroyed) nearby.start() else nearby.stop() }
+        }
+
+        /** Asks the found computer [id] to pair; both screens then show a number. */
+        @JavascriptInterface
+        fun nearbyPair(key: String, id: String) { if (ok(key)) nearby.pair(id) }
+
+        /** The user compared the numbers of request [attempt]: [same] or not. */
+        @JavascriptInterface
+        fun nearbyAnswer(key: String, attempt: Int, same: Boolean) { if (ok(key)) { if (same) nearby.confirm(attempt) else nearby.cancel() } }
+
+        /** First start, USB: Developer options when they are on, otherwise the page with the build number. */
+        @JavascriptInterface
+        fun openUsbSettings(key: String): Boolean {
+            if (!ok(key)) return false
+            val developer = Settings.Global.getInt(contentResolver, Settings.Global.DEVELOPMENT_SETTINGS_ENABLED, 0) == 1
+            return openScreen(Intent(if (developer) Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS else Settings.ACTION_DEVICE_INFO_SETTINGS))
+        }
+
+        /** First start, QR code: the phone's camera app, which reads QR codes (PhoneDash itself never uses the camera). */
+        @JavascriptInterface
+        fun openCamera(key: String): Boolean = ok(key) && openScreen(Intent(MediaStore.INTENT_ACTION_STILL_IMAGE_CAMERA))
+
+        private fun openScreen(intent: Intent): Boolean {
+            if (pinned()) return false
+            return try {
+                startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))
+                true
+            } catch (_: android.content.ActivityNotFoundException) {
+                false
+            } catch (_: SecurityException) {
                 false
             }
         }

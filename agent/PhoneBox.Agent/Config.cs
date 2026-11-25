@@ -180,7 +180,7 @@ public sealed class DisplayConfig
     public bool VolumeKeys { get; set; } = true;
     /// <summary>landscape, portrait or auto (follow the phone). In portrait the widgets are arranged automatically.</summary>
     public string Orientation { get; set; } = "landscape";
-    /// <summary>default, amoled, midnight, warm or graphite.</summary>
+    /// <summary>default, calendar, keycap, amoled, midnight, warm or graphite.</summary>
     public string Theme { get; set; } = "default";
     /// <summary>Accent colour (background glow, page dots), e.g. "#ffb020".</summary>
     public string Accent { get; set; } = "#ffb020";
@@ -476,7 +476,7 @@ public sealed class Shortcut
 public sealed partial class ConfigStore(string path)
 {
     /// <summary>Pages a fresh install (or an empty page list) starts with.</summary>
-    public static readonly string[] DefaultPages = ["home", "ai", "work", "system", "procs", "deck"];
+    public static readonly string[] DefaultPages = ["board", "ai", "work", "system", "procs", "deck"];
 
     public static readonly JsonSerializerOptions ReadOpts = new()
     {

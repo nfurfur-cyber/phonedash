@@ -3,13 +3,15 @@
 // Outside the app (a desktop browser, the layout editor's preview) nothing is sold, so nothing is locked.
 //
 // Free: the home page (the first page, or the one set as Home), the first FREE_BUTTONS buttons and the default theme.
-// Pro: every page (and so the rules that switch between them), every button and the colour themes.
+// Pro: every page (and so the rules that switch between them), every button and every theme (the home board's looks too).
 // Like the widgets, this module only uses main.js from its functions, never while it loads.
-import { $, applyDisplay, bridge, buildLayout, cfg, emo, h, haptic, icon, PREVIEW, rich, t, toast, WIDGET_ICONS } from './main.js';
+import { $, applyDisplay, bridge, buildLayout, cfg, h, haptic, icon, PREVIEW, resetNav, rich, t, toast } from './main.js';
 import { stat } from './stats.js';
 
 /** Buttons that work without Pro: the first ones in the computer's shortcut list. */
 export const FREE_BUTTONS = 8;
+/** Page names the Pro page lists before it counts the rest. */
+const SHOWN_PAGES = 6;
 
 const EMPTY = Object.freeze({ state: 'free', price: '', ready: false, problem: '' });
 let info = null;
@@ -56,16 +58,20 @@ export function allowedTheme(theme) {
   return 'default';
 }
 
-/** What a locked page shows in place of its widgets: its name, what is on it and the way to Pro. */
-export function lockedPage(p) {
-  const kinds = [...new Set((p.widgets || []).map((w) => w.type))].slice(0, 8);
+/** The one page that stands for all the pages the free app keeps back (`held`). */
+export const proPage = (held) => ({ id: '__pro', title: 'Pro', icon: '🔒', widgets: [], held });
+
+/** What that page shows: the names of the pages it stands for and the way to Pro. */
+export function proPageCard({ held }) {
+  const names = held.slice(0, SHOWN_PAGES).map((p) => h('span', null, rich(`${p.icon || ''} ${p.title || ''}`.trim())));
+  if (held.length > SHOWN_PAGES) names.push(h('span', null, `+${held.length - SHOWN_PAGES}`));
   const btn = h('button', 'pl-go', t('pro.see'));
   btn.addEventListener('click', (e) => { e.stopPropagation(); openPro('page'); });
   return h('div', 'pro-lock',
     h('div', 'pl-ico', icon('lock')),
-    h('b', 'pl-title', rich(t('pro.pageLocked', { page: `${p.icon || ''} ${p.title || ''}`.trim() }))),
+    h('b', 'pl-title', t('pro.morePages')),
     h('span', 'pl-text', t('pro.pageLockedHint')),
-    kinds.length ? h('div', 'pl-widgets', ...kinds.map((k) => h('span', null, emo(WIDGET_ICONS[k] || '◻')))) : '',
+    h('div', 'pl-pages', ...names),
     btn);
 }
 
@@ -141,6 +147,7 @@ window.onProChange = (next) => {
   const was = isPro();
   info = { ...EMPTY, ...(next || {}) };
   if (isPro() !== was) {
+    resetNav();
     buildLayout();
     applyDisplay();
     if (isPro()) { toast(t('pro.thanks'), 'ok', 'Pro', 4); closePro(); }

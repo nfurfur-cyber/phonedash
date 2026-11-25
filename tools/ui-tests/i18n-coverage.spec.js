@@ -25,7 +25,7 @@ const DEMO_NAMES = [
   'samsung SM-X200 · seen 2 min ago over Wi-Fi · WebView 134',
   '0.9.16 (up to date)',
   // deck controls, radio slots and shortcut sample data the demo config carries
-  'AI quotas', 'Deep work', 'Audio deck', 'Streaming deck', 'Meeting deck', 'Development deck',
+  'Home board', 'AI quotas', 'Deep work', 'Audio deck', 'Streaming deck', 'Meeting deck', 'Development deck',
   'Music deck', 'Computer controls', 'Hacker News', 'Smart Stack', 'Workflow GitHub',
   'Radio internet', 'Mixer OBS', 'Screen Off', 'Run tests', 'Web dev server', 'API dev server',
   'Mute in meeting', 'Raise hand',

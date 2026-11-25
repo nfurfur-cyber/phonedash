@@ -18,6 +18,10 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
 
     /// <summary>Connected phones that do not have the PhoneDash app yet (installed from Settings, e.g. after winget / Scoop).</summary>
     public string[] MissingApp => _missingApp;
+    /// <summary>Phones on USB whose user has not allowed USB debugging for this computer yet.</summary>
+    public int WaitingForPermission => _unauthorized;
+    private volatile int _unauthorized;
+    internal static int Unauthorized(string devices) => devices.Split('\n').Skip(1).Count(l => l.Trim().EndsWith("\tunauthorized", StringComparison.Ordinal));
     private const string Rule = "tcp:8775";
     private string TargetRule => $"tcp:{usb?.Port ?? endpoint?.Port ?? 8775}";
     private readonly Dictionary<string, long> _keyTriedAt = []; // serial -> when its key was last asked for (Ensure only)
@@ -128,7 +132,9 @@ public sealed class AdbReverse(ConfigStore cfg, ILogger<AdbReverse> log, AgentEn
         }
 
         var serial = cfg.Get().DeviceSerial;
-        var devices = (await Adb(adb, "devices", ct))
+        var listed = await Adb(adb, "devices", ct);
+        _unauthorized = Unauthorized(listed);
+        var devices = listed
             .Split('\n').Skip(1)
             .Select(l => l.Trim().Split('\t'))
             .Where(p => p.Length == 2 && p[1] == "device")

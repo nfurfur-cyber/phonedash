@@ -19,7 +19,7 @@ import org.json.JSONObject
 
 /**
  * PhoneDash Pro: a one-time in-app product ([PRODUCT]) bought through Google Play. It unlocks the panel's extra pages,
- * the colour themes and buttons past the free ones (the panel decides what is locked, see assets/www/pro.js).
+ * the themes and buttons past the free ones (the panel decides what is locked, see assets/www/pro.js).
  *
  * There is no server: Google Play's own purchase list is the record. It is read at start, whenever the app comes back
  * to the front (a pending payment may have gone through meanwhile) and on Restore. The last settled answer is kept, so

@@ -93,13 +93,17 @@ public static class Lan
         || path.StartsWithSegments("/api/media") || path.StartsWithSegments("/api/volume") || path.StartsWithSegments("/api/quotas")
         || path.StartsWithSegments("/api/work") || path.StartsWithSegments("/api/procs") || path.StartsWithSegments("/api/run")
         || path.StartsWithSegments("/api/apps") || path.StartsWithSegments("/api/shortcuts/icon") || path.StartsWithSegments("/api/console") || path == "/api/dictate"
-        || path.StartsWithSegments("/api/widget") || path.StartsWithSegments("/api/calendar") || path.StartsWithSegments("/api/feeds") || path.StartsWithSegments("/api/photos") || path == "/api/camera" || path == "/api/spectrum" || path.StartsWithSegments("/api/docker") || path.StartsWithSegments("/api/obs") || path.StartsWithSegments("/api/discord") || path == "/api/steam" || path == "/api/steam/avatar" || path.StartsWithSegments("/api/batteries") || path.StartsWithSegments("/api/ha/states") || path.StartsWithSegments("/api/ha/toggle") || path.StartsWithSegments("/api/approvals") || path.StartsWithSegments("/api/rules/pause") || path.StartsWithSegments("/api/phone/battery") || path.StartsWithSegments("/api/stream") || path.StartsWithSegments("/api/trackpad") || path == "/api/pair/claim" || path == "/api/wake/macs" || IsWebhook(path);
+        || path.StartsWithSegments("/api/widget") || path.StartsWithSegments("/api/calendar") || path.StartsWithSegments("/api/feeds") || path.StartsWithSegments("/api/photos") || path == "/api/camera" || path == "/api/spectrum" || path.StartsWithSegments("/api/docker") || path.StartsWithSegments("/api/obs") || path.StartsWithSegments("/api/discord") || path == "/api/steam" || path == "/api/steam/avatar" || path.StartsWithSegments("/api/batteries") || path.StartsWithSegments("/api/ha/states") || path.StartsWithSegments("/api/ha/toggle") || path.StartsWithSegments("/api/approvals") || path.StartsWithSegments("/api/rules/pause") || path.StartsWithSegments("/api/phone/battery") || path.StartsWithSegments("/api/stream") || path.StartsWithSegments("/api/trackpad") || path == "/api/pair/claim" || IsNearbyStep(path) || path == "/api/wake/macs" || IsWebhook(path);
 
     /// <summary>
     /// The one Wi-Fi path that needs no key: a phone pairing without USB trades a one-time code for it (see
     /// <see cref="PairingCodes"/>). The endpoint checks the code; everything else still needs the paired key.
     /// </summary>
-    public static bool IsPairingClaim(string method, PathString path) => method == "POST" && path == "/api/pair/claim";
+    public static bool IsPairingClaim(string method, PathString path) => method == "POST" && (path == "/api/pair/claim" || IsNearbyStep(path));
+
+    /// <summary>The phone's steps of pairing without a QR code (see <see cref="NearbyPairing"/>); the answer is given on this computer only.</summary>
+    private static bool IsNearbyStep(PathString path) =>
+        path == "/api/pair/nearby/begin" || path == "/api/pair/nearby/reveal" || path == "/api/pair/nearby/poll" || path == "/api/pair/nearby/withdraw";
 
     /// <summary>The webhook API: other machines on the network (or Tailscale) may push data with the same token.</summary>
     public static bool IsWebhook(PathString path) =>

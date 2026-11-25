@@ -121,7 +121,7 @@ class AgentLink(private val context: Context) {
     private val deviceId = MessageDigest.getInstance("SHA-256")
         .digest((Settings.Secure.getString(context.contentResolver, Settings.Secure.ANDROID_ID) ?: "unknown").toByteArray())
         .take(6).joinToString("") { "%02x".format(it) }
-    private val deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}".filter { it in ' '..'~' }.trim().take(40)
+    internal val deviceModel = "${Build.MANUFACTURER} ${Build.MODEL}".filter { it in ' '..'~' }.trim().take(40)
     private val webViewInfo = runCatching {
         WebViewCompat.getCurrentWebViewPackage(context)?.let { p ->
             "${p.packageName}/${p.versionName ?: ""}".filter { it in ' '..'~' }.trim().take(80)
@@ -358,7 +358,7 @@ class AgentLink(private val context: Context) {
      * the subnet's broadcast address are not something Android's ConnectivityManager gives. The Android network that
      * runs on the interface is looked up separately by [networkOwning]. Private addresses only.
      */
-    private fun lanLinks(): List<LanLink> = try {
+    internal fun lanLinks(): List<LanLink> = try {
         (java.net.NetworkInterface.getNetworkInterfaces()?.toList() ?: emptyList())
             .filter { it.isUp && !it.isLoopback && (it.name.startsWith("wlan") || it.name.startsWith("eth")) }
             .flatMap { ni ->
@@ -373,7 +373,7 @@ class AgentLink(private val context: Context) {
      * Needs ACCESS_NETWORK_STATE; null when none matches or Android refuses the lookup.
      */
     @Suppress("DEPRECATION") // allNetworks: still the only way to list every network on API 21-30
-    private fun networkOwning(link: LanLink): android.net.Network? = try {
+    internal fun networkOwning(link: LanLink): android.net.Network? = try {
         val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as android.net.ConnectivityManager
         WakePacket.networkOwning(link, cm.allNetworks.map { n ->
             val properties = cm.getLinkProperties(n)
@@ -596,20 +596,7 @@ class AgentLink(private val context: Context) {
                 }
                 val j = JSONObject(c.inputStream.bufferedReader().readText())
                 if (!j.optString("fingerprint").equals(link.fingerprint, ignoreCase = true)) return PairFailure.WrongCertificate(link.pc)
-                val hosts = j.optJSONArray("hosts")?.let { a -> (0 until a.length()).map { a.getString(it) } }
-                    ?.filter { PairLink.isLocalAddress(it) }?.takeIf { it.isNotEmpty() } ?: link.hosts
-                // the name the user confirmed; only an entry for this very certificate is replaced, never one that
-                // merely has the same name
-                val reportedMacs = WakePacket.macsFrom(j.optJSONArray("macs"))
-                synchronized(pcsLock) {
-                    // an empty report (an adapter briefly not eligible) must not wipe the MACs already stored for it
-                    val id = link.fingerprint.lowercase()
-                    val pc = Pc(id, link.pc, hosts, j.optInt("port", link.port), j.getString("token"),
-                        reportedMacs ?: pcs.firstOrNull { it.id == id }?.macs ?: emptyList())
-                    savePcs(pcs.filter { it.id != pc.id } + pc, pc.id)
-                    factory = null
-                    preferredHost = 0
-                }
+                store(link.pc, link.fingerprint.lowercase(), link.port, link.hosts, j)
                 return null
             } catch (e: javax.net.ssl.SSLException) {
                 problem = PairFailure.WrongCertificate(link.pc)
@@ -618,6 +605,29 @@ class AgentLink(private val context: Context) {
             }
         }
         return problem
+    }
+
+    /** Keeps what a computer found on this Wi-Fi ([NearbyPairing]) sent after both sides agreed; false when it is not that computer's. */
+    internal fun storePairing(pc: NearbyPc, j: JSONObject): Boolean {
+        if (!j.optString("fingerprint").equals(pc.fingerprint, ignoreCase = true)) return false
+        store(pc.name, pc.fingerprint, pc.port, listOf(pc.host), j)
+        return true
+    }
+
+    /** Saves a computer's pairing answer under the name the user confirmed and makes it the active one. */
+    private fun store(name: String, id: String, port: Int, triedHosts: List<String>, j: JSONObject) {
+        val hosts = j.optJSONArray("hosts")?.let { a -> (0 until a.length()).map { a.getString(it) } }
+            ?.filter { PairLink.isLocalAddress(it) }?.takeIf { it.isNotEmpty() } ?: triedHosts
+        val reportedMacs = WakePacket.macsFrom(j.optJSONArray("macs"))
+        synchronized(pcsLock) {
+            // only an entry for this very certificate is replaced, never one that merely has the same name; an empty
+            // report (an adapter briefly not eligible) must not wipe the MACs already stored for it
+            val pc = Pc(id, name, hosts, j.optInt("port", port), j.getString("token"),
+                reportedMacs ?: pcs.firstOrNull { it.id == id }?.macs ?: emptyList())
+            savePcs(pcs.filter { it.id != id } + pc, id)
+            factory = null
+            preferredHost = 0
+        }
     }
 
     private fun pinnedFactory(pin: String): SSLSocketFactory {
