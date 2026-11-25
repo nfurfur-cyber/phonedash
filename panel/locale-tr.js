@@ -1023,6 +1023,8 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "World clocks, forecast and calendar.": "Dünya saatleri, hava tahmini ve takvim.",
       "Your automation rules: which ones hold right now, and a button to pause them all for an hour.": "Otomatik kurallarınız: şu anda hangileri devam ediyor ve hepsini bir saatliğine durdurmak için bir düğme.",
       "Your next calendar event, big, with a countdown; during an event, how much of it is left.": "Bir sonraki takvim olayınız, büyük, geri sayma ile; bir olay sırasında ne kadar kaldığını gösteren.",
+      "Home board": "Ana pano",
+      "A full page drawn by the theme: clock, weather, music and the PC's load.": "Temanın çizdiği tam sayfa: saat, hava durumu, müzik ve PC yükü.",
       "Your own HTML, CSS and JavaScript in a sandbox, fed with the PC's data through window.phonebox.": "Kendi HTML, CSS ve JavaScript'iniz bir kum kutusunda, window.phonebox aracılığıyla PC verileriyle beslenmiş durumdadır.",
       "Your own quotes, one per line ('text — author'); empty = built-in": "Kendi alıntılarınız, satır başına birer tane ('text — author'); boş = dahili",
       "Your rules and what they push: on-air sign, webhook values and the notification inbox.": "Kurallarınız ve neyi bastırıyorlar: havada işaret, webhook değerleri ve bildirim kutusu.",

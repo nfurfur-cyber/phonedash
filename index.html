@@ -107,7 +107,7 @@ footer a { color: var(--muted); }
     <div class="steps">
       <div class="step"><div>
         <h3>PC 프로그램 설치</h3>
-        <p><a data-download href="#start"><b>PhoneDash-Setup.exe</b></a>를 받아 더블클릭하세요. 설치 폴더를 고를 필요 없이 바로 설치되고, 컴퓨터를 켤 때마다 자동으로 실행됩니다. 설치가 끝나면 연결용 QR 코드가 바로 떠요.</p>
+        <p><a data-download href="#start"><b>PhoneDash-Setup.exe</b></a>를 받아 더블클릭하세요. 설치 폴더를 고를 필요 없이 바로 설치되고, 컴퓨터를 켤 때마다 자동으로 실행됩니다. 설치가 끝나면 연결 창이 바로 떠요.</p>
         <p class="note">“Windows의 PC 보호” 창이 뜨면 <b>추가 정보 › 실행</b>을 누르세요. 아직 코드 서명 인증서가 없는 프로그램이라 나오는 안내입니다. 방화벽 창이 뜨면 <kbd>허용</kbd>을 눌러 주세요. 공기계가 Wi-Fi로 PC에 들어오는 길입니다.</p>
       </div></div>
       <div class="step"><div>
@@ -115,13 +115,13 @@ footer a { color: var(--muted); }
         <p>Google Play에서 <b>폰대시</b>를 설치하세요(무료). Android 7.0 이상이면 됩니다. PC 화면 왼쪽 QR을 공기계 카메라로 찍어도 설치 페이지가 열려요.</p>
       </div></div>
       <div class="step"><div>
-        <h3>QR 찍으면 연결 끝</h3>
+        <h3>세 가지 중 편한 걸로 연결</h3>
         <ol>
-          <li>공기계와 PC를 <b>같은 Wi-Fi</b>에 연결하세요.</li>
-          <li>PC 화면 오른쪽 <b>연결 QR</b>을 공기계 카메라로 찍으세요. 링크를 열고 폰대시를 고르면 확인 코드가 나와요.</li>
-          <li>공기계에 나온 코드가 PC 화면의 코드와 같은지 보고 <kbd>페어링</kbd>을 누르면 끝입니다.</li>
+          <li><b>Wi-Fi</b>: 같은 Wi-Fi에서 폰대시를 열고 내 컴퓨터를 누르세요. 폰에 나온 숫자를 PC 화면에서 고르면 끝입니다.</li>
+          <li><b>USB</b>: 개발자 옵션의 USB 디버깅을 켠 공기계를 꽂으면 바로 연결돼요. 충전과 화면 깨우기가 같이 됩니다.</li>
+          <li><b>QR</b>: PC 화면의 <b>연결 QR</b>을 공기계 카메라로 찍고, 확인 코드가 같으면 <kbd>페어링</kbd>을 누르세요.</li>
         </ol>
-        <p class="note">QR 창을 닫았다면 PC 설정 화면의 <b>일반 › Wi-Fi &amp; Tailscale › Wi-Fi로 폰 페어링</b>에서 다시 열 수 있어요. 케이블을 선호하면 개발자 옵션의 USB 디버깅을 켜고 USB로 연결해도 됩니다(충전과 화면 깨우기가 같이 돼요).</p>
+        <p class="note">연결 창을 닫았다면 PC 설정 화면의 <b>일반 › Wi-Fi &amp; Tailscale › Wi-Fi로 폰 페어링</b>에서 다시 열 수 있어요. Wi-Fi로 찾기는 이 창이 열려 있는 동안에만 됩니다.</p>
       </div></div>
     </div>
   </section>
@@ -142,7 +142,7 @@ footer a { color: var(--muted); }
 
   <section id="faq">
     <h2>자주 묻는 질문</h2>
-    <details><summary>돈이 드나요?</summary><p>PC 프로그램과 폰 앱 모두 무료예요. 무료로 모든 위젯과 페이지 1장, 버튼 8개를 쓸 수 있고, 페이지 여러 장·자동 전환 규칙·버튼 무제한·색 테마가 필요하면 앱 안에서 <b>Pro</b>를 한 번 결제하면 돼요(구독 아님).</p></details>
+    <details><summary>돈이 드나요?</summary><p>PC 프로그램과 폰 앱 모두 무료예요. 무료로 모든 위젯과 페이지 1장, 버튼 8개를 쓸 수 있고, 페이지 여러 장·자동 전환 규칙·버튼 무제한·모든 테마가 필요하면 앱 안에서 <b>Pro</b>를 한 번 결제하면 돼요(구독 아님).</p></details>
     <details><summary>맥이나 리눅스에서도 되나요?</summary><p>현재 정식 지원은 Windows 10/11입니다.</p></details>
     <details><summary>공기계를 계속 켜 두면 화면이나 배터리는 괜찮나요?</summary><p>밤(기본 00:30~07:30)에는 화면을 아주 어둡게 하는 야간 모드가 켜져 있어요. Home Assistant로 제어하는 스마트 플러그가 있으면 PC 설정의 <b>배터리 관리</b>에서 충전을 일정 범위로 묶어 둘 수도 있습니다.</p></details>
     <details><summary>어떤 정보가 밖으로 나가나요?</summary><p>이용 통계는 폰 앱에서 동의한 경우에만 보내고 언제든 끌 수 있어요. 그 밖에는 날씨처럼 기능에 필요한 요청만 해당 서비스로 갑니다. 전체 목록은 <a href="privacy.html">개인정보처리방침</a>에 있습니다.</p></details>

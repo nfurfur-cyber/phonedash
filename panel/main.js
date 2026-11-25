@@ -16,9 +16,11 @@ import './widgets/console.js';
 import './widgets/dictate.js';
 import './widgets/camera.js';
 import './widgets/spectrum.js';
-import { allowedTheme, buttonOpen, closePro, freePage, isPro, lockedKey, lockedPage, openPro, sellsPro } from './pro.js';
+import './widgets/board.js';
+import { allowedTheme, buttonOpen, closePro, freePage, isPro, lockedKey, openPro, proPage, proPageCard, sellsPro } from './pro.js';
 import { dismissUsage, renderUsageBtn, startStats, stat, statOnceADay, toggleUsage } from './stats.js';
 import { startPrivacy } from './privacy.js';
+import { bindWelcome, startWelcome, welcomeBack, welcomeRender } from './welcome.js';
 
 // PhoneDash desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
 // The panel talks to the PhoneDash agent through "/agent/*", which the Android shell proxies over USB
@@ -56,7 +58,7 @@ export const $ = (id) => document.getElementById(id);
 // The native bridge (window.Android) is in every frame, sandboxed widgets included, so each call carries a key that only
 // the panel's own frames receive (MainActivity.bridgeKey). This wrapper adds it.
 const BRIDGE = ['battery', 'buzz', 'haptic', 'is24Hour', 'pcs', 'selectPc', 'forgetPc', 'setBrightness', 'setHomeScreen', 'setOrientation',
-  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro', 'usage', 'setUsage', 'stat', 'quietMoment', 'openPrivacy'];
+  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro', 'usage', 'setUsage', 'stat', 'quietMoment', 'openPrivacy', 'nearbySearch', 'nearbyPair', 'nearbyAnswer', 'openUsbSettings', 'openCamera'];
 export const bridge = typeof Android === 'undefined' ? null : Object.fromEntries(BRIDGE.filter((m) => typeof Android[m] === 'function')
   .map((m) => [m, (...args) => Android[m](window.__phoneboxKey || '', ...args)]));
 // Live preview inside the agent's layout editor: the layout comes from the editor (unsaved), not from the agent.
@@ -64,13 +66,8 @@ export const PREVIEW = new URLSearchParams(location.search).has('preview') && wi
 
 /** Used until the agent has sent its settings once (first start without a connection). */
 export const FALLBACK_PAGES = [{
-  id: 'home', title: 'Home', icon: '🏠', enabled: true, widgets: [
-    { id: 'clock', type: 'clock', x: 0, y: 0, w: 6, h: 4, options: {} },
-    { id: 'media', type: 'media', x: 6, y: 0, w: 6, h: 4, options: {} },
-    { id: 'cpu', type: 'stat', x: 0, y: 4, w: 3, h: 2, options: { metric: 'cpu' } },
-    { id: 'gpu', type: 'stat', x: 3, y: 4, w: 3, h: 2, options: { metric: 'gpu' } },
-    { id: 'ram', type: 'stat', x: 6, y: 4, w: 3, h: 2, options: { metric: 'ram' } },
-    { id: 'net', type: 'stat', x: 9, y: 4, w: 3, h: 2, options: { metric: 'net' } },
+  id: 'board', title: 'Home', icon: '🏠', enabled: true, widgets: [
+    { id: 'board', type: 'board', x: 0, y: 0, w: 12, h: 6, options: {} },
   ],
 }];
 
@@ -1406,11 +1403,12 @@ export function handleEvent(e) {
 export const WIDGET_ICONS = { camera: '📹', dictate: '🎙️', spectrum: '📶', 'app-console': '🎛️', discord: '💬', steam: '👥', 'steam-activity': '🔔', rules: '⚡', chargecare: '🔋', nextup: '⏭️', moon: '🌙', wordclock: '🔤', clock: '🕒', weather: '⛅', forecast: '🌦️', media: '🎵', stat: '📈', gauge: '⏲️', chart: '📊', meters: '💾', gpu: '🎮', quotas: '✳️', sessions: '🤖',
   github: '🐙', processes: '⚙️', shortcuts: '🎛️', button: '🔘', worldclock: '🌍', calendar: '📅', pomodoro: '🍅', countdown: '⏳', note: '📝', command: '💻',
   push: '📡', inbox: '📬', label: '🔤', analog: '🕰️', progress: '📆', stopwatch: '⏱️', timer: '⏲️', counter: '🔢', breathe: '🫁', quote: '💬',
-  checklist: '✅', battery: '🔋', topprocs: '🔥', quotaring: '🎯', volume: '🔊', sun: '🌅', air: '🍃', hackernews: '📰', feeds: '🗞️', photos: '🖼️', exchange: '💱', crypto: '🪙', image: '🖼️', pcswitch: '🖥️' };
+  checklist: '✅', battery: '🔋', topprocs: '🔥', quotaring: '🎯', volume: '🔊', sun: '🌅', air: '🍃', hackernews: '📰', feeds: '🗞️', photos: '🖼️', exchange: '💱', crypto: '🪙', image: '🖼️', pcswitch: '🖥️', board: '🏠' };
 
 // ================================================================= pages
 export const pager = $('pager');
-export let pages = [];       // enabled pages
+export let pages = [];       // the pages shown: the enabled ones, or the free one and the Pro page
+export let allPages = [];           // every enabled page, what page numbers and names refer to
 export let mounted = [];     // { pi, def, inst, ctx, dirty }
 export let layoutKey = '';
 export let curPage = 0;
@@ -1424,8 +1422,9 @@ export function portraitLayout(widgets) {
   const cols = 6, occ = [], pos = new Map();
   const free = (x, y, w, h) => { for (let r = y; r < y + h; r++) for (let c = x; c < x + w; c++) if (occ[r]?.[c]) return false; return true; };
   const take = (x, y, w, h) => { for (let r = y; r < y + h; r++) { occ[r] = occ[r] || []; for (let c = x; c < x + w; c++) occ[r][c] = true; } };
+  const whole = widgets.length === 1 && widgets[0].type === 'board'; // a home board alone on its page keeps the whole screen
   for (const w of [...widgets].sort((a, b) => a.y - b.y || a.x - b.x)) {
-    const ww = Math.min(cols, w.w), hh = w.h;
+    const ww = Math.min(cols, w.w), hh = whole ? 12 : w.h;
     search: for (let y = 0; y < 200; y++) for (let x = 0; x + ww <= cols; x++) if (free(x, y, ww, hh)) { take(x, y, ww, hh); pos.set(w, { x, y, w: ww, h: hh }); break search; }
   }
   return { pos, rows: Math.max(12, occ.length) };
@@ -1433,25 +1432,26 @@ export function portraitLayout(widgets) {
 
 export function buildLayout() {
   const enabled = (cfg.pages || []).filter((p) => p.enabled !== false && Array.isArray(p.widgets));
-  const next = enabled.length ? enabled : FALLBACK_PAGES;
+  const all = enabled.length ? enabled : FALLBACK_PAGES;
   const portrait = isPortrait();
   const h12 = hour12();
   // the active language belongs in the key: the widgets render their texts once, when they are created
-  const free = freePage(next);
-  const key = JSON.stringify([next, cfg.shortcuts, cfg.display?.showSeconds, cfg.display?.hour12, h12, cfg.display?.appearance, portrait, I18n?.getLang(), free]);
+  const free = freePage(all);
+  const key = JSON.stringify([all, cfg.shortcuts, cfg.display?.showSeconds, cfg.display?.hour12, h12, cfg.display?.appearance, portrait, I18n?.getLang(), free, boardLook()]);
   if (key === layoutKey) return;
   layoutKey = key;
   lastHour12 = h12;
   const prevId = pages[curPage]?.id;
-  pages = next;
+  allPages = all;
+  // without Pro one page is open, and one more page stands for all the others
+  pages = free >= 0 && all.length > 1 ? [all[free], proPage(all.filter((_, i) => i !== free))] : all;
   for (const m of mounted) { try { m.inst.destroy?.(); } catch (_) {} }
   mounted = [];
   closeSheet();
   pager.replaceChildren();
   pages.forEach((p, pi) => {
-    if (free >= 0 && pi !== free) {
-      // without Pro only one page is open; the others say what they hold
-      const sec = h('section', 'page locked', lockedPage(p));
+    if (p.held) {
+      const sec = h('section', 'page locked', proPageCard(p));
       sec.dataset.id = p.id;
       pager.appendChild(sec);
       return;
@@ -1653,24 +1653,25 @@ export function currentProcessesSort() {
 
 export function hasProcessesPage() {
   return resolvePage('procs') >= 0 || resolvePage('processes') >= 0
-    || pages.some((p) => (p.widgets || []).some((w) => w.type === 'processes'));
+    || allPages.some((p) => (p.widgets || []).some((w) => w.type === 'processes'));
 }
 
 export function gotoProcesses(sortTarget = 'cpu') {
   procsSort = sortTarget === 'mem' ? 'mem' : 'cpu';
-  let idx = resolvePage('procs');
-  if (idx < 0) idx = resolvePage('processes');
-  if (idx < 0) idx = pages.findIndex((p) => (p.widgets || []).some((w) => w.type === 'processes'));
-  if (idx >= 0) gotoPageRef(idx + 1);
+  gotoPageRef(['procs', 'processes'].find((id) => resolvePage(id) >= 0)
+    ?? allPages.findIndex((p) => (p.widgets || []).some((w) => w.type === 'processes')) + 1);
   if (procsSorter) procsSorter(procsSort);
 }
 
+/** Where a page (its number, id or name) is shown; a page the free app keeps back is found at the Pro page. -1: no such page. */
 export const resolvePage = (ref) => {
-  const n = typeof ref === 'number' ? ref - 1 : /^\d+$/.test(String(ref)) ? +ref - 1 : pages.findIndex((p) => p.id === ref || p.title.toLowerCase() === String(ref).toLowerCase());
-  return n >= 0 && n < pages.length ? n : -1;
+  const n = typeof ref === 'number' ? ref - 1 : /^\d+$/.test(String(ref)) ? +ref - 1 : allPages.findIndex((p) => p.id === ref || p.title.toLowerCase() === String(ref).toLowerCase());
+  if (!allPages[n]) return -1;
+  const shown = pages.indexOf(allPages[n]);
+  return shown >= 0 ? shown : pages.findIndex((p) => p.held);
 };
-/** A page the free app keeps locked: automatic switches (rules, webhooks) leave it alone. */
-export const pageLocked = (i) => { const free = freePage(pages); return free >= 0 && i !== free; };
+/** The Pro page: automatic switches (rules, webhooks) leave it alone. */
+export const pageLocked = (i) => !!pages[i]?.held;
 export const homeIndex = () => { const id = cfg.display?.homePage; const i = id ? pages.findIndex((p) => p.id === id) : -1; return i >= 0 ? i : 0; };
 
 // ================================================================= calm page switching
@@ -1765,6 +1766,13 @@ function perform(req) {
   lastNav = Date.now();
   renderNav();
   if (navQueue.length) setTimeout(pump, 0);
+}
+
+/** Forgets the requested and held pages: they are positions, and the pages shown are about to change. */
+export function resetNav() {
+  navQueue = [];
+  ruleHold = null;
+  pump();
 }
 
 /** Drops a request (the Stay button). A dropped rule page also gives up its "back". */
@@ -2079,6 +2087,7 @@ window.onAndroidBack = () => {
   const noteEdit = document.querySelector('.note-edit');
   if (noteEdit) { noteEdit.remove(); return; }
   if (closeSessionDetails()) return;
+  if (welcomeBack()) return;
   if ($('pro') && !$('pro').hidden) closePro();
   else if (dismissUsage()) return;
   else if (!$('overview').hidden) closeOverview();
@@ -2243,14 +2252,21 @@ export function tick() {
 }
 
 // ---------------------------------------------------------------- data from the agent
+const THEMES = ['amoled', 'midnight', 'warm', 'graphite', 'calendar', 'keycap'];
+
+/** How the home board is drawn: the theme's own look, or the dials (the default theme, the colour themes, a locked one). */
+export function boardLook() {
+  const theme = cfg.display?.theme;
+  return isPro() && (theme === 'calendar' || theme === 'keycap') ? theme : 'dial';
+}
+
 export function applyDisplay() {
   const d = cfg.display || {};
   const langChanged = I18n ? I18n.setLang(d.language || 'auto') : false;
   LOCALE = I18n ? I18n.getLocale() : 'en-GB';
   I18n?.applyDom();
   // theme and accent apply in the preview and the browser too
-  const theme = ['amoled', 'midnight', 'warm', 'graphite'].includes(d.theme) ? d.theme : 'default';
-  document.body.dataset.theme = allowedTheme(theme); // the colour themes come with Pro
+  document.body.dataset.theme = allowedTheme(THEMES.includes(d.theme) ? d.theme : 'default'); // the other themes come with Pro
   const accent = hexToRgb(d.accent);
   const before = DEFAULT_AMBIENT;
   DEFAULT_AMBIENT = accent || '255, 176, 32';
@@ -2393,26 +2409,6 @@ $('wake')?.querySelector('button').addEventListener('click', () => {
   wakeRender();
 });
 
-// ---------------------------------------------------------------- first start
-// In the app, before any computer has been paired and while none answers (not even over USB), the panel would only
-// say "PC not connected". Instead it walks through the setup and sends the PC program's link to the user's computer.
-const siteUrl = () => String(window.__phonedashSite || '');
-function welcomeRender() {
-  const box = $('welcome');
-  if (!box) return;
-  box.hidden = !(bridge && document.body.classList.contains('offline') && pairedPcs().length === 0);
-  if (!box.hidden) $('wlUrl').textContent = siteUrl().replace(/^https?:\/\//, '').replace(/\/$/, '');
-}
-$('wlSend')?.addEventListener('click', () => {
-  haptic();
-  const text = t('welcome.shareText', { url: siteUrl() });
-  if (!bridge?.share || !bridge.share(text)) toast(siteUrl());
-});
-$('wlCopy')?.addEventListener('click', async () => {
-  haptic();
-  try { await navigator.clipboard.writeText(siteUrl()); toast(t('welcome.copied')); } catch (_) { toast(siteUrl()); }
-});
-
 export function setOnline(on) {
   document.body.classList.toggle('offline', !on);
   if (on) { wakeAt = 0; clearInterval(wakeTicker); wakeTicker = 0; }
@@ -2497,6 +2493,7 @@ window.onAppPause = (paused) => {
   const was = idle();
   appPaused = !!paused;
   if (was && !idle()) wokeUp();
+  if (!paused) startWelcome(); // the app stopped looking for computers in the background
 };
 document.addEventListener('visibilitychange', () => { if (!document.hidden && !appPaused) wokeUp(); });
 // what the paused panel skipped is fetched at once, not at the next interval
@@ -2548,6 +2545,7 @@ applyDisplay();
 tick();
 startStats();
 startPrivacy();
+bindWelcome();
 loadWeather();
 setInterval(loadWeather, 15 * 60_000);
 setInterval(() => { if (!nightOn && !idle()) { emit('fast'); beat(); } }, 250);

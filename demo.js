@@ -22,7 +22,7 @@
     ['snip', 'Snip', '✂️', '#14b8a6'], ['taskmgr', 'Task Manager', '📊', '#22c55e'], ['mute', 'Mute', '🔇', '#f59e0b'],
     ['screenoff', 'Screen Off', '🌙', '#8b5cf6'], ['lock', 'Lock', '🔒', '#ef4444'], ['settings', 'Settings', '⚙️', '#94a3b8'],
   ].map(([id, label, icon, color]) => ({ id, label: (KO && KO_LABELS[label]) || label, icon, color, cmd: id === 'mute' ? 'builtin:mute' : 'demo', args: null, toggle: false }));
-  const PAGES = ['home', 'dashboard', 'ai', 'work', 'system', 'procs', 'deck', 'music', 'status', 'ambient', 'world', 'daily', 'markets', 'feeds', 'focus', 'calm', 'clock', 'automation', 'planner', 'nightstand', 'weekend', 'focuswork',
+  const PAGES = ['board', 'home', 'dashboard', 'ai', 'work', 'system', 'procs', 'deck', 'music', 'status', 'ambient', 'world', 'daily', 'markets', 'feeds', 'focus', 'calm', 'clock', 'automation', 'planner', 'nightstand', 'weekend', 'focuswork',
     'codexbar', 'devops', 'audio-deck', 'stream-deck', 'meeting-deck', 'development-deck', 'music-deck', 'system-deck'];
 
   let catalog = null;
@@ -789,7 +789,7 @@
         link: new URL('../pair/', ROOT).href + '#v=1&pc=DEMO-PC&fp=demo&port=8776&h=192.168.1.20&c=demo',
         qr: box('demo pairing'), app: 'https://play.google.com/store/apps/details?id=kr.phonedash.app', appQr: box('demo app') });
     }
-    if (path === '/api/pair/status') return json({ claims: 0 });
+    if (path === '/api/pair/status') return json({ claims: 0, nearby: null, usb: { state: 'none' } });
     if (path === '/api/pair/cancel' && method === 'POST') return json({});
     if (path === '/api/lan') return json({ configured: true, active: true, port: 8766, restartNeeded: false, hosts: ['192.168.1.20', '100.101.102.103'], fingerprint: 'demo' });
     if (path === '/api/update') return json({ status: { agentVersion: VERSION, appVersion: VERSION, latest: VERSION, releaseUrl: new URL('../', ROOT).href, agentUpdate: false, appUpdate: false,

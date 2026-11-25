@@ -3,7 +3,7 @@
 // app about quiet moments, when Google Play's rating card may come up (ReviewAsk.kt).
 // Outside the app, or in a build without a Firebase project, nothing is asked and nothing is counted.
 // Like pro.js, this module only uses main.js from its functions, never while it loads.
-import { $, bridge, cfg, haptic, icon, idle, nightOn, online, pages, PREVIEW, sheet, store, t, transport } from './main.js';
+import { $, allPages, bridge, cfg, haptic, icon, idle, nightOn, online, PREVIEW, sheet, store, t, transport } from './main.js';
 import { proState } from './pro.js';
 
 const ASK_AFTER_MS = 60_000;   // the dashboard has been up for a minute: the setup is over
@@ -71,9 +71,9 @@ function daily() {
   const today = new Date().toDateString();
   if (store.get('statDay', '') === today) return;
   store.set('statDay', today);
-  const widgets = pages.flatMap((p) => p.widgets || []);
+  const widgets = allPages.flatMap((p) => p.widgets || []);
   stat('panel_day', {
-    link: transport() || 'none', pages: pages.length, buttons: (cfg.shortcuts || []).length, widgets: widgets.length,
+    link: transport() || 'none', pages: allPages.length, buttons: (cfg.shortcuts || []).length, widgets: widgets.length,
     theme: cfg.display?.theme || 'default', lang: document.documentElement.lang || 'en', pro: proState(),
   });
   for (const widget of new Set(widgets.map((w) => w.type))) stat('widget_day', { widget });
