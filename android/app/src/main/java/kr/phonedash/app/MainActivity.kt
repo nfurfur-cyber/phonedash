@@ -70,6 +70,8 @@ class MainActivity : Activity(), SensorEventListener {
     private lateinit var link: AgentLink
     private lateinit var stream: AgentStream
     private lateinit var proStore: ProStore
+    private lateinit var usage: UsageStats
+    private lateinit var review: ReviewAsk
     @Volatile private var resumed = false
     @Volatile private var volumeKeysFlipPages = true
     private val sensors by lazy { getSystemService(Context.SENSOR_SERVICE) as SensorManager? }
@@ -99,6 +101,9 @@ class MainActivity : Activity(), SensorEventListener {
 
         // Pro: Google Play's answers reach the panel through window.onProChange (see assets/www/pro.js)
         proStore = ProStore(this) { json -> if (!destroyed) web.evaluateJavascript("window.onProChange && window.onProChange($json)", null) }
+
+        usage = UsageStats(this)
+        review = ReviewAsk(this) { usage.log("review_ask", "{}") }
 
         web = WebView(this)
         web.setBackgroundColor(0xFF000000.toInt())
@@ -262,6 +267,7 @@ class MainActivity : Activity(), SensorEventListener {
         web.onResume()
         web.evaluateJavascript("window.onAppPause && window.onAppPause(false)", null) // the panel catches up at once
         stream.start()
+        review.used()
         proStore.refresh() // a pending payment may have gone through, or a purchase been refunded, while the app was away
         hideSystemUi()
         sensors?.getDefaultSensor(Sensor.TYPE_LIGHT)?.let { sensors?.registerListener(this, it, SensorManager.SENSOR_DELAY_NORMAL) }
@@ -569,6 +575,28 @@ class MainActivity : Activity(), SensorEventListener {
         /** Pro: asks Google Play for this account's purchases again (after buying on another phone, or a refund). */
         @JavascriptInterface
         fun restorePro(key: String) { if (ok(key)) runOnUiThread { if (!destroyed) proStore.refresh() } }
+
+        /** Usage statistics: {"available":bool,"choice":"unset|on|off"}. */
+        @JavascriptInterface
+        fun usage(key: String): String = if (ok(key)) usage.json() else "{}"
+
+        /** Usage statistics: the user's answer, which can be changed at any time. */
+        @JavascriptInterface
+        fun setUsage(key: String, on: Boolean) { if (ok(key)) usage.choose(on) }
+
+        /** Usage statistics: one event. Sent only when the user agreed, and only what UsageEvents lists. */
+        @JavascriptInterface
+        fun stat(key: String, name: String, json: String) { if (ok(key)) usage.log(name, json) }
+
+        /** A quiet moment after a touch: the time to show Google Play's rating card, when it is due. */
+        @JavascriptInterface
+        fun quietMoment(key: String) {
+            if (ok(key)) runOnUiThread { review.quietMoment { !destroyed && resumed && !pinned() } }
+        }
+
+        // Google Play's card cannot open over a pinned screen (lock task)
+        private fun pinned(): Boolean =
+            (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE
 
         /** Dictation widget: true when the phone has a speech recognizer. */
         @JavascriptInterface

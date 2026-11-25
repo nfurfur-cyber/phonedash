@@ -399,6 +399,7 @@ switchable ports). The panel keeps running over Wi-Fi while the USB power is off
   command. Only measured quota fields reach the panel; CLI conversation identifiers and token counters are omitted.
   PhoneBox does not manage Google OAuth credentials; the CLI uses its own authentication. CLI auto-updates are
   disabled for these probes.
-- **No telemetry**: no accounts, no analytics, no crash reports. The [privacy policy](../PRIVACY.md) lists every
+- **No telemetry without a yes**: no accounts, no crash reports, and usage statistics from the phone app only if you
+  agree to them there. The [privacy policy](../PRIVACY.md) lists every
   connection the agent and the app make (update check, weather, the widgets that use public APIs) and how to turn
   each one off.

@@ -50,3 +50,6 @@ tools/ui-tests/test-results/
 
 *.log
 *.txt.store-site/
+
+# Firebase project file for usage statistics (UsageStats.kt)
+android/app/google-services.json

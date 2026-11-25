@@ -17,6 +17,7 @@ import './widgets/dictate.js';
 import './widgets/camera.js';
 import './widgets/spectrum.js';
 import { allowedTheme, buttonOpen, closePro, freePage, isPro, lockedKey, lockedPage, openPro, sellsPro } from './pro.js';
+import { dismissUsage, renderUsageBtn, startStats, stat, statOnceADay, toggleUsage } from './stats.js';
 
 // PhoneDash desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
 // The panel talks to the PhoneDash agent through "/agent/*", which the Android shell proxies over USB
@@ -54,7 +55,7 @@ export const $ = (id) => document.getElementById(id);
 // The native bridge (window.Android) is in every frame, sandboxed widgets included, so each call carries a key that only
 // the panel's own frames receive (MainActivity.bridgeKey). This wrapper adds it.
 const BRIDGE = ['battery', 'buzz', 'haptic', 'is24Hour', 'pcs', 'selectPc', 'forgetPc', 'setBrightness', 'setHomeScreen', 'setOrientation',
-  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro'];
+  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro', 'usage', 'setUsage', 'stat', 'quietMoment'];
 export const bridge = typeof Android === 'undefined' ? null : Object.fromEntries(BRIDGE.filter((m) => typeof Android[m] === 'function')
   .map((m) => [m, (...args) => Android[m](window.__phoneboxKey || '', ...args)]));
 // Live preview inside the agent's layout editor: the layout comes from the editor (unsaved), not from the agent.
@@ -1903,6 +1904,7 @@ export function onScroll() {
   setActive();
   if (sheet) closeSheet();
   if (pageOf('procs')) loadProcs();
+  if (pageLocked(p)) statOnceADay('locked_seen');
 }
 pager.addEventListener('scroll', onScroll, { passive: true });
 
@@ -1926,6 +1928,8 @@ export function openOverview() {
   // the free app: the way to Pro sits next to the rules button
   $('ovPro').hidden = !sellsPro() || isPro();
   $('ovPro').replaceChildren(icon('lock-open', 'm'), t('pro.see'));
+  renderUsageBtn();
+  stat('overview_open');
   // several paired computers: switch between them here (a USB cable always wins)
   const pcs = pairedPcs();
   $('ovPcs').replaceChildren(...(pcs.length > 1 ? pcs.map((pc) => {
@@ -1951,7 +1955,8 @@ export function switchPc(pc) {
 export function closeOverview() { $('overview').hidden = true; }
 $('overview').addEventListener('click', closeOverview);
 $('ovRules').addEventListener('click', (e) => { e.stopPropagation(); toggleRulesPause(); });
-$('ovPro').addEventListener('click', (e) => { e.stopPropagation(); closeOverview(); openPro(); });
+$('ovPro').addEventListener('click', (e) => { e.stopPropagation(); closeOverview(); openPro('overview'); });
+$('ovUsage').addEventListener('click', (e) => { e.stopPropagation(); toggleUsage(); });
 
 let dotsHoldTimer = 0, dotsHoldStart = null, heldDots = false;
 /** Cancels any pending long-press hold timer on the #dots bar. */
@@ -2074,6 +2079,7 @@ window.onAndroidBack = () => {
   if (noteEdit) { noteEdit.remove(); return; }
   if (closeSessionDetails()) return;
   if ($('pro') && !$('pro').hidden) closePro();
+  else if (dismissUsage()) return;
   else if (!$('overview').hidden) closeOverview();
   else if (sheet) closeSheet();
   else if (curPage !== homeIndex()) goPage(homeIndex(), true);
@@ -2530,6 +2536,7 @@ nightBeforeBuild();
 buildLayout();
 applyDisplay();
 tick();
+startStats();
 loadWeather();
 setInterval(loadWeather, 15 * 60_000);
 setInterval(() => { if (!nightOn && !idle()) { emit('fast'); beat(); } }, 250);

@@ -36,7 +36,10 @@ page lists what reviews keep asking for; following it gets a pull request merged
 
 ## Privacy
 
-- PhoneBox has no telemetry, accounts or servers of its own, and that stays so.
+- There are no accounts and no servers of our own, and that stays so. The only statistics are the phone app's opt-in
+  ones: a new event or parameter goes into the allow list in `UsageEvents.kt` (no titles, texts, addresses or readings)
+  and into [PRIVACY.md](PRIVACY.md). They need `android/app/google-services.json` from the Firebase project, which is
+  not in the repository; a build without it has none.
 - **Every new outbound connection** (a public API, a cloud provider, a download) needs a row in
   [PRIVACY.md](PRIVACY.md): the host, what is sent, and how to turn it off. Sending the user's data (audio, text,
   location, files) somewhere must be opt-in and say so where it is switched on.

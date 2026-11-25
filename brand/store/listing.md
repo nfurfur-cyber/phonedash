@@ -64,7 +64,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 • 같은 Google 계정의 다른 폰에서는 [구매 복원]으로 다시 열 수 있습니다.
 
 ■ 안심하고 쓰세요
-• 계정·광고·사용 통계가 없습니다. 개발자는 여러분의 데이터를 받지 않습니다.
+• 계정과 광고가 없습니다. 이용 통계는 동의한 경우에만 보내고 언제든 끌 수 있어요.
 • PC 정보는 암호화된 Wi-Fi 직접 연결(또는 USB 케이블)로 여러분의 공기계에만 갑니다.
 • 루팅이 필요 없습니다.
 
@@ -117,7 +117,7 @@ FREE TO START, PRO WHEN YOU WANT MORE
 • On another phone with the same Google account, tap Restore purchase.
 
 PRIVATE BY DESIGN
-• No account, no ads, no analytics. The developer never receives your data.
+• No account, no ads. Usage statistics are sent only if you agree, and can be turned off at any time.
 • Your PC's readings go only to your phone, over the USB cable or an encrypted Wi-Fi link.
 • No root needed.
 
@@ -173,6 +173,7 @@ PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Pl
 | 날씨·대기질 위젯 | 설정에서 고른 도시의 좌표 (기본값 서울) | open-meteo.com |
 | 환율·암호화폐·Hacker News·라디오 위젯을 넣었을 때 | 고른 통화/코인, 라디오 검색어와 방송국 | 각 서비스 |
 | 받아쓰기 위젯의 마이크 버튼을 누르고 있을 때 | 음성 (앱이 아니라 폰의 음성 인식 서비스, 보통 Google이 처리) | 폰의 음성 인식 서비스 |
+| 사용자가 **이용 통계에 동의했을 때만** | 이용 이벤트, 기기·앱 정보, 설치 ID(광고 ID 아님), IP로 추정한 지역 | Google 애널리틱스(Firebase) |
 | Wi-Fi 페어링 QR을 찍을 때 | 페이지 요청 (연결 정보는 URL `#` 뒤라 서버로 안 감) | GitHub Pages(폰대시 사이트) |
 
 권장 답변:
@@ -180,16 +181,18 @@ PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Pl
 1. 데이터 수집 또는 공유 여부: **예**
 2. 전송 중 암호화: **예** (외부 서비스는 HTTPS, PC 연결은 TLS. 평문 HTTP는 폰 안의 127.0.0.1만 허용)
 3. 계정 생성: **아니요** (계정 없음)
-4. 데이터 삭제 요청 방법: 개발자가 보관하는 데이터가 없음 — "앱 삭제 시 폰의 데이터가 모두 지워지며 개발자 서버에 저장되는 데이터는 없음"
+4. 데이터 삭제 요청 방법: **예, 삭제를 요청할 수 있음** — 앱에서 이용 통계를 끄면 통계용 ID가 초기화되고, 이미 보낸 통계는 개발자 이메일로 요청
 5. 데이터 유형:
    - **위치 › 대략적인 위치**: 수집함 / 공유 안 함 / 일시적으로 처리 / 선택사항(날씨 도시를 바꿀 때) / 목적: 앱 기능
+   - **위치 › 대략적인 위치**(위와 같은 항목): 애널리틱스가 IP로 지역을 추정하므로 목적에 **분석**도 추가하고, "일시적으로 처리"는 **아니요**로 바꾸기
+   - **앱 활동 › 앱 상호작용**: 수집함 / 공유 안 함 / 일시적 아님 / **선택사항**(동의해야 보냄) / 목적: 분석
+   - **기기 또는 기타 ID**: 수집함 / 공유 안 함 / 일시적 아님 / **선택사항** / 목적: 분석 (Firebase 설치 ID. 광고 ID는 쓰지 않음)
+   - **금융 정보 › 구매 내역**: 동의한 사용자는 애널리틱스가 인앱 구매를 자동 기록하므로 수집함 / 공유 안 함 / 선택사항 / 목적: 분석
+   - 제출 전에 [Firebase 데이터 공개 안내](https://firebase.google.com/docs/android/play-data-disclosure)와 [애널리틱스 안내](https://support.google.com/analytics/answer/11582702)를 확인하세요.
    - **오디오 › 음성 또는 사운드 녹음**: 수집함 / 공유 안 함 / 일시적으로 처리 / 선택사항(받아쓰기 위젯) / 목적: 앱 기능
-   - **금융 정보 › 구매 내역**: 앱은 결제 정보를 직접 다루지 않습니다. 결제는 Google Play가 처리하고, 앱은 폰 안에서 Play에
-     "Pro를 샀는지"만 물어보며 그 결과를 개발자에게 보내지 않습니다(서버 없음). 그래서 개발자가 수집하는 데이터는 아닙니다. 다만
-     Google 도움말은 결제 서비스에서 받는 구매 정보도 따져 보라고 하므로, 더 보수적으로 가려면 수집함 / 공유 안 함 / 필수 /
-     목적: 앱 기능으로 적으세요. 제출 전에 [데이터 보안 도움말](https://support.google.com/googleplay/android-developer/answer/10787469)을 확인하세요.
-   - 그 외 유형: 수집 안 함. 폰에서 사용자 본인의 PC로 가는 조작 정보는 개발자나 제3자에게 가지 않으므로 넣지 않았습니다. 더 보수적으로
-     가려면 **앱 활동 › 앱 상호작용**(수집함, 공유 안 함, 일시적, 필수, 앱 기능)을 추가하세요.
+   - 결제 정보(카드 번호 등)는 Google Play가 처리하고 앱은 다루지 않습니다. [데이터 보안 도움말](https://support.google.com/googleplay/android-developer/answer/10787469)도 확인하세요.
+   - 그 외 유형: 수집 안 함. 폰에서 사용자 본인의 PC로 가는 조작 정보는 개발자나 제3자에게 가지 않습니다.
+6. 광고 ID 사용: **아니요** (앱 콘텐츠 › 광고 ID. 앱에 AD_ID 권한이 없음)
 
 ### 기타 선언
 

@@ -5,6 +5,10 @@ plugins {
     id("org.jetbrains.kotlin.android")
 }
 
+// Usage statistics (UsageStats.kt) need the Firebase project's google-services.json, which is not in the repository. A
+// build without it has no Firebase project and never offers or sends statistics.
+if (file("google-services.json").isFile) apply(plugin = "com.google.gms.google-services")
+
 // Release signing (Play upload key): PHONEDASH_STORE_FILE, PHONEDASH_STORE_PASSWORD, PHONEDASH_KEY_ALIAS and
 // PHONEDASH_KEY_PASSWORD from a Gradle property, an environment variable or ~/.phonedash/signing.properties (kept
 // outside the repository, next to upload-key.jks). A release build without them stops instead of quietly signing
@@ -113,6 +117,10 @@ dependencies {
     // PhoneDash Pro, the one-time unlock sold through Google Play (ProStore.kt). Each major version must be replaced
     // within two years: 9 is accepted for new apps and updates until 31 August 2028.
     implementation("com.android.billingclient:billing:9.1.0")
+    // usage statistics, only after the user agrees; 24 needs Android 7, and 23.2 a newer Kotlin than this project uses
+    implementation("com.google.firebase:firebase-analytics:23.0.0")
+    // Google Play's rating card (ReviewAsk.kt)
+    implementation("com.google.android.play:review:2.0.2")
     testImplementation("junit:junit:4.13.2")
     // android.jar's org.json is a stub on the JVM; the real one lets the unit tests build and read JSON
     testImplementation("org.json:json:20240303")

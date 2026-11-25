@@ -1,13 +1,37 @@
 # Privacy policy
 
-PhoneDash is based on the open-source PhoneBox (MIT licence). PhoneDash has no accounts, no servers of its own, no telemetry, no analytics and no crash reporting. The project never
-receives any data from you. This page lists every place the agent (on your computer) and the Android app (on your
+PhoneDash is based on the open-source PhoneBox (MIT licence). PhoneDash has no accounts, no servers of its own, no ads and no crash reporting. The phone app can send usage
+statistics to the developer through Google Analytics, only if you agree (see [Usage statistics](#usage-statistics)). Without your yes, and from the PC program
+in any case, the developer receives no data from you. This page lists every place the agent (on your computer) and the Android app (on your
 phone) connect to, so you can see exactly what leaves your machine and turn it off.
 
-Last updated: 2026-11-22 (PhoneDash 1.0.0).
+Last updated: 2026-11-25 (PhoneDash 1.0.0).
 
-**Purchase.** The phone app is sold on Google Play. Google handles the payment; the developer receives only the
-order information Google provides to every developer (no card details) and never links it to the app's use.
+**Purchase.** The phone app is free; PhoneDash Pro is sold in it through Google Play. Google handles the payment; the
+developer receives only the order information Google provides to every developer (no card details).
+
+## Usage statistics
+
+Off until you tap **Send statistics** in the question the phone app shows after it has been connected for a while.
+**Statistics: on / off** in the page overview changes the answer at any time; turning it off also resets the statistics
+ID and drops what had not been sent yet (statistics already sent stay with Google Analytics until they are deleted or
+expire). It uses Google Analytics for Firebase (Google), and
+the developer uses it only to see what to improve and sees totals, not names.
+
+Sent while it is on, from the phone app only:
+
+- **How the panel is set up, once a day**: USB or Wi-Fi, how many pages, buttons and widgets there are, the theme's and
+  language's code, and whether Pro is owned; the kinds of widgets in use (such as "clock"), never their contents.
+- **Steps taken**: opening the page overview, seeing a locked page, opening the Pro sheet and tapping Buy, and that Google Play was asked for its rating card.
+- **What Google Analytics records by itself**: first start, sessions and time of use, app updates and removal, in-app
+  purchases (product and price), the phone's model, Android version, language and app version, the country and region
+  worked out from the IP address, where the app was installed from, and a random ID for this installation (not for you;
+  reinstalling makes a new one).
+
+Never sent: page or button names, anything typed or dictated, computer names or readings, what plays, AI sessions,
+addresses, or the advertising ID (the app does not have the permission to read it). Ad features are off. A copy of the
+app built without the developer's Firebase project has no statistics at all. To have statistics deleted, write to the
+address under Contact.
 
 ## What stays on your devices
 
@@ -27,7 +51,7 @@ order information Google provides to every developer (no card details) and never
 - **Log**: `agent.log` in `%LOCALAPPDATA%\PhoneDash` (Windows), `~/.local/share/PhoneDash` (Linux) or
   `~/Library/Application Support/PhoneDash` (macOS).
 - **Phone app**: caches (weather, rates, widget state) in its own app storage. The app asks for `INTERNET`,
-  `VIBRATE` and `ACCESS_NETWORK_STATE` (only to tell which network is Wi-Fi when the Wake button sends its packet; Android
+  `VIBRATE`, `WAKE_LOCK` and the Play Store's install referrer (both added by the statistics library, unused while statistics are off) and `ACCESS_NETWORK_STATE` (only to tell which network is Wi-Fi when the Wake button sends its packet; Android
   grants it without a prompt), and for the microphone (`RECORD_AUDIO`) only when a Dictation widget's button is tapped for
   the first time.
 - **Computer data shown on the panel** (CPU, GPU, memory, disks, processes, media, volume, AI coding sessions and
@@ -131,6 +155,8 @@ identifies your GitHub account to GitHub.
 | Spotify control | `accounts.spotify.com`, `api.spotify.com` | Your own Spotify app's client ID and the sign-in you approve; the token is saved in `config.json.spotify.json` next to your settings |
 | Spotify queue covers (phone) | `i.scdn.co`, while a Spotify queue widget shows covers. Turn off with the widget's **Show covers** option | The request for each cover image |
 | PhoneDash Pro (phone) | Google Play, through the Play Store app on the phone: when the app starts or comes back to the front, and when you open the Pro sheet, buy Pro or tap **Restore purchase** | The app asks Google Play whether this Google account bought Pro and, when you buy, opens Google Play's own payment sheet. Google Play handles the payment and your payment details under Google's privacy policy; PhoneDash never sees them. The answer (free or Pro) is kept on the phone only and is sent to no one, the developer included |
+| Usage statistics (phone, opt-in) | Google Analytics for Firebase (`app-measurement.com`, `firebaseinstallations.googleapis.com`), only after **Send statistics**. Turn off with **Statistics** in the page overview | What [Usage statistics](#usage-statistics) lists |
+| Google Play's rating card (phone) | Google Play, through the Play Store app: after a week with at least five days of use, at a quiet moment, at most every 120 days and three times in all | The app asks Google Play to show its card. A rating goes to Google Play; the app is not told whether you rated or what |
 | Pairing over Wi-Fi without USB | The PhoneDash site on GitHub Pages (the page the QR code opens), then your computer | GitHub Pages serves the page and sees your IP address; the pairing details are after `#` in the link, which browsers never send, and the page removes them from the history. The phone then sends the one-time code only to your computer, over TLS pinned to its certificate |
 | Calendars | The iCal addresses you add | The request to that address |
 | Dictation widget | Only while you hold a dictation open (the microphone button is red, at most a minute): the phone's own speech recognizer hears you. On most phones that is Google's, which may send the audio to Google. With the widget's **Recognize on the phone only** option the app uses Android's on-device recognizer, which keeps the audio on the phone; that needs Android 12 or later and the offline language, and on older Android the option refuses to listen rather than fall back. The recognized text goes from the phone to the agent and is typed into the app in front if the widget's **Type the text on the computer** option is on (off by default). Neither the audio nor the text is stored or logged by PhoneDash. Android asks for the microphone the first time the button is tapped; you can take it back in Android's app settings | Google (or your phone's recognizer), only while dictating; nothing with on-device recognition |

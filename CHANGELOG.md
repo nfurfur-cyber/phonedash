@@ -9,6 +9,11 @@
   every page, button and colour theme. **See Pro** (in the page overview and on each locked page), **Restore
   purchase**, pending payments and refunds are handled; outside the app (a browser, the layout editor's preview)
   nothing is locked. In all 23 languages.
+- Opt-in usage statistics (Google Analytics for Firebase): asked once the dashboard has been connected for a minute, off
+  until the answer is yes, with a switch in the page overview. Only the events in `UsageEvents.kt` can be sent, without
+  titles, texts, PC readings or an advertising ID. Needs the developer's `google-services.json`; without it there is
+  nothing to ask or send.
+- Google Play's own rating card (In-App Review) after a week with five days of use, at a quiet moment.
 - Needs Android 6.0 (API 23) or later: Google Play Billing 8.1 and later does not run on Android 5.
 
 ## 1.0.0 — 2026-11-22
