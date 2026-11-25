@@ -41,7 +41,7 @@ android {
         applicationId = "kr.phonedash.app"
         minSdk = 24 // Android 7.0: Google Play automatic protection needs it; see CONTRIBUTING.md before changing it
         targetSdk = 36
-        versionCode = 3
+        versionCode = 4
         versionName = "1.0.0"
 
         manifestPlaceholders["pairHost"] = pairHost

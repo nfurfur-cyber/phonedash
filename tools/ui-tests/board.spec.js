@@ -51,8 +51,12 @@ test('a fresh panel starts with the board', async ({ page }) => {
 
 for (const [theme, name] of [['default', 'dial'], ['amoled', 'dial'], ['calendar', 'calendar'], ['keycap', 'keycap']]) {
   test(`${theme}: the board fits every screen`, async ({ page }) => {
+    await page.clock.setFixedTime(new Date(2026, 10, 26, 10, 8)); // the demo's day has three events left: the fullest board
     await open(page, { theme, pro: PRO });
     await look(page, name);
+    // a font with tall lines (Korean, Linux) must not push the last rows out
+    expect(await page.locator('.w-board').evaluate((e) => getComputedStyle(e).lineHeight)).not.toBe('normal');
+    if (name === 'calendar') await expect(page.locator('.bd-events .bd-ev')).toHaveCount(3);
     for (const [width, height] of [[640, 320], [780, 360], [915, 412], [1280, 800], [360, 640], [360, 780], [800, 1280]]) {
       await page.setViewportSize({ width, height });
       await expect(page.locator('.w-board')).toHaveClass(height > width ? /\btall\b/ : /^(?!.*\btall\b)/);
@@ -96,8 +100,9 @@ test('a PC that reports no CPU temperature shows the name alone', async ({ page 
 });
 
 test('the calendar theme shows today and what is next', async ({ page }) => {
+  const now = new Date(2026, 10, 26, 10, 8); // not near midnight, where the demo's events fall on two days
+  await page.clock.setFixedTime(now);
   await open(page, { theme: 'calendar', pro: PRO });
-  const now = new Date();
   await expect(page.locator('.bd-day')).toHaveText(String(now.getDate()));
   await expect(page.locator('.bd-week span')).toHaveCount(7);
   await expect(page.locator('.bd-week .on')).toHaveText(String(now.getDate()));

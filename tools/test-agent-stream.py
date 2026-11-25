@@ -404,8 +404,8 @@ def check_agent_link(compiler_cp: str, classpath: str, base_out: Path) -> None:
          "-storetype", "PKCS12", "-keystore", str(pfx), "-storepass", "changeit", "-keypass", "changeit"],
         check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=30)
     deskpanel = ROOT / "android/app/src/main/java/kr/phonedash/app"
-    # WakePacket.kt holds what AgentLink's Wake-on-LAN code uses (packet, MAC parsing, LanLink)
-    src_files = [deskpanel / "AgentLink.kt", deskpanel / "WakePacket.kt"]
+    # WakePacket.kt holds what its Wake-on-LAN code uses (packet, MAC parsing, LanLink), NearbyCode.kt the computer found on Wi-Fi (NearbyPc)
+    src_files = [deskpanel / "AgentLink.kt", deskpanel / "WakePacket.kt", deskpanel / "NearbyCode.kt"]
     for name, content in LINK_STUBS.items():
         path = src_dir / name
         path.write_text(content, encoding="utf-8")
