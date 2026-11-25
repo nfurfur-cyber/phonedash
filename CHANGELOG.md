@@ -14,7 +14,10 @@
   titles, texts, PC readings or an advertising ID. Needs the developer's `google-services.json`; without it there is
   nothing to ask or send.
 - Google Play's own rating card (In-App Review) after a week with five days of use, at a quiet moment.
-- Needs Android 6.0 (API 23) or later: Google Play Billing 8.1 and later does not run on Android 5.
+- Needs Android 7.0 (API 24) or later: Google Play Billing 8.1 and later does not run on Android 5, and Google Play's
+  automatic protection does not run on Android 6.
+- The panel no longer keeps the default night screen up for up to a second after the PC's settings turned it off, which
+  swallowed the first touch.
 
 ## 1.0.0 — 2026-11-22
 

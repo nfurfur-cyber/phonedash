@@ -101,7 +101,7 @@
     if (/[?&]preview(?:[=&]|$)/.test(location.search)) return;
     var el = document.getElementById('webviewWarn'), btn = document.getElementById('webviewWarnClose');
     if (!el) return;
-    // A WebView older than Chromium 80 can't run the panel at all (modules, ?. and ??): the stock WebView of Android 6
+    // A WebView older than Chromium 80 can't run the panel at all (modules, ?. and ??): the stock WebView of Android 7
     // until it is updated. The panel would stay black, so say what to do, in English as the translations come
     // with the code it can't run, and keep it up: there is nothing behind it.
     var runs = 'noModule' in document.createElement('script');

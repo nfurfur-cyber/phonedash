@@ -39,7 +39,7 @@ android {
 
     defaultConfig {
         applicationId = "kr.phonedash.app"
-        minSdk = 23 // Android 6.0: Google Play Billing 8.1+ needs it; see CONTRIBUTING.md before changing it
+        minSdk = 24 // Android 7.0: Google Play automatic protection needs it; see CONTRIBUTING.md before changing it
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"

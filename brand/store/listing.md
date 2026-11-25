@@ -70,7 +70,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 
 ■ 꼭 확인해 주세요
 • Windows 10/11 PC에 무료 PC 프로그램을 설치해야 동작합니다. (앱만으로는 PC 정보를 볼 수 없습니다)
-• 공기계는 Android 6.0 이상이면 됩니다. Wi-Fi 연결에는 PC와 같은 네트워크가 필요하고, 케이블 연결을 원하면 USB 디버깅이 필요합니다.
+• 공기계는 Android 7.0 이상이면 됩니다. Wi-Fi 연결에는 PC와 같은 네트워크가 필요하고, 케이블 연결을 원하면 USB 디버깅이 필요합니다.
 • 일부 정보(GPU 센서, 특정 AI 도구 사용량 등)는 PC 하드웨어와 설치된 프로그램에 따라 표시되지 않을 수 있습니다.
 
 폰대시는 오픈소스 프로젝트 PhoneBox(MIT 라이선스, © Ersin KOÇ)를 바탕으로 만들었습니다. 라이선스 전문은 앱과 웹사이트에 있습니다.
@@ -123,7 +123,7 @@ PRIVATE BY DESIGN
 
 PLEASE NOTE
 • Requires the free PhoneDash PC program on Windows 10/11. The app alone cannot show PC data.
-• Android 6.0 or later. The USB link needs USB debugging.
+• Android 7.0 or later. The USB link needs USB debugging.
 • Some readings (GPU sensors, some AI tools) depend on your hardware and installed software.
 
 PhoneDash is based on the open-source PhoneBox project (MIT licence, © Ersin KOÇ); the licence text is in the app and on the website. Claude, Codex and Spotify are trademarks of their owners; PhoneDash is not affiliated with them.

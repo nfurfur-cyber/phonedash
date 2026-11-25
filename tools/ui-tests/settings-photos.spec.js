@@ -27,6 +27,7 @@ async function answerAlbums(page, albums) {
 
 // what the Advanced section's "Apply JSON" button does with the text in its box
 async function applyJson(page, photos) {
+  await expect(page.locator('#json')).not.toHaveValue(''); // the settings are loaded: they would replace what is applied before
   await page.evaluate(async (photos) => {
     const cfg = await (await fetch('/api/settings')).json();
     cfg.photos = photos;

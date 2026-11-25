@@ -342,15 +342,9 @@ class MainActivity : Activity(), SensorEventListener {
     private val documentStartKey by lazy { WebViewFeature.isFeatureSupported(WebViewFeature.DOCUMENT_START_SCRIPT) }
 
     private fun panelBootstrap(): String {
-        val configuration = resources.configuration
+        val locales = resources.configuration.locales
         val languages = JSONArray()
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            val locales = configuration.locales
-            for (index in 0 until locales.size()) languages.put(locales[index].toLanguageTag())
-        } else {
-            @Suppress("DEPRECATION")
-            languages.put(configuration.locale.toLanguageTag())
-        }
+        for (index in 0 until locales.size()) languages.put(locales[index].toLanguageTag())
         return "window.__phoneboxKey='$bridgeKey';window.__phoneboxLanguages=$languages;window.__phonedashSite='${BuildConfig.SITE_URL}';"
     }
 

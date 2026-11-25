@@ -6,14 +6,11 @@ import android.content.Intent
 import android.os.Build
 import android.service.quicksettings.Tile
 import android.service.quicksettings.TileService
-import androidx.annotation.RequiresApi
 
 /**
  * Quick Settings tile (Edit tiles › PhoneDash, #180): tapping it closes the shade and brings the panel to the front.
  * It only opens the app, so it has no state of its own.
  */
-// RequiresApi: the app may install below Android 7 (#184), where Quick Settings tiles don't exist
-@RequiresApi(Build.VERSION_CODES.N)
 class PanelTile : TileService() {
     override fun onStartListening() {
         qsTile?.apply {

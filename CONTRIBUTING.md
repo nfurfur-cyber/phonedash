@@ -54,12 +54,12 @@ page lists what reviews keep asking for; following it gets a pull request merged
   `android/app/src/main/assets/www/widgets/`, an icon in `WIDGET_ICONS`, the README count (`tools/check-release.py`
   checks it) and, if it calls the agent, a mock in `tools/pages/demo.js` so the web demo and the UI tests can render
   it. Outside the app (no native bridge) it must show an empty state, not throw.
-- **The Android app** targets Android 6.0 (API 23) and later, the minimum of Google Play Billing 8.1+ (PhoneDash
-  Pro), and runs the panel in the system WebView, which is updated through the Play Store, so its version doesn't
+- **The Android app** targets Android 7.0 (API 24) and later, the minimum of Google Play's automatic protection
+  (Google Play Billing for PhoneDash Pro needs API 23), and runs the panel in the system WebView, which is updated through the Play Store, so its version doesn't
   follow the Android version. The panel runs from Chromium 83 (`compat.js` fills in the newer DOM APIs) and scales
   widgets fully from Chrome 105 (container query units); below that, `index.html` shows an update notice from a plain
-  script that runs even when the panel's modules don't. The last WebView for Android 6 is 106, so widgets scale fully
-  on every supported phone. Calls above API 23 need a version check (`./gradlew lintRelease` reports them as NewApi). Changing `minSdk` needs `./gradlew lintDebug` to pass and a note on the devices
+  script that runs even when the panel's modules don't. The last WebView for Android 7 is 119, so widgets scale fully
+  on every supported phone. Calls above API 24 need a version check (`./gradlew lintRelease` reports them as NewApi). Changing `minSdk` needs `./gradlew lintDebug` to pass and a note on the devices
   and WebView versions you tried.
 - **Don't change behaviour users rely on** (removing a choice, renaming a setting, changing a default) without
   migrating existing settings and saying so in the pull request.
