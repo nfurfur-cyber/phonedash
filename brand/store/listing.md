@@ -11,7 +11,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 | 앱 이름 (30자 이하) | `폰대시: PC 모니터 & AI 사용량 대시보드` |
 | 기본 언어 | 한국어 – ko-KR (영어 en-US 번역 추가) |
 | 앱/게임 | 앱 |
-| 무료/유료 | **유료** (한 번 유료로 출시하면 무료로 바꿀 수는 있어도 다시 유료로 바꿀 수 없습니다) |
+| 무료/유료 | **무료** + 인앱 상품 Pro (아래 [Pro 인앱 상품](#pro-인앱-상품)). 무료 앱은 나중에 유료 앱으로 바꿀 수 없으니 처음부터 무료로 만듭니다. |
 | 카테고리 | 도구 (대안: 생산성) |
 | 태그 | 시스템 모니터, 위젯, 대시보드 |
 | 이메일 | Play 개발자 계정의 연락처 이메일 (공개됨) |
@@ -58,6 +58,11 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 • 책상 위에 작은 보조 화면이 하나 더 있었으면 하는 분
 • 바꾸고 남은 공기계를 버리기 아까운 분
 
+■ 무료로 시작하고, 필요하면 Pro
+• 무료: 모든 위젯, 페이지 1장, 버튼 8개, 기본 테마
+• Pro(한 번 결제, 구독 아님): 만든 페이지 전부와 페이지를 알아서 바꿔 주는 규칙, 버튼·매크로 무제한, 모든 색 테마
+• 같은 Google 계정의 다른 폰에서는 [구매 복원]으로 다시 열 수 있습니다.
+
 ■ 안심하고 쓰세요
 • 계정·광고·사용 통계가 없습니다. 개발자는 여러분의 데이터를 받지 않습니다.
 • PC 정보는 암호화된 Wi-Fi 직접 연결(또는 USB 케이블)로 여러분의 공기계에만 갑니다.
@@ -65,7 +70,7 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 
 ■ 꼭 확인해 주세요
 • Windows 10/11 PC에 무료 PC 프로그램을 설치해야 동작합니다. (앱만으로는 PC 정보를 볼 수 없습니다)
-• 공기계는 Android 5.0 이상이면 됩니다. Wi-Fi 연결에는 PC와 같은 네트워크가 필요하고, 케이블 연결을 원하면 USB 디버깅이 필요합니다.
+• 공기계는 Android 6.0 이상이면 됩니다. Wi-Fi 연결에는 PC와 같은 네트워크가 필요하고, 케이블 연결을 원하면 USB 디버깅이 필요합니다.
 • 일부 정보(GPU 센서, 특정 AI 도구 사용량 등)는 PC 하드웨어와 설치된 프로그램에 따라 표시되지 않을 수 있습니다.
 
 폰대시는 오픈소스 프로젝트 PhoneBox(MIT 라이선스, © Ersin KOÇ)를 바탕으로 만들었습니다. 라이선스 전문은 앱과 웹사이트에 있습니다.
@@ -106,6 +111,11 @@ EASY TO CONNECT
 3. Plug in the USB cable and open the app. Next time it connects by itself.
 Prefer Wi-Fi? Scan the QR code in the PC settings with the phone.
 
+FREE TO START, PRO WHEN YOU WANT MORE
+• Free: every widget, one page, 8 buttons, the default theme
+• Pro (one payment, no subscription): every page you set up and the rules that switch between them, unlimited buttons and macros, every colour theme
+• On another phone with the same Google account, tap Restore purchase.
+
 PRIVATE BY DESIGN
 • No account, no ads, no analytics. The developer never receives your data.
 • Your PC's readings go only to your phone, over the USB cable or an encrypted Wi-Fi link.
@@ -113,7 +123,7 @@ PRIVATE BY DESIGN
 
 PLEASE NOTE
 • Requires the free PhoneDash PC program on Windows 10/11. The app alone cannot show PC data.
-• Android 5.0 or later. The USB link needs USB debugging.
+• Android 6.0 or later. The USB link needs USB debugging.
 • Some readings (GPU sensors, some AI tools) depend on your hardware and installed software.
 
 PhoneDash is based on the open-source PhoneBox project (MIT licence, © Ersin KOÇ); the licence text is in the app and on the website. Claude, Codex and Spotify are trademarks of their owners; PhoneDash is not affiliated with them.
@@ -131,6 +141,7 @@ PhoneDash is the phone half of a desktop companion: it displays data sent by the
 Without the PC program the app shows a "Computer not connected" screen with setup help; this is expected.
 To see the full dashboard without a PC: the same panel runs with demo data at https://<owner>.github.io/phonedash/panel/
 To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/phonedash/, run it, enable USB debugging on the phone, connect the cable and open the app.
+PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Play Billing. The free app shows one page, 8 buttons and the default theme; extra pages show a "opens with Pro" card, and "See Pro" (also in the page overview) opens the purchase sheet. Nothing else is behind a payment.
 ```
 
 ### 광고
@@ -143,7 +154,7 @@ To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/p
 - 폭력·성적 콘텐츠·욕설·약물·도박·공포: 모두 **아니요**
 - 사용자 간 상호작용/콘텐츠 공유: **아니요** (다른 사용자와 대화하거나 콘텐츠를 주고받는 기능 없음)
 - 사용자 위치를 다른 사용자와 공유: **아니요**
-- 디지털 상품 구매: **아니요** (앱 내 결제 없음, 앱 자체가 유료)
+- 디지털 상품 구매: **예** (Google Play 결제로 파는 인앱 상품 Pro 1개)
 - 웹 브라우저/검색 기능: **아니요** (인터넷 라디오·뉴스 피드 위젯은 사용자가 정한 주소만 표시)
 - 예상 등급: 전체이용가 / PEGI 3 / ESRB Everyone
 
@@ -173,6 +184,10 @@ To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/p
 5. 데이터 유형:
    - **위치 › 대략적인 위치**: 수집함 / 공유 안 함 / 일시적으로 처리 / 선택사항(날씨 도시를 바꿀 때) / 목적: 앱 기능
    - **오디오 › 음성 또는 사운드 녹음**: 수집함 / 공유 안 함 / 일시적으로 처리 / 선택사항(받아쓰기 위젯) / 목적: 앱 기능
+   - **금융 정보 › 구매 내역**: 앱은 결제 정보를 직접 다루지 않습니다. 결제는 Google Play가 처리하고, 앱은 폰 안에서 Play에
+     "Pro를 샀는지"만 물어보며 그 결과를 개발자에게 보내지 않습니다(서버 없음). 그래서 개발자가 수집하는 데이터는 아닙니다. 다만
+     Google 도움말은 결제 서비스에서 받는 구매 정보도 따져 보라고 하므로, 더 보수적으로 가려면 수집함 / 공유 안 함 / 필수 /
+     목적: 앱 기능으로 적으세요. 제출 전에 [데이터 보안 도움말](https://support.google.com/googleplay/android-developer/answer/10787469)을 확인하세요.
    - 그 외 유형: 수집 안 함. 폰에서 사용자 본인의 PC로 가는 조작 정보는 개발자나 제3자에게 가지 않으므로 넣지 않았습니다. 더 보수적으로
      가려면 **앱 활동 › 앱 상호작용**(수집함, 공유 안 함, 일시적, 필수, 앱 기능)을 추가하세요.
 
@@ -182,9 +197,18 @@ To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/p
 - 민감한 권한: 없음 (RECORD_AUDIO는 별도 선언서가 필요 없는 일반 위험 권한, 받아쓰기 때만 요청)
 - 포그라운드 서비스·전체 화면 인텐트·정확한 알람: 사용 안 함
 
-## 가격
+## Pro 인앱 상품
 
-- 유료 앱은 Play Console › **수익 창출 설정 › 판매자 프로필**(결제 프로필)을 먼저 만들어야 가격을 정할 수 있습니다.
-- 가격은 직접 정하세요. 비슷한 유료 앱 가격을 Play에서 몇 개 찾아보고 정하는 걸 권합니다. 국가별 가격은 Play가 환율로 자동 계산해 줍니다.
+앱은 무료이고, 더 쓰고 싶은 사람이 **Pro**를 한 번 사는 구조입니다(구독 아님). 앱 코드는 상품 ID `pro_lifetime`을 찾습니다.
+
+- 먼저 Play Console › **설정 › 결제 프로필**(판매자 프로필)이 있어야 인앱 상품을 팔 수 있습니다.
+- 결제 라이브러리가 들어간 빌드(AAB)를 테스트 트랙에 한 번 올려야 인앱 상품 메뉴가 열립니다.
+- **수익 창출 › 제품 › 일회성 제품**(예전 이름: 인앱 상품) › 만들기:
+  - 제품 ID: `pro_lifetime` (만든 뒤에는 바꿀 수 없음, 코드와 같아야 함)
+  - 이름: `폰대시 Pro` / 설명: `페이지 여러 장과 자동 전환 규칙, 버튼·매크로 무제한, 모든 색 테마를 한 번 결제로 엽니다.`
+  - 가격: 보고서 제안은 ₩4,900 (출시 기념 할인 ₩2,900은 할인 혜택으로 따로 만들면 앱이 가장 싼 가격을 보여 줍니다)
+  - 상태를 **활성**으로 바꿔야 앱에서 보입니다.
+- 무료판에서 열리는 양은 `android/app/src/main/assets/www/pro.js`의 `FREE_BUTTONS`(버튼 8개)와 페이지 1장입니다.
+- 국가별 가격은 Play가 환율로 자동 계산해 줍니다.
 - 서비스 수수료와 세금(부가세)은 Play Console › 수익 창출 설정의 안내를 확인하세요.
 - 환불: 구매 직후 짧은 기간은 Google Play가 처리합니다. 그 이후 요청은 개발자가 Play Console › 주문 관리에서 직접 환불할 수 있습니다.

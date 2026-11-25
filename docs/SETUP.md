@@ -114,7 +114,7 @@ curl -fsSL https://raw.githubusercontent.com/ersinkoc/phonebox/main/setup.sh | b
 ### 2. Connect the phone
 
 - **Over USB** (recommended): it wakes the phone on plug-in, updates the app and falls back to USB when Wi-Fi drops.
-  The phone needs Android 5.0 or later (Android 6 or later recommended) with USB debugging turned on:
+  The phone needs Android 6.0 or later with USB debugging turned on:
   1. *Settings › About phone*: tap *Build number* seven times.
   2. *Developer options*: turn on *USB debugging*. On Xiaomi, Redmi and POCO, also turn on *Install via USB*.
   3. Plug the phone in with a data cable and answer *Allow USB debugging?* with *Allow*.
@@ -298,7 +298,7 @@ GPU values come from Windows itself (the temperature, as in Task Manager, needs 
 GitHub needs `gh auth login`, quotas and sessions need Claude Code / Codex to have been used on this PC.
 </details>
 
-<details><summary><b>On Android 5 or 6, the weather says "Weather unavailable".</b></summary>
+<details><summary><b>On Android 6 or 7.0, the weather says "Weather unavailable".</b></summary>
 
 The weather and air quality come straight from Open-Meteo over HTTPS, and Android before 7.1.1 doesn't trust the
 certificate authority its certificate chains to (Let's Encrypt's ISRG Root X1). Download `isrgrootx1.pem` from

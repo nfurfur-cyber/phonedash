@@ -9,7 +9,7 @@ CPU·GPU·메모리, 재생 중인 음악, Claude·Codex 사용량, 바로가기
 
 | | 어디서 받나 | 하는 일 |
 |---|---|---|
-| **공기계 앱** | Google Play (유료, `kr.phonedash.app`) | 전체 화면 대시보드. Android 5.0 이상 |
+| **공기계 앱** | Google Play (무료, Pro는 한 번 결제하는 인앱 상품, `kr.phonedash.app`) | 전체 화면 대시보드. Android 6.0 이상 |
 | **PC 프로그램** | 폰대시 사이트의 `PhoneDash-Setup.exe` (무료, Windows) | PC 정보를 읽어 Wi-Fi(또는 USB)로 공기계에 보냄, 브라우저 설정 화면 |
 
 ## 사용자는 이렇게 씁니다

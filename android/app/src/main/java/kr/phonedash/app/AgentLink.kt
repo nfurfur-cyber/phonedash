@@ -384,11 +384,9 @@ class AgentLink(private val context: Context) {
     /**
      * Where a packet for [pc] may leave from: a link on a network the computer is on (its subnet holds one of the
      * computer's stored addresses, so never a café's or a hotel's network) whose Android network can be named, because
-     * the socket is bound to that network and nothing is sent without it. Below API 22 a DatagramSocket cannot be bound
-     * to a network, so there is no link there at all.
+     * the socket is bound to that network and nothing is sent without it.
      */
     private fun wakeTargets(pc: Pc): List<Pair<LanLink, android.net.Network>> {
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP_MR1) return emptyList()
         return WakePacket.linksOnOwnNetwork(pc.hosts, lanLinks()).mapNotNull { link -> networkOwning(link)?.let { link to it } }
     }
 
@@ -413,7 +411,7 @@ class AgentLink(private val context: Context) {
                     val network = networks.getValue(link)
                     java.net.DatagramSocket().use {
                         // inside use: a bind that fails (Wi-Fi gone since the lookup) must still close the socket
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) network.bindSocket(it)
+                        network.bindSocket(it)
                         it.broadcast = true
                         it.send(java.net.DatagramPacket(packet, packet.size, target, WakePacket.PORT))
                     }

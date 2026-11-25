@@ -35,7 +35,7 @@ android {
 
     defaultConfig {
         applicationId = "kr.phonedash.app"
-        minSdk = 21 // Android 5.0; see CONTRIBUTING.md before changing it
+        minSdk = 23 // Android 6.0: Google Play Billing 8.1+ needs it; see CONTRIBUTING.md before changing it
         targetSdk = 36
         versionCode = 1
         versionName = "1.0.0"
@@ -110,6 +110,9 @@ androidComponents {
 
 dependencies {
     implementation("androidx.webkit:webkit:1.12.1")
+    // PhoneDash Pro, the one-time unlock sold through Google Play (ProStore.kt). Each major version must be replaced
+    // within two years: 9 is accepted for new apps and updates until 31 August 2028.
+    implementation("com.android.billingclient:billing:9.1.0")
     testImplementation("junit:junit:4.13.2")
     // android.jar's org.json is a stub on the JVM; the real one lets the unit tests build and read JSON
     testImplementation("org.json:json:20240303")

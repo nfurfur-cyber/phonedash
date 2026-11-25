@@ -1,12 +1,23 @@
 # Changelog
 
+## Unreleased
+
+**Android app**
+- Free on Google Play, with PhoneDash Pro: a one-time in-app purchase through Google Play Billing 9 (no subscription,
+  no server). Without Pro the panel shows the home page, the first 8 buttons and the default theme; the other pages say
+  what they hold and open with Pro, rules and webhooks leave them alone, and the extra buttons are greyed. Pro opens
+  every page, button and colour theme. **See Pro** (in the page overview and on each locked page), **Restore
+  purchase**, pending payments and refunds are handled; outside the app (a browser, the layout editor's preview)
+  nothing is locked. In all 23 languages.
+- Needs Android 6.0 (API 23) or later: Google Play Billing 8.1 and later does not run on Android 5.
+
 ## 1.0.0 — 2026-11-22
 
 First release of PhoneDash (폰대시), based on PhoneBox 0.9.27 by Ersin KOÇ (MIT licence; its history is in the
 PhoneBox repository, <https://github.com/ersinkoc/phonebox/blob/main/CHANGELOG.md>).
 
 **Android app**
-- New name, icon and package (`kr.phonedash.app`), sold on Google Play; targets Android 16 (API 36).
+- New name, icon and package (`kr.phonedash.app`) for Google Play; targets Android 16 (API 36).
 - The Wi-Fi pairing link and the help text point to the PhoneDash site; a debug build points nowhere, and a release
   build refuses to build without the site owner (`tools/set-owner.mjs`).
 - Korean interface reviewed: times ("2분 전", "3일 4시간"), quota pace, waiting counts and many settings texts read as

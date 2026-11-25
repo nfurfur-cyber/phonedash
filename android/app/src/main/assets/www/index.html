@@ -17,7 +17,7 @@
 <div id="pagePauseOverlay" aria-hidden="true"></div>
 
 <div id="overview" hidden>
-  <div class="ov-head"><span data-i18n="panel.allPages">All pages</span> <small data-i18n="panel.overviewHint">tap one to jump · volume keys flip pages · long-press a page to come back here</small><span id="ovPcs"></span><button class="ov-pc" id="ovRules" hidden></button></div>
+  <div class="ov-head"><span data-i18n="panel.allPages">All pages</span> <small data-i18n="panel.overviewHint">tap one to jump · volume keys flip pages · long-press a page to come back here</small><span id="ovPcs"></span><button class="ov-pc" id="ovRules" hidden></button><button class="ov-pc ov-pro" id="ovPro" hidden></button></div>
   <div id="ovGrid"></div>
 </div>
 
@@ -96,8 +96,8 @@
     if (/[?&]preview(?:[=&]|$)/.test(location.search)) return;
     var el = document.getElementById('webviewWarn'), btn = document.getElementById('webviewWarnClose');
     if (!el) return;
-    // A WebView older than Chromium 80 can't run the panel at all (modules, ?. and ??): the stock WebView of Android 5
-    // and 6 until it is updated. The panel would stay black, so say what to do, in English as the translations come
+    // A WebView older than Chromium 80 can't run the panel at all (modules, ?. and ??): the stock WebView of Android 6
+    // until it is updated. The panel would stay black, so say what to do, in English as the translations come
     // with the code it can't run, and keep it up: there is nothing behind it.
     var runs = 'noModule' in document.createElement('script');
     try { new Function('return ({ a: 1 })?.a ?? 1_0'); } catch (_) { runs = false; }

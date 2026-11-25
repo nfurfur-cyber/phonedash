@@ -51,9 +51,7 @@ class Dictation(private val activity: Activity, private val js: (String) -> Unit
         return request.id
     }
 
-    // below Android 6 the microphone is granted when the app is installed
-    private fun granted() = Build.VERSION.SDK_INT < 23 ||
-        activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
+    private fun granted() = activity.checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED
 
     /** From MainActivity.onRequestPermissionsResult. */
     fun onPermission(granted: Boolean) {
@@ -62,7 +60,7 @@ class Dictation(private val activity: Activity, private val js: (String) -> Unit
         when {
             granted -> begin(request)
             // "don't ask again": Android no longer shows the prompt, only its settings can turn the microphone on
-            Build.VERSION.SDK_INT >= 23 && !activity.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO) ->
+            !activity.shouldShowRequestPermissionRationale(Manifest.permission.RECORD_AUDIO) ->
                 send("error", "permission-blocked", request.id)
             else -> send("error", "permission", request.id)
         }
