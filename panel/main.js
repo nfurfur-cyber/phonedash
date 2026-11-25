@@ -2105,6 +2105,12 @@ export function isNight(now) {
   return a <= b ? t >= a && t < b : t >= a || t < b;
 }
 
+/** Whether the night screen should be up: by the schedule or because the room went dark, unless it was just woken. */
+function nightDue(now) {
+  const dark = darkRoom && cfg.display?.nightWhenDark === true;
+  return (isNight(now) || dark) && Date.now() > wakeUntil;
+}
+
 export function setNight(on) {
   if (on === nightOn) return;
   nightOn = on;
@@ -2114,9 +2120,13 @@ export function setNight(on) {
 /**
  * Before widgets are built: a timer that ran out while the panel was closed rings during the build, so the night
  * screen must already be on if the schedule says so (nightOn is null at start, and new settings may move the night).
- * Only ever turns night on; tick() keeps the state up to date as before, so the day is unchanged.
+ * A night screen that new settings no longer ask for goes here too: until the first settings arrive the default night
+ * applies, and with it still up the first touch would only wake the panel. By day nothing changes.
  */
-function nightBeforeBuild() { if (isNight(new Date()) && Date.now() > wakeUntil) setNight(true); }
+function nightBeforeBuild() {
+  const night = nightDue(new Date());
+  if (night || nightOn) setNight(night);
+}
 
 // ---------------------------------------------------------------- phone sensors
 // Room light (lux) and proximity come from the Android shell. Brightness can follow the room, the night screen can
@@ -2220,8 +2230,7 @@ export function tick() {
   $('nClock').textContent = fmtHM(now);
   $('nDate').textContent = now.toLocaleDateString(LOCALE, { weekday: 'long', day: 'numeric', month: 'long' });
   if (darkSince && Date.now() - darkSince > 30_000) darkRoom = true;
-  const dark = darkRoom && cfg.display?.nightWhenDark === true;
-  setNight((isNight(now) || dark) && Date.now() > wakeUntil);
+  setNight(nightDue(now));
   if (!PREVIEW && idleDue() && !navQueue.some((r) => r.kind === 'home')) {
     if (curPage === homeIndex()) { closeSheet(); closeOverview(); lastNav = Date.now(); } // only a sheet to close
     else { navQueue.push({ kind: 'home', at: Date.now(), priority: -1 }); pump(); }
