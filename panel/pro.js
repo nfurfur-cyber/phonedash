@@ -6,6 +6,7 @@
 // Pro: every page (and so the rules that switch between them), every button and the colour themes.
 // Like the widgets, this module only uses main.js from its functions, never while it loads.
 import { $, applyDisplay, bridge, buildLayout, cfg, emo, h, haptic, icon, PREVIEW, rich, t, toast, WIDGET_ICONS } from './main.js';
+import { stat } from './stats.js';
 
 /** Buttons that work without Pro: the first ones in the computer's shortcut list. */
 export const FREE_BUTTONS = 8;
@@ -26,6 +27,9 @@ function current() {
   } catch (_) {}
   return info || EMPTY;
 }
+
+/** "free", "pending" or "pro". */
+export const proState = () => (sellsPro() ? current().state : 'pro');
 
 export const isPro = () => !sellsPro() || current().state === 'pro';
 
@@ -56,7 +60,7 @@ export function allowedTheme(theme) {
 export function lockedPage(p) {
   const kinds = [...new Set((p.widgets || []).map((w) => w.type))].slice(0, 8);
   const btn = h('button', 'pl-go', t('pro.see'));
-  btn.addEventListener('click', (e) => { e.stopPropagation(); openPro(); });
+  btn.addEventListener('click', (e) => { e.stopPropagation(); openPro('page'); });
   return h('div', 'pro-lock',
     h('div', 'pl-ico', icon('lock')),
     h('b', 'pl-title', rich(t('pro.pageLocked', { page: `${p.icon || ''} ${p.title || ''}`.trim() }))),
@@ -71,16 +75,17 @@ export function lockedKey(s, { label = true } = {}) {
   b.setAttribute('aria-label', t('pro.buttonLocked', { name: String(s.label || s.id || '').trim() }));
   b.style.setProperty('--k', '#4b5563');
   b.dataset.id = s.id;
-  b.addEventListener('click', (e) => { e.stopPropagation(); openPro(); });
+  b.addEventListener('click', (e) => { e.stopPropagation(); openPro('button'); });
   return b;
 }
 
 // ---------------------------------------------------------------- the sheet
 let sheet = null;
 
-export function openPro() {
+export function openPro(from) {
   if (!sellsPro()) return;
   haptic();
+  stat('pro_open', { from });
   if (!sheet) {
     sheet = h('div', null);
     sheet.id = 'pro';
@@ -115,6 +120,7 @@ function renderPro() {
   buy.disabled = owned || p.state === 'pending';
   buy.addEventListener('click', () => {
     haptic();
+    stat('pro_buy', { problem: p.problem || 'none' });
     if (!bridge.buyPro?.()) toast(t(p.problem ? `pro.problem.${p.problem}` : 'pro.notReady'), 'warn');
   });
   const restore = h('button', 'pr-restore', t('pro.restore'));
