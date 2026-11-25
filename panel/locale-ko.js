@@ -97,6 +97,7 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "usage.no": "안 보내기",
       "usage.stateOn": "이용 통계: 켬",
       "usage.stateOff": "이용 통계: 끔",
+      "panel.privacy": "개인정보처리방침",
       "panel.webviewWarn": "WebView가 오래됐어요. 위젯이 제대로 보이도록 Android System WebView나 Google Chrome을 업데이트하세요.",
       "panel.switchingPc": "{name}(으)로 전환 중…",
       "panel.otherComputer": "다른 컴퓨터",

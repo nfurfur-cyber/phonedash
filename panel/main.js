@@ -18,6 +18,7 @@ import './widgets/camera.js';
 import './widgets/spectrum.js';
 import { allowedTheme, buttonOpen, closePro, freePage, isPro, lockedKey, lockedPage, openPro, sellsPro } from './pro.js';
 import { dismissUsage, renderUsageBtn, startStats, stat, statOnceADay, toggleUsage } from './stats.js';
+import { startPrivacy } from './privacy.js';
 
 // PhoneDash desk panel. Pages are 12 × 6 grids of widgets, designed in the agent's settings page.
 // The panel talks to the PhoneDash agent through "/agent/*", which the Android shell proxies over USB
@@ -55,7 +56,7 @@ export const $ = (id) => document.getElementById(id);
 // The native bridge (window.Android) is in every frame, sandboxed widgets included, so each call carries a key that only
 // the panel's own frames receive (MainActivity.bridgeKey). This wrapper adds it.
 const BRIDGE = ['battery', 'buzz', 'haptic', 'is24Hour', 'pcs', 'selectPc', 'forgetPc', 'setBrightness', 'setHomeScreen', 'setOrientation',
-  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro', 'usage', 'setUsage', 'stat', 'quietMoment'];
+  'setPinned', 'setVolumeKeys', 'setLanguage', 'transport', 'sensors', 'version', 'canListen', 'listen', 'stopListening', 'cancelListening', 'trackpad', 'canWake', 'wakePc', 'share', 'pro', 'buyPro', 'restorePro', 'usage', 'setUsage', 'stat', 'quietMoment', 'openPrivacy'];
 export const bridge = typeof Android === 'undefined' ? null : Object.fromEntries(BRIDGE.filter((m) => typeof Android[m] === 'function')
   .map((m) => [m, (...args) => Android[m](window.__phoneboxKey || '', ...args)]));
 // Live preview inside the agent's layout editor: the layout comes from the editor (unsaved), not from the agent.
@@ -2546,6 +2547,7 @@ buildLayout();
 applyDisplay();
 tick();
 startStats();
+startPrivacy();
 loadWeather();
 setInterval(loadWeather, 15 * 60_000);
 setInterval(() => { if (!nightOn && !idle()) { emit('fast'); beat(); } }, 250);
