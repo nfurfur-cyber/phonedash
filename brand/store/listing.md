@@ -13,11 +13,11 @@ GitHub 사용자 이름입니다. 데이터 보안과 콘텐츠 등급은 **권�
 | 앱/게임 | 앱 |
 | 무료/유료 | **무료** + 인앱 상품 Pro (아래 [Pro 인앱 상품](#pro-인앱-상품)). 무료 앱은 나중에 유료 앱으로 바꿀 수 없으니 처음부터 무료로 만듭니다. |
 | 카테고리 | 도구 (대안: 생산성) |
-| 태그 | 시스템 모니터, 위젯, 대시보드 |
+| 태그 | 도구, 생산성 (Play 태그 목록에 시스템 모니터·위젯·대시보드는 없음) |
 | 이메일 | Play 개발자 계정의 연락처 이메일 (공개됨) |
 | 웹사이트 | `https://<owner>.github.io/phonedash/` |
 | 개인정보처리방침 URL | `https://<owner>.github.io/phonedash/privacy.html` |
-| 그래픽 | 아이콘 `brand/out/play-icon-512.png`, 그래픽 이미지 `brand/out/feature-1024x500.png` |
+| 그래픽 | 아이콘 `brand/out/play-icon-512.png`, 그래픽 이미지 `brand/out/feature-1024x500.png` (영어 `feature-en-1024x500.png`) |
 | 휴대전화 스크린샷 | `brand/store/ko/*.png` (한국어 등록정보), `brand/store/en/*.png` (영어), 1920×1080, 6장 |
 
 ## 한국어 등록정보
@@ -84,7 +84,7 @@ Claude, Codex, Spotify 등은 각 소유자의 상표이며, 폰대시는 이들
 **Short description**
 
 ```
-Turn a spare Android phone into a desk dashboard for your PC over one USB cable
+Turn a spare Android phone into a desk dashboard for your PC. Just scan a QR.
 ```
 
 **Full description**
@@ -106,10 +106,10 @@ MAKE IT YOURS
 Start from 126 widgets and 30 templates, then rearrange them by drag and drop in the editor that opens in your PC's browser. Swipe between pages or let them switch automatically. Landscape and portrait.
 
 EASY TO CONNECT
-1. On the computer, open the PhoneDash website (see the website link below) and run the free PC program. It installs itself and fetches the tools it needs (adb).
-2. Turn on USB debugging on the phone (the website shows how).
-3. Plug in the USB cable and open the app. Next time it connects by itself.
-Prefer Wi-Fi? Scan the QR code in the PC settings with the phone.
+1. On the computer, open the PhoneDash website (see the website link below) and run the free PC program. It installs itself and shows a QR code.
+2. With the phone and the PC on the same Wi-Fi, scan the QR code with the phone's camera.
+3. Check that the code on the phone matches the PC and tap Pair. Next time it connects by itself on the same Wi-Fi.
+No developer options and no cable needed. If you would rather charge and connect over a cable, turn on USB debugging and plug it in.
 
 FREE TO START, PRO WHEN YOU WANT MORE
 • Free: every widget, one page, 8 buttons, the default theme
@@ -118,12 +118,12 @@ FREE TO START, PRO WHEN YOU WANT MORE
 
 PRIVATE BY DESIGN
 • No account, no ads. Usage statistics are sent only if you agree, and can be turned off at any time.
-• Your PC's readings go only to your phone, over the USB cable or an encrypted Wi-Fi link.
+• Your PC's readings go only to your phone, over an encrypted Wi-Fi link or the USB cable.
 • No root needed.
 
 PLEASE NOTE
 • Requires the free PhoneDash PC program on Windows 10/11. The app alone cannot show PC data.
-• Android 7.0 or later. The USB link needs USB debugging.
+• Android 7.0 or later. Wi-Fi needs the same network as the PC; a cable needs USB debugging.
 • Some readings (GPU sensors, some AI tools) depend on your hardware and installed software.
 
 PhoneDash is based on the open-source PhoneBox project (MIT licence, © Ersin KOÇ); the licence text is in the app and on the website. Claude, Codex and Spotify are trademarks of their owners; PhoneDash is not affiliated with them.
@@ -140,7 +140,7 @@ PhoneDash is based on the open-source PhoneBox project (MIT licence, © Ersin KO
 PhoneDash is the phone half of a desktop companion: it displays data sent by the free PhoneDash PC program (Windows) over USB (adb reverse) or the local Wi-Fi network. No account or login exists.
 Without the PC program the app shows a "Computer not connected" screen with setup help; this is expected.
 To see the full dashboard without a PC: the same panel runs with demo data at https://<owner>.github.io/phonedash/panel/
-To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/phonedash/, run it, enable USB debugging on the phone, connect the cable and open the app.
+To test with a PC: download PhoneDash-Setup.exe from https://<owner>.github.io/phonedash/, run it, put the phone on the same Wi-Fi, scan the QR code it shows with the phone camera and tap Pair (a USB cable with USB debugging also works).
 PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Play Billing. The free app shows one page, 8 buttons and the default theme; extra pages show a "opens with Pro" card, and "See Pro" (also in the page overview) opens the purchase sheet. Nothing else is behind a payment.
 ```
 
@@ -181,7 +181,7 @@ PhoneDash Pro is a one-time in-app product (pro_lifetime) sold through Google Pl
 1. 데이터 수집 또는 공유 여부: **예**
 2. 전송 중 암호화: **예** (외부 서비스는 HTTPS, PC 연결은 TLS. 평문 HTTP는 폰 안의 127.0.0.1만 허용)
 3. 계정 생성: **아니요** (계정 없음)
-4. 데이터 삭제 요청 방법: **예, 삭제를 요청할 수 있음** — 앱에서 이용 통계를 끄면 통계용 ID가 초기화되고, 이미 보낸 통계는 개발자 이메일로 요청
+4. 데이터 삭제 요청 방법: **선택 문항, 지금은 비움** (예를 고르면 삭제 절차·보관 기간이 적힌 URL이 필요. 사이트를 올린 뒤에는 `privacy.html#delete-data-ko`를 쓸 수 있음) — 앱에서 이용 통계를 끄면 통계용 ID가 초기화되고, 이미 보낸 통계는 개발자 이메일로 요청
 5. 데이터 유형:
    - **위치 › 대략적인 위치**: 수집함 / 공유 안 함 / 일시적으로 처리 / 선택사항(날씨 도시를 바꿀 때) / 목적: 앱 기능
    - **위치 › 대략적인 위치**(위와 같은 항목): 애널리틱스가 IP로 지역을 추정하므로 목적에 **분석**도 추가하고, "일시적으로 처리"는 **아니요**로 바꾸기

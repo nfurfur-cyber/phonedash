@@ -97,6 +97,7 @@ window.PhoneBoxLocaleData = Object.assign(window.PhoneBoxLocaleData || {}, {
       "usage.no": "Neposílat",
       "usage.stateOn": "Statistiky: zap.",
       "usage.stateOff": "Statistiky: vyp.",
+      "panel.privacy": "Zásady ochrany soukromí",
       "panel.webviewWarn": "Zastaralé WebView — aktualizace Android Systém WebView nebo Google Chrome, aby se widgety správně škálovaly.",
       "panel.switchingPc": "Přepnutí na {name} …",
       "panel.otherComputer": "na druhém počítači",

@@ -19,6 +19,7 @@
 <div id="overview" hidden>
   <div class="ov-head"><span data-i18n="panel.allPages">All pages</span> <small data-i18n="panel.overviewHint">tap one to jump · volume keys flip pages · long-press a page to come back here</small><span id="ovPcs"></span><button class="ov-pc" id="ovRules" hidden></button><button class="ov-pc ov-pro" id="ovPro" hidden></button><button class="ov-pc ov-usage" id="ovUsage" hidden></button></div>
   <div id="ovGrid"></div>
+  <div class="ov-foot"><button type="button" class="privacy-link" id="ovPrivacy" data-privacy data-i18n="panel.privacy" hidden>Privacy policy</button></div>
 </div>
 
 <div class="p-sheet" id="pSheet" hidden>
@@ -69,7 +70,7 @@
 <!-- first start: no computer has been paired yet and none answers. Walks through installing the PC program. -->
 <div id="welcome" hidden>
   <div class="wl-card">
-    <div class="wl-eyebrow">PHONEDASH</div>
+    <div class="wl-top"><div class="wl-eyebrow">PHONEDASH</div><button type="button" class="privacy-link" id="wlPrivacy" data-privacy data-i18n="panel.privacy" hidden>Privacy policy</button></div>
     <h1 data-i18n="welcome.title">Connect this phone to your computer</h1>
     <ol class="wl-steps">
       <li><b data-i18n="welcome.s1">Install the free PhoneDash program on the computer</b><span data-i18n="welcome.s1Hint">Send yourself the link below and open it on the computer.</span></li>
@@ -85,7 +86,7 @@
 </div>
 <!-- usage statistics: asked once the dashboard has been up for a while; nothing is sent without a yes (stats.js) -->
 <div id="usageAsk" role="dialog" aria-labelledby="usTitle" hidden>
-  <div><b id="usTitle" data-i18n="usage.title">Help improve PhoneDash?</b><span data-i18n="usage.text">PhoneDash would send Google Analytics which widgets and features are used. No page names, PC data, texts or advertising ID. You can change this in the page overview at any time.</span></div>
+  <div><b id="usTitle" data-i18n="usage.title">Help improve PhoneDash?</b><span data-i18n="usage.text">PhoneDash would send Google Analytics which widgets and features are used. No page names, PC data, texts or advertising ID. You can change this in the page overview at any time.</span><button type="button" class="privacy-link" id="usPrivacy" data-privacy data-i18n="panel.privacy" hidden>Privacy policy</button></div>
   <div class="us-btns"><button type="button" id="usNo" data-i18n="usage.no">Don't send</button><button type="button" id="usYes" data-i18n="usage.yes">Send statistics</button></div>
 </div>
 <div id="night"><div id="nClock">--:--</div><div id="nDate"></div></div>

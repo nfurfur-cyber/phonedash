@@ -30,8 +30,23 @@ Sent while it is on, from the phone app only:
 
 Never sent: page or button names, anything typed or dictated, computer names or readings, what plays, AI sessions,
 addresses, or the advertising ID (the app does not have the permission to read it). Ad features are off. A copy of the
-app built without the developer's Firebase project has no statistics at all. To have statistics deleted, write to the
-address under Contact.
+app built without the developer's Firebase project has no statistics at all. See [Deleting your
+data](#deleting-your-data) for statistics already sent.
+
+## Deleting your data
+
+PhoneDash has no accounts, so there is no account to delete. What there is goes away like this:
+
+- **On the phone**: uninstall the app, or use Android's **Settings › Apps › PhoneDash › Storage › Clear data**.
+- **On the computer**: uninstall the program, then delete the folders named under
+  [What stays on your devices](#what-stays-on-your-devices).
+- **Usage statistics**: **Statistics: off** in the page overview stops them, resets the statistics ID and drops what had
+  not been sent yet. To have statistics already sent deleted, write to the developer e-mail address on the PhoneDash
+  Google Play page. They hold no name or e-mail address to look you up by, so say which phone model and country it was
+  and roughly when statistics were on; what can be told apart by that is deleted.
+- **How long they are kept**: without a request, statistics tied to the installation's ID are deleted by Google Analytics
+  at the latest 14 months after the last use. Totals without an ID remain.
+- **Purchases** are kept by Google Play and managed in your Google account.
 
 ## What stays on your devices
 

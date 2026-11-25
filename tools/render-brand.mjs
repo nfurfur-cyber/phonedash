@@ -15,6 +15,7 @@ const JOBS = [
   ['icon.svg', 'play-icon-512.png', 512, 512],
   ['icon.svg', 'icon-192.png', 192, 192],
   ['feature.svg', 'feature-1024x500.png', 1024, 500],
+  ['feature-en.svg', 'feature-en-1024x500.png', 1024, 500],
   ...[16, 20, 24, 32, 48, 64, 128, 256].map((s) => [s <= 32 ? 'icon-win-small.svg' : 'icon-win.svg', `ico-${s}.png`, s, s]),
 ];
 

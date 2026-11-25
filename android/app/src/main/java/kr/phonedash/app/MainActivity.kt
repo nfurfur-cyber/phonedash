@@ -17,6 +17,7 @@ import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.os.BatteryManager
 import android.os.SystemClock
+import android.net.Uri
 import android.os.Bundle
 import android.os.Build
 import android.os.VibrationEffect
@@ -553,6 +554,28 @@ class MainActivity : Activity(), SensorEventListener {
             }
         }
 
+        /**
+         * Opens the privacy policy in the phone's browser: always this one address, whatever the panel asks. A pinned
+         * screen blocks other apps and some phones have no browser, so then the address is shown instead.
+         */
+        @JavascriptInterface
+        fun openPrivacy(key: String) {
+            if (!ok(key)) return
+            runOnUiThread {
+                if (destroyed) return@runOnUiThread
+                val url = BuildConfig.PRIVACY_URL
+                val view = Intent(Intent.ACTION_VIEW, Uri.parse(url)).addCategory(Intent.CATEGORY_BROWSABLE)
+                try {
+                    if (pinned()) showAddress(url) else startActivity(view)
+                } catch (e: android.content.ActivityNotFoundException) {
+                    showAddress(url)
+                }
+            }
+        }
+
+        private fun showAddress(url: String) =
+            Toast.makeText(this@MainActivity, url.removePrefix("https://"), Toast.LENGTH_LONG).show()
+
         /** Pro: {"state":"free|pending|pro","price":"…","ready":bool,"problem":""}; changes arrive via window.onProChange. */
         @JavascriptInterface
         fun pro(key: String): String = if (ok(key)) proStore.json() else "{}"
@@ -588,7 +611,7 @@ class MainActivity : Activity(), SensorEventListener {
             if (ok(key)) runOnUiThread { review.quietMoment { !destroyed && resumed && !pinned() } }
         }
 
-        // Google Play's card cannot open over a pinned screen (lock task)
+        // neither Google Play's card nor another app can open over a pinned screen (lock task)
         private fun pinned(): Boolean =
             (getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).lockTaskModeState != ActivityManager.LOCK_TASK_MODE_NONE
 

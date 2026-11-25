@@ -196,6 +196,8 @@ body.night #pagePauseOverlay { display: none; }
   background: #06080b; display: flex; flex-direction: column; gap: 10px;
 }
 .ov-head { font-size: 15px; font-weight: 700; display: flex; align-items: baseline; gap: 4px; }
+/* held upright there is no room for everything in one row, and the switches must not run off the screen */
+@media (orientation: portrait) { .ov-head { flex-wrap: wrap; gap: 6px; } }
 .ov-head small { font-size: 11.5px; font-weight: 400; color: var(--muted); margin-left: 8px; }
 #ovGrid { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(var(--n, 4), minmax(0, 1fr)); grid-auto-rows: minmax(0, 1fr); gap: 10px; overflow-y: auto; }
 .ov-tile {
@@ -313,6 +315,13 @@ body.offline #offline { display: flex; align-items: center; gap: 5px; }
 .us-btns button:active { transform: translateY(1px); }
 .ov-usage { display: inline-flex; align-items: center; white-space: nowrap; flex: none; }
 .ov-usage[hidden] { display: none; }
+/* the privacy policy (privacy.js): quiet text, but a full touch target */
+.privacy-link { min-height: 36px; padding: 0 2px; border: 0; background: none; color: var(--muted); font: inherit; font-size: 12.5px; text-decoration: underline; text-underline-offset: 3px; justify-self: start; text-align: start; }
+.privacy-link[hidden] { display: none; }
+.wl-top { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 12px; margin: -12px 0; min-height: 36px; }
+.privacy-link:active { color: var(--text); }
+.ov-foot { display: flex; justify-content: flex-end; flex: none; margin-top: -4px; }
+.ov-foot:has(> [hidden]) { display: none; }
 .wl-btns .pr-buy { background: var(--accent); border-color: transparent; color: #1a1000; }
 .pr-note { margin-top: 12px; font-size: 12px; color: var(--dim, var(--muted)); }
 #wake button { min-height: 44px; padding: 0 18px; border-radius: 99px; border: 1px solid rgba(255, 255, 255, .2); background: rgba(255, 255, 255, .1); color: var(--text); font-size: 14px; font-weight: 600; }

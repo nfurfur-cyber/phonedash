@@ -26,6 +26,8 @@ function inline(text) {
     .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
     .replace(/&lt;(https?:\/\/[^&]+)&gt;/g, '<a href="$1">$1</a>');
 }
+/** The anchor GitHub gives a heading, so a link within a page works on the site too. */
+const slug = (text) => text.toLowerCase().replace(/[^\p{L}\p{N} -]/gu, '').trim().replace(/ /g, '-');
 function markdown(md) {
   const out = [];
   const lines = md.replace(/\r/g, '').split('\n');
@@ -33,7 +35,7 @@ function markdown(md) {
     const line = lines[i];
     if (!line.trim()) { i++; continue; }
     const h = line.match(/^(#{1,3}) (.*)/);
-    if (h) { out.push(`<h${h[1].length + 1}>${inline(h[2])}</h${h[1].length + 1}>`); i++; continue; }
+    if (h) { out.push(`<h${h[1].length + 1} id="${slug(h[2])}">${inline(h[2])}</h${h[1].length + 1}>`); i++; continue; }
     if (line.startsWith('|')) {
       const rows = [];
       while (i < lines.length && lines[i].startsWith('|')) rows.push(lines[i++]);
@@ -63,7 +65,7 @@ const PRIVACY_KO = `
 <h2>한눈에 보기</h2>
 <ul>
   <li><b>동의 없이는 수집하지 않습니다.</b> 폰대시에는 계정, 자체 서버, 광고, 오류 보고가 없습니다. 동의하지 않으면 개발자는 여러분의 데이터를 받지 않습니다.</li>
-  <li><b>이용 통계(선택)</b>: 폰 앱에서 "통계 보내기"를 누른 경우에만 Google 애널리틱스(Firebase)로 보냅니다. 연결 방식(USB·Wi-Fi), 페이지·버튼·위젯 개수와 위젯 종류, 테마·언어, Pro 여부, Pro 화면을 열었는지 같은 이용 단계와 애널리틱스가 자동으로 기록하는 정보(첫 실행, 사용 시간, 기종·Android 버전, IP로 추정한 국가·지역, 설치 경로, 인앱 구매, 설치마다 새로 만드는 무작위 ID)입니다. 목적은 앱 개선이며, 페이지 이름·입력한 글·PC 정보·광고 ID는 보내지 않습니다. 전체 페이지 화면의 "이용 통계: 켬/끔" 버튼으로 언제든 끌 수 있고, 끄면 통계용 ID가 초기화되고 아직 보내지 않은 통계는 버립니다. 이미 보낸 통계의 삭제는 아래 문의로 요청해 주세요.</li>
+  <li><b>이용 통계(선택)</b>: 폰 앱에서 "통계 보내기"를 누른 경우에만 Google 애널리틱스(Firebase)로 보냅니다. 연결 방식(USB·Wi-Fi), 페이지·버튼·위젯 개수와 위젯 종류, 테마·언어, Pro 여부, Pro 화면을 열었는지 같은 이용 단계와 애널리틱스가 자동으로 기록하는 정보(첫 실행, 사용 시간, 기종·Android 버전, IP로 추정한 국가·지역, 설치 경로, 인앱 구매, 설치마다 새로 만드는 무작위 ID)입니다. 목적은 앱 개선이며, 페이지 이름·입력한 글·PC 정보·광고 ID는 보내지 않습니다. 전체 페이지 화면의 "이용 통계: 켬/끔" 버튼으로 언제든 끌 수 있고, 끄면 통계용 ID가 초기화되고 아직 보내지 않은 통계는 버립니다. 이미 보낸 통계는 <a href="#delete-data-ko">데이터 삭제</a>의 방법으로 지울 수 있습니다.</li>
   <li><b>별점 요청</b>: 일정 기간 쓴 뒤 Google Play의 평가 창이 뜰 수 있습니다. 평가 내용은 Google Play로만 가고, 앱은 평가했는지 알 수 없습니다.</li>
   <li><b>PC와 폰 사이에서만 오갑니다.</b> 화면에 보이는 PC 정보(CPU·GPU·메모리·재생 중인 음악·AI 사용량 등)는 PC에서 읽어 USB 케이블(또는 직접 연결한 Wi-Fi, 고정 인증서와 키로 암호화)로 여러분의 폰에만 보냅니다.</li>
   <li><b>기능에 필요한 요청만 밖으로 나갑니다.</b> 날씨(open-meteo.com: 고른 도시의 좌표), 프로그램 업데이트 확인(GitHub), adb가 없을 때 adb 내려받기(Google) 같은 요청입니다. 각 서비스는 일반 웹 요청처럼 IP 주소를 봅니다. 전체 목록과 끄는 방법은 아래 영문 상세 목록에 있습니다.</li>
@@ -71,6 +73,15 @@ const PRIVACY_KO = `
   <li><b>결제</b>는 Google Play가 처리합니다. 개발자는 Google이 모든 개발자에게 주는 주문 정보만 받습니다(카드 정보 없음).</li>
   <li><b>저장 위치</b>: 설정은 PC의 <code>%APPDATA%\\PhoneDash</code>, 기록은 <code>%LOCALAPPDATA%\\PhoneDash</code>, 폰 앱의 캐시는 앱 저장공간에만 있습니다. 앱이나 PC 프로그램을 지우면 함께 지울 수 있습니다.</li>
   <li><b>문의</b>: Google Play의 폰대시 페이지에 있는 개발자 이메일로 연락해 주세요.</li>
+</ul>
+<h2 id="delete-data-ko">데이터 삭제</h2>
+<p>폰대시(PhoneDash)에는 계정이 없어서 지울 계정 정보도 없습니다. 데이터는 이렇게 지웁니다.</p>
+<ul>
+  <li><b>폰</b>: 앱을 삭제하거나 Android <b>설정 › 앱 › 폰대시 › 저장공간 › 데이터 삭제</b>를 누르면 앱이 폰에 저장한 것이 모두 지워집니다.</li>
+  <li><b>PC</b>: PC 프로그램을 제거한 뒤 <code>%APPDATA%\\PhoneDash</code>와 <code>%LOCALAPPDATA%\\PhoneDash</code> 폴더를 지우세요.</li>
+  <li><b>이용 통계</b>: 전체 페이지 화면에서 <b>이용 통계: 끔</b>으로 바꾸면 더 보내지 않고, 통계용 ID를 초기화하고, 아직 보내지 않은 통계를 버립니다. 이미 보낸 통계는 Google Play의 폰대시 페이지에 있는 개발자 이메일로 삭제를 요청해 주세요. 통계에는 이름이나 이메일이 없어 이메일 주소로는 찾을 수 없으니, 기종·국가·통계를 켠 시기를 함께 적어 주세요. 그 정보로 특정할 수 있는 기록을 지웁니다.</li>
+  <li><b>보관 기간</b>: 설치 ID가 붙은 통계는 요청이 없어도 마지막 이용 후 최대 14개월이 지나면 Google 애널리틱스에서 자동으로 지워집니다. ID가 없는 합계는 남습니다.</li>
+  <li><b>구매 기록</b>은 Google Play가 보관하며 Google 계정에서 관리합니다.</li>
 </ul>
 <h2>Details (English)</h2>`;
 

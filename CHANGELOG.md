@@ -13,6 +13,8 @@
   until the answer is yes, with a switch in the page overview. Only the events in `UsageEvents.kt` can be sent, without
   titles, texts, PC readings or an advertising ID. Needs the developer's `google-services.json`; without it there is
   nothing to ask or send.
+- The privacy policy is linked inside the app: on the first-start screen, in the question about statistics and in the page
+  overview. It opens in the phone's browser. The policy says how to have data deleted.
 - Google Play's own rating card (In-App Review) after a week with five days of use, at a quiet moment.
 - Needs Android 7.0 (API 24) or later: Google Play Billing 8.1 and later does not run on Android 5, and Google Play's
   automatic protection does not run on Android 6.
